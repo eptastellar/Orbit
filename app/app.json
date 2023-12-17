@@ -1,0 +1,62 @@
+{
+   "expo": {
+      "name": "Orbit",
+      "slug": "orbit",
+      "scheme": "orbit",
+      "version": "0.1.4",
+
+      "owner": "tacitneptune",
+      "githubUrl": "https://github.com/74C17N3P7UN3/Orbit",
+
+      "backgroundColor": "#030303",
+      "icon": "./src/assets/logos/icon.png",
+      "orientation": "portrait",
+      "userInterfaceStyle": "dark",
+
+      "splash": {
+         "image": "./src/assets/splash-screen.png",
+         "resizeMode": "contain",
+         "backgroundColor": "#030303"
+      },
+
+      "assetBundlePatterns": [
+         "**/*"
+      ],
+      "android": {
+         "adaptiveIcon": {
+            "foregroundImage": "./src/assets/logos/adaptive-icon.png",
+            "backgroundColor": "#030303"
+         },
+         "package": "com.ecorp.orbit"
+      },
+      "ios": {
+         "bundleIdentifier": "com.ecorp.orbit",
+         "infoPlist": {
+            "UIViewControllerBasedStatusBarAppearance": "YES"
+         },
+         "supportsTablet": true
+      },
+
+      "experiments": {
+         "tsconfigPaths": true,
+         "typedRoutes": true
+      },
+      "extra": {
+         "router": {
+            "origin": false
+         },
+         "eas": {
+            "projectId": "50c8249f-bd7a-4f0e-8c59-8b186026e1cd"
+         }
+      },
+      "plugins": [
+         "expo-router"
+      ],
+      "runtimeVersion": {
+         "policy": "appVersion"
+      },
+      "updates": {
+         "url": "https://u.expo.dev/50c8249f-bd7a-4f0e-8c59-8b186026e1cd"
+      }
+   }
+}

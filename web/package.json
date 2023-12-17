@@ -1,0 +1,24 @@
+{
+   "name": "api",
+   "version": "1.0.0",
+   "private": true,
+   "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start"
+   },
+   "dependencies": {
+      "@supabase/supabase-js": "^2.38.4",
+      "bcrypt-ts": "^4.0.1",
+      "neo4j-driver": "^5.14.0",
+      "next": "^14.0.2",
+      "react": "^18.2.0",
+      "react-dom": "^18.2.0"
+   },
+   "devDependencies": {
+      "@types/node": "^20.9.0",
+      "@types/react": "^18.2.37",
+      "@types/react-dom": "^18.2.15",
+      "typescript": "^5.2.2"
+   }
+}

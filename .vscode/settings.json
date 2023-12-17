@@ -1,0 +1,26 @@
+{
+   // Editor properties
+   "editor.linkedEditing": true,
+   "editor.links": true,
+   "editor.detectIndentation": false,
+   "editor.tabSize": 3,
+
+   // Formatting properties
+   "editor.formatOnPaste": true,
+   "editor.formatOnSave": true,
+   "files.insertFinalNewline": true,
+   "files.trimFinalNewlines": true,
+   "files.trimTrailingWhitespace": true,
+   "editor.codeActionsOnSave": {
+      "source.organizeImports": "always",
+   },
+
+   // Material Icons
+   "material-icon-theme.folders.associations": {
+      "algorithms": "functions",
+      "components": "react-components",
+      "cron-jobs": "archive",
+      "hoc": "interface",
+      "workflows": "batch",
+   },
+}
