@@ -4,7 +4,7 @@
 
 <div>
 
-![GitHub Last Commit](https://img.shields.io/github/last-commit/74C17N3P7UN3/Orbit)
+![GitHub Last Commit](https://img.shields.io/github/last-commit/orbit-org/Orbit)
 
 </div>
 
