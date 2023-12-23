@@ -26,12 +26,12 @@ A social media mobile application inspired by soon less popular socials like Ins
 
 <table>
 <tr>
-    <td align="center"><a href="https://github.com/mzyxnuel">
+    <td align="center"><a href="https://github.com/mzyxnuel" >
         <img src="https://avatars.githubusercontent.com/u/137792640" width="100px;" alt="mzyxnuel"/><br />
         <sub><b>mzyxnuel</b></sub></a><br />
         <a title="Project Management">📆</a> 
         <a title="Code">💻</a>
-        <a title="Design">🎨</a> <br>
+        <a title="Design">🎨</a> <br />
         <a title="Security">🛡</a> 
         <a title="Ideas, Planning, & Feedback">🤔</a> 
         <a title="Reviewed Pull Requests">👀</a>
@@ -41,7 +41,7 @@ A social media mobile application inspired by soon less popular socials like Ins
         <sub><b>74C17N3P7UN3</b></sub></a><br />
         <a title="Code">💻</a>
         <a title="Design">🎨</a>
-        <a title="Infrastructure (Hosting, Build-Tools, etc.)">🚇</a> <br>
+        <a title="Infrastructure (Hosting, Build-Tools, etc.)">🚇</a> <br />
         <a title="Content">🖋</a>
         <a title="Ideas, Planning, & Feedback">🤔</a> 
         <a title="Reviewed Pull Requests">👀</a>
@@ -51,7 +51,7 @@ A social media mobile application inspired by soon less popular socials like Ins
         <sub><b>TheInfernalNick</b></sub></a><br />
         <a title="Code">💻</a>
         <a title="Ideas, Planning, & Feedback">🤔</a> 
-        <a title="Documentation">📖</a> <br>
+        <a title="Documentation">📖</a> <br />
         <a title="Testing">⚠️</a> 
     </td>
     <td align="center"><a href="https://github.com/MarcoMattei04">
@@ -60,15 +60,16 @@ A social media mobile application inspired by soon less popular socials like Ins
         <sub><b>MarcoMattei04</b></sub></a><br />
         <a title="Documentation">📖</a>
         <a title="Design">🎨</a>
-        <a title="Testing">⚠️</a> <br>
+        <a title="Testing">⚠️</a> <br />
         <a title="User Testing">📓</a>
     </td>
     <td align="center"><a href="https://github.com/itspomo">
         <img src="https://avatars.githubusercontent.com/u/102945599" width="100px;" alt="itspomo"/><br />
         <sub><b>itspomo</b></sub></a><br />
         <a title="Promotion">📣</a>
-        <a title="Testing">⚠️</a>
-        <a title="Audio">🔊</a>
+        <a title="Audio">🔊</a> 
+        <a title="Testing">⚠️</a> <br />
+        <a title="User Testing">📓</a>
     </td>
 </tr>
 </table>
