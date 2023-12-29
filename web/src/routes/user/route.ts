@@ -1,12 +1,9 @@
 import { Request, Response, Router } from "express";
 const app: Router = Router();
 
-app.get("/", (req: Request, res: Response) => {
-   res.json({
-      "uptime": process.uptime(),
-      "status": 200,
-      "platform": process.platform
-   });
+app.get("/", (req: Request, res: Response, next: NextFunction) => {
+   console.log(res.locals.jwt);
+   res.json({});
 });
 
 export default app;
