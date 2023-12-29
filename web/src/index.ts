@@ -11,10 +11,10 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
-app.use('/health', health)
-app.use('/auth/sign-up', middleware, signup)
-app.use('/interests', interests)
-app.use('/user', middleware, user)
+app.use('/api/health', health)
+app.use('/api/auth/sign-up', middleware, signup)
+app.use('/api/interests', interests)
+app.use('/api/user', middleware, user)
 
 app.listen(port, () => { console.log(`⚡[server]: server is running on port: http://localhost:${port}`) }) //TODO REMOVE IN PRODUCTION
 
