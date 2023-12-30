@@ -11,7 +11,7 @@ const WelcomeButton = ({ btnType, image, text, onClick }: Props) => (
       onClick={onClick}
    >
       {image && <img src={image} alt="Icon" height={28} width={28} />}
-      <p className={`text-xl ${btnType !== "transparent" ? "font-bold" : ""} ${btnType === "white" ? " text-black" : " text-white"}`}>
+      <p className={`text-center text-xl ${btnType !== "transparent" ? "font-bold" : ""} ${btnType === "white" ? " text-black" : " text-white"}`}>
          {text}
       </p>
    </div>

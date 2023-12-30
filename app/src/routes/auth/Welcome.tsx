@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 
 import { apple, google, welcomeBg } from "@/assets"
 import { WelcomeButton } from "@/components"
+import { Wrapper } from "@/hoc"
 
 type Views = "default" | "signin" | "signup"
 
@@ -12,15 +13,15 @@ const Welcome = () => {
    const navigateTo = useNavigate()
 
    return (
-      <div className="h-screen w-screen">
+      <>
          <video
-            className="fixed h-screen w-screen object-cover"
+            className="absolute h-full w-full object-cover"
 
             src={welcomeBg}
             autoPlay loop muted
          />
 
-         <div className="fixed flex flex-col items-center justify-between h-full w-full p-8 bg-black/50">
+         <div className="absolute flex flex-col items-center justify-between h-full w-full p-8 bg-black/50">
             <p className="mt-36 text-center text-4xl font-bold text-white">
                Welcome, to your personal orbit.
             </p>
@@ -88,8 +89,8 @@ const Welcome = () => {
                }
             </div>
          </div>
-      </div>
+      </>
    )
 }
 
-export default Welcome
+export default Wrapper({ children: <Welcome /> })
