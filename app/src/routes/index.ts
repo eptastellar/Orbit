@@ -1,5 +1,8 @@
-import Root from "./Root"
+import Home from "./app/Home"
+
+import Welcome from "./auth/Welcome"
 
 export {
-   Root
+   Home,
+   Welcome
 }
