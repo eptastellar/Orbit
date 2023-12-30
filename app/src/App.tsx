@@ -4,15 +4,21 @@ import "@/App.css"
 // Importing external modules from packages
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 // Importing and defining the routes for the router
-import { Root } from "@/routes"
+import { protectedLoader } from "@/loaders"
+import { Home, Welcome } from "@/routes"
 
 const router = createBrowserRouter([
    {
       path: "/",
-      element: <Root />
+      element: <Home />,
+      loader: protectedLoader,
+   },
+   {
+      path: "/onboarding",
+      element: <Welcome />
    }
 ])
 
