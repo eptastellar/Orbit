@@ -8,13 +8,14 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 // Importing and defining the routes for the router
 import { protectedLoader } from "@/loaders"
-import { Home, Welcome } from "@/routes"
+import { ErrorPage, Home, Welcome } from "@/routes"
 
 const router = createBrowserRouter([
    {
       path: "/",
       element: <Home />,
       loader: protectedLoader,
+      errorElement: <ErrorPage />
    },
    {
       path: "/onboarding",
