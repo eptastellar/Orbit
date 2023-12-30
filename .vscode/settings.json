@@ -21,6 +21,7 @@
       "components": "react-components",
       "cron-jobs": "archive",
       "hoc": "interface",
+      "loaders": "CI",
       "workflows": "batch",
    },
 }
