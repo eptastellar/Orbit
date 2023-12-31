@@ -10,8 +10,8 @@ app.post("/", (req: Request, res: Response, next: NextFunction) => {
    const interests = req.body.interests
    const bday = req.body.bday
 
-   createDoc(uid, username).then(() => {
-      createNode(uid, interests, bday).then(() => {
+   createDoc(uid, username).then(() => { //create a new doc in /users
+      createNode(uid, interests, bday).then(() => { //create a new node in neo4j
          res.json({ success: true, message: "Node & Document created" }).status(201);
       }).catch((error) => {
          res.json({ success: false, message: error.message }).status(500);
@@ -27,13 +27,12 @@ async function createDoc(uid: string, username: string) {
 
    return new Promise((resolve, reject) => {
       usersRef.get()
-         .then((snapshot) => {
-            if (snapshot.empty) {
-               const newUser = {
-                  uid: uid,
-                  username: username
-               };
-               db.collection('users').add(newUser);
+         .then(async (snapshot) => {
+            if (snapshot.empty) { //check if username is already used
+               const docRef = db.collection('users').doc(uid);
+               await docRef.set({
+                  username: username,
+               });
                resolve(null);
             } else
                reject(new Error('Username already exists'));
