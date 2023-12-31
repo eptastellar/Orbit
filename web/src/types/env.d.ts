@@ -2,7 +2,7 @@ declare global {
    namespace NodeJS {
       interface ProcessEnv {
          PORT: number
-         WORK_FACTOR: number
+         JWT_SECRET_KEY: string
 
          FIREBASE_PRIVATE_KEY: string
          FIREBASE_CLIENT_EMAIL: string

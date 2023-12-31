@@ -1,4 +1,5 @@
 import { middleware } from '@helpers/middleware';
+import signin from '@routes/auth/sign-in/route';
 import signup from '@routes/auth/sign-up/route';
 import health from '@routes/health/route';
 import interests from '@routes/interests/route';
@@ -13,7 +14,8 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json())
 app.use('/api/health', health)
-app.use('/api/auth/sign-up', middleware, signup)
+app.use('/api/auth/sign-in', signin)
+app.use('/api/auth/sign-up', signup)
 app.use('/api/interests', interests)
 app.use('/api/user', middleware, user)
 app.use('*', (_, res) => { res.end('404 not found').status(404) })
