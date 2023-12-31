@@ -11,6 +11,7 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+app.use(express.json())
 app.use('/api/health', health)
 app.use('/api/auth/sign-up', middleware, signup)
 app.use('/api/interests', interests)

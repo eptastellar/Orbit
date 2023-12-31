@@ -1,18 +1,52 @@
 import { NextFunction, Request, Response, Router } from "express";
+import admin from 'firebase-admin';
 import neo4j from "../../../lib/neo4j.config";
 
 const app: Router = Router();
 
 app.post("/", (req: Request, res: Response, next: NextFunction) => {
-   //TODO @Mxzynvuel dammi dati veri cosi so come aggiungere i dati nella query effettivamente
-   let interests = ""
-   let bday = ""
-   const query = `CREATE (:User {name:"${name}",interests:${interests},bday:${bday}})`
-   if (neo4j) {
-      const result = neo4j.executeWrite(tx => tx.run(query))
-   }
-   // res.json({ success: true, message: "Node created" }).status(201);
-   res.json({ success: false, message: "Error while creating the node" }).status(400);
-});
+   const uid = req.body.uid
+   const username = req.body.username
+   const interests = req.body.interests
+   const bday = req.body.bday
 
-export default app;
+   createDoc(uid, username).then(() => {
+      createNode(uid, interests, bday).then(() => {
+         res.json({ success: true, message: "Node & Document created" }).status(201);
+      }).catch((error) => {
+         res.json({ success: false, message: error.message }).status(500);
+      })
+   }).catch((error) => {
+      res.json({ success: false, message: error.message }).status(500);
+   })
+})
+
+async function createDoc(uid: string, username: string) {
+   const db = admin.firestore();
+   const usersRef = db.collection('users').where("username", "==", username);
+
+   return new Promise((resolve, reject) => {
+      usersRef.get()
+         .then((snapshot) => {
+            if (snapshot.empty) {
+               const newUser = {
+                  uid: uid,
+                  username: username
+               };
+               db.collection('users').add(newUser);
+               resolve(null);
+            } else
+               reject(new Error('Username already exists'));
+         })
+   })
+}
+
+async function createNode(uid: string, interests: string[], bday: string[]) {
+   if (neo4j) {
+      const query = `CREATE (:User {name:"${uid}",interests:"${interests}",bday:"${bday}"})`
+      const result = await neo4j.executeWrite(tx => tx.run(query))
+   } else
+      throw new Error('Driver not found')
+}
+
+export default app
