@@ -1,11 +1,9 @@
 import { ServiceAccount, cert, getApps, initializeApp } from 'firebase-admin/app';
 
-
-
 export function baas() {
    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
-   if(privateKey) {
+   if (privateKey) {
       const formattedPrivateKey: string = formatPrivateKey(privateKey)
 
       const firebaseAccount: ServiceAccount = {

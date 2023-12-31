@@ -1,6 +1,6 @@
+import { baas } from "@config/firebase-admin.config";
 import express, { NextFunction } from "express";
 import admin from "firebase-admin";
-import { baas } from "../lib/firebase-admin.config";
 
 export const middleware = async (req: express.Request, res: express.Response, next: NextFunction) => {
    const authorization = req.headers.authorization

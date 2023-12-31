@@ -1,6 +1,6 @@
+import neo4j from "@config/neo4j.config";
 import { NextFunction, Request, Response, Router } from "express";
 import admin from 'firebase-admin';
-import neo4j from "../../../lib/neo4j.config";
 
 const app: Router = Router();
 
