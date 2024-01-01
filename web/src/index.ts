@@ -1,3 +1,4 @@
+import { checkIfSessionTokenIsValid } from '@helpers/middlewares';
 import signin from '@routes/auth/sign-in/route';
 import signup from '@routes/auth/sign-up/route';
 import health from '@routes/health/route';
@@ -22,7 +23,7 @@ app.use('/api/health', health)
 app.use('/api/auth/sign-in', authLimiter, signin)
 app.use('/api/auth/sign-up', authLimiter, signup)
 app.use('/api/interests', interests)
-app.use('/api/user', user)
+app.use('/api/user', checkIfSessionTokenIsValid, user)
 app.use('*', (_, res) => { res.end('404 not found').status(404) })
 
 app.listen(port, () => { console.log(`⚡[server]: server is running on port: http://localhost:${port}`) }) //TODO REMOVE IN PRODUCTION
