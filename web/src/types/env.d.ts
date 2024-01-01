@@ -7,6 +7,7 @@ declare global {
          FIREBASE_PRIVATE_KEY: string
          FIREBASE_CLIENT_EMAIL: string
          FIREBASE_PROJECT_ID: string
+         FIREBASE_BUCKET_ID: string
 
          AURA_INSTANCE_ID: string
          AURA_INSTANCE_NAME: string
