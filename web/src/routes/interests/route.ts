@@ -1,4 +1,4 @@
-import { interests } from '@assets/interests';
+import { interests } from '@public/interests';
 import { NextFunction, Request, Response, Router } from "express";
 
 const app: Router = Router();

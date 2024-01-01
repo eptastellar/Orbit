@@ -29,6 +29,9 @@
          "@cron-jobs/*": [
             "cron-jobs/*"
          ],
+         "@public/*": [
+            "../public/*"
+         ],
       }
    },
    "ts-node": {
@@ -38,6 +41,6 @@
    },
    "include": [
       "./*.js",
-      "src/**/*.ts",
+      "src/**/*.ts", "public/interests.ts",
    ],
 }

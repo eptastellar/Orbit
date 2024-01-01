@@ -8,7 +8,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
    const jwt = authorization?.split("Bearer ")[1]
 
    if (jwt) {
-      validateJWT(jwt).then((payload) => {
+      validateJWT(jwt).then((payload) => { //validate if the token is signed
          baas()
 
          const uid: string = payload.uid as string
@@ -18,9 +18,10 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
 
          docRef.get()
             .then(async (snapshot) => {
-               if (jwt == snapshot.data()?.token)
+               if (jwt == snapshot.data()?.token) { //check if the token is the same saved in firestore
+                  res.locals.uid = uid //save the uid of the user to manipulate only his data
                   next()
-               else
+               } else
                   throw new Error('Invalid token')
             })
             .catch((error) => {
