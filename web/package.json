@@ -5,7 +5,7 @@
   "scripts": {
     "start": "ts-node src/app.ts",
     "dev": "nodemon src/app.ts",
-    "vercel-build": "echo vercel",
+    "vercel-build": "",
     "js-build": "npx tsc",
     "typecheck": "tsc --noEmit"
   },
