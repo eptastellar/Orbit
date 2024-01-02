@@ -10,7 +10,7 @@ app.get("/", (req: Request, res: Response) => {
 
    checkIfAccessTokenIsValid(authorization).then(async (uid: string) => { //send the firebase access token to create a session
       createNewSession(uid).then((jwt: string) => {
-         res.json({ success: true, jwt: jwt }).status(200) //return the session jwt
+         res.json({ success: true, jwt: jwt, uid: uid }).status(200) //return the session jwt and the uid
       })
    }).catch((error) => {
       res.json({ success: false, message: error.message }).status(401)
@@ -22,7 +22,10 @@ async function createNewSession(uid: string): Promise<string> {
    const db = admin.firestore();
 
    const docRef = db.collection('sessions').doc(uid); //create a new doc in the collection /sessions
-   await docRef.set({ token: jwt }) //save the token in the session
+   await docRef.set({ //save the token in the session and the time
+      token: jwt,
+      created: Date.now()
+   })
 
    return jwt;
 }
