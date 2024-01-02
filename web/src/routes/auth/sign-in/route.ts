@@ -22,9 +22,8 @@ async function createNewSession(uid: string): Promise<string> {
    const db = admin.firestore();
 
    const docRef = db.collection('sessions').doc(uid); //create a new doc in the collection /sessions
-   await docRef.set({ //save the token in the session and the time
-      token: jwt,
-      created: Date.now()
+   await docRef.set({ //save the token in the session
+      token: jwt
    })
 
    return jwt;

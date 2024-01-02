@@ -35,9 +35,8 @@ async function createDoc(uid: string, username: string) {
          .then(async (snapshot) => {
             if (snapshot.empty) { //check if username is already used
                const docRef = db.collection('users').doc(uid);
-               await docRef.set({ //set the username and the created at time
-                  username: username,
-                  created: Date.now()
+               await docRef.set({ //set the username
+                  username: username
                });
                resolve(null); //return nothing
             } else
