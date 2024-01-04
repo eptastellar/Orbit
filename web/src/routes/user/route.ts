@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 
 const app: Router = Router();
 
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
+app.get("/", (req: Request, res: Response) => {
+   //TODO
    console.log(res.locals.uid);
    res.json({});
 });

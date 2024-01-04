@@ -38,10 +38,10 @@ export async function checkIfAccessTokenIsValid(authorization: string): Promise<
    return new Promise(async (resolve, reject) => {
       try {
          baas()
-         const jwt = authorization.split("Bearer ")[1]
+         const jwt = authorization.split("Bearer ")[1] //remove bearer from the authentication param
          const decodedjwt = await admin.auth().verifyIdToken(jwt) //verify token using firebase, it also check if the token is expired
          const uid: string = decodedjwt.uid
-         resolve(uid)
+         resolve(uid) //return the uid of the user
       } catch (error) {
          reject(new Error('Invalid token'))
       }
