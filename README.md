@@ -9,11 +9,12 @@
 </div>
 
 A social media mobile application inspired by soon less popular socials like Instagram and X.
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E6SYFXS)
 
 ## 📝 Table of Contents
 
--  [🧐️ About](#-about)
--  [✍ Authors](#-authors)
+- [🧐️ About](#-about)
+- [✍ Authors](#-authors)
 
 > [📚️ Docs](/DOCS.md)\
 > [📜️️️️️️️️️ Licence](/LICENSE)
@@ -29,11 +30,11 @@ A social media mobile application inspired by soon less popular socials like Ins
     <td align="center"><a href="https://github.com/mzyxnuel" >
         <img src="https://avatars.githubusercontent.com/u/137792640" width="100px;" alt="mzyxnuel"/><br />
         <sub><b>mzyxnuel</b></sub></a><br />
-        <a title="Project Management">📆</a> 
+        <a title="Project Management">📆</a>
         <a title="Code">💻</a>
         <a title="Design">🎨</a> <br />
-        <a title="Security">🛡</a> 
-        <a title="Ideas, Planning, & Feedback">🤔</a> 
+        <a title="Security">🛡</a>
+        <a title="Ideas, Planning, & Feedback">🤔</a>
         <a title="Reviewed Pull Requests">👀</a>
     </td>
     <td align="center"><a href="https://github.com/74C17N3P7UN3">
@@ -43,19 +44,19 @@ A social media mobile application inspired by soon less popular socials like Ins
         <a title="Design">🎨</a>
         <a title="Infrastructure (Hosting, Build-Tools, etc.)">🚇</a> <br />
         <a title="Content">🖋</a>
-        <a title="Ideas, Planning, & Feedback">🤔</a> 
+        <a title="Ideas, Planning, & Feedback">🤔</a>
         <a title="Reviewed Pull Requests">👀</a>
     </td>
     <td align="center"><a href="https://github.com/TheInfernalNick">
         <img src="https://avatars.githubusercontent.com/u/82029415" width="100px;" alt="TheInfernalNick"/><br />
         <sub><b>TheInfernalNick</b></sub></a><br />
         <a title="Code">💻</a>
-        <a title="Ideas, Planning, & Feedback">🤔</a> 
+        <a title="Ideas, Planning, & Feedback">🤔</a>
         <a title="Documentation">📖</a> <br />
-        <a title="Testing">⚠️</a> 
+        <a title="Testing">⚠️</a>
     </td>
     <td align="center"><a href="https://github.com/MarcoMattei04">
-        <img src="https://avatars.githubusercontent.com/u/151754542" 
+        <img src="https://avatars.githubusercontent.com/u/151754542"
         width="100px;" alt="MarcoMattei04"/><br />
         <sub><b>MarcoMattei04</b></sub></a><br />
         <a title="Documentation">📖</a>
@@ -67,7 +68,7 @@ A social media mobile application inspired by soon less popular socials like Ins
         <img src="https://avatars.githubusercontent.com/u/102945599" width="100px;" alt="itspomo"/><br />
         <sub><b>itspomo</b></sub></a><br />
         <a title="Promotion">📣</a>
-        <a title="Audio">🔊</a> 
+        <a title="Audio">🔊</a>
         <a title="Testing">⚠️</a> <br />
         <a title="User Testing">📓</a>
     </td>
