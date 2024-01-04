@@ -11,7 +11,7 @@ app.post("/", (req: Request, res: Response) => {
    const interests = req.body.interests
    const bday = req.body.bday
 
-   checkIfAccessTokenIsValid(authorization).then((uid) => {
+   checkIfAccessTokenIsValid(authorization).then((uid) => { //check if firebase access token is valid
       createDoc(uid, username).then(() => { //create a new doc in /users
          createNode(uid, interests, bday).then(() => { //create a new node in neo4j
             res.json({ success: true, message: "Node & Document created" }).status(201);
@@ -28,7 +28,7 @@ app.post("/", (req: Request, res: Response) => {
 
 async function createDoc(uid: string, username: string) {
    const db = admin.firestore();
-   const usersRef = db.collection('users').where("username", "==", username);
+   const usersRef = db.collection('users').where("username", "==", username); //search where the username is equal to the input username
 
    return new Promise((resolve, reject) => {
       usersRef.get()

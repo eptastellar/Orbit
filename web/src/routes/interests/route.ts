@@ -1,9 +1,9 @@
 import { interests } from '@assets/interests';
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 
 const app: Router = Router();
 
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
+app.get("/", (_: Request, res: Response) => {
    res.json({ interests }).status(200);
 });
 

@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { retriveUserData } from '@helpers/retriver';
+import { Request, Response, Router } from "express";
 import admin from 'firebase-admin';
 
 const app: Router = Router();
 
-app.post("/upload", async (req: Request, res: Response, next: NextFunction) => {
+app.post("/upload", async (req: Request, res: Response) => {
    const uid = res.locals.uid
-   const text = req.body.text
+   const type = req.body.type
    const content = req.body.content
 
    const db = admin.firestore()
@@ -13,10 +14,10 @@ app.post("/upload", async (req: Request, res: Response, next: NextFunction) => {
 
    docRef.set({ //set the post information in firestore
       owner: uid,
-      text: text,
+      type: type,
       content: content,
       likes_number: 0,
-      comments_number: 0,
+      // comments_number: 0, //TODO
    }).then(() => {
       res.json({ success: true, message: 'Created', post: docRef.id }).status(201); //return the post id
    }).catch(() => {
@@ -24,11 +25,11 @@ app.post("/upload", async (req: Request, res: Response, next: NextFunction) => {
    })
 });
 
-app.get("/download/:id", async (req: Request, res: Response, next: NextFunction) => {
+app.get("/download/:id", async (req: Request, res: Response) => { //get the specific post based from is id
    const id = req.params.id;
 
    const db = admin.firestore()
-   const docRef = db.collection('posts').doc(id) //set the docRef to posts
+   const docRef = db.collection('posts').doc(id) //set the docRef to posts and id
 
    const doc = await docRef.get();
    if (doc.exists) { //if the document exists
@@ -36,13 +37,13 @@ app.get("/download/:id", async (req: Request, res: Response, next: NextFunction)
       const content = doc.data()?.content
       const text = doc.data()?.text
       const likes_number = doc.data()?.likes_number
-      const comments_number = doc.data()?.comments_number
+      // const comments_number = doc.data()?.comments_number
 
       res.json({
          text: text,
          content: content,
          likes_number: likes_number,
-         comments_number: comments_number,
+         //TODO comments_number: comments_number,
          created: doc.createTime?.seconds,
          username: username,
          name: name,
@@ -51,17 +52,5 @@ app.get("/download/:id", async (req: Request, res: Response, next: NextFunction)
    } else
       res.json({ success: false, message: 'Post doesn\'t exists' }).status(400)
 });
-
-async function retriveUserData(uid: string) { //retrive owner informations based from the uid
-   const db = admin.firestore()
-   const docRef = db.collection('users').doc(uid)
-   const doc = await docRef.get()
-
-   const username = doc.data()?.username
-   const name = doc.data()?.name
-   const pfp = doc.data()?.pfp
-
-   return { username, name, pfp }
-}
 
 export default app;
