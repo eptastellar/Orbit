@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom"
 
 import { apple, google, welcomeBg } from "@/assets"
 import { WelcomeButton } from "@/components"
+import { useAuthContext } from "@/contexts"
 import { Wrapper } from "@/hoc"
 
 type Views = "default" | "signin" | "signup"
 
 const Welcome = () => {
-   const [activeView, setActiveView] = useState<Views>("default")
+   const { googleLogin } = useAuthContext()
 
    const navigateTo = useNavigate()
+
+   const [activeView, setActiveView] = useState<Views>("default")
 
    return (
       <>
@@ -44,13 +47,16 @@ const Welcome = () => {
                         btnType="white"
                         image={apple}
                         text="Sign in with Apple"
-                        onClick={() => { }}
+                        onClick={() => { alert("Coming soon...") }}
                      />
                      <WelcomeButton
                         btnType="white"
                         image={google}
                         text="Sign in with Google"
-                        onClick={() => { }}
+                        onClick={async () => {
+                           await googleLogin()
+                           navigateTo("/")
+                        }}
                      />
                      <WelcomeButton
                         btnType="ring"
@@ -67,13 +73,16 @@ const Welcome = () => {
                         btnType="white"
                         image={apple}
                         text="Sign up with Apple"
-                        onClick={() => { }}
+                        onClick={() => { alert("Coming soon...") }}
                      />
                      <WelcomeButton
                         btnType="white"
                         image={google}
                         text="Sign up with Google"
-                        onClick={() => { }}
+                        onClick={async () => {
+                           await googleLogin()
+                           navigateTo("/onboarding/interests")
+                        }}
                      />
                      <WelcomeButton
                         btnType="ring"
