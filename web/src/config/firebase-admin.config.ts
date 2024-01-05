@@ -13,7 +13,8 @@ export function baas() {
       }
 
       const firebaseAdminConfig = {
-         credential: cert(firebaseAccount)
+         credential: cert(firebaseAccount),
+         storageBucket: process.env.FIREBASE_BUCKET_ID
       }
 
       if (getApps().length <= 0)
