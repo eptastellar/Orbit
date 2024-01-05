@@ -1,6 +1,6 @@
 import Home from "./app/Home"
 
-import Welcome from "./auth/Welcome"
+import Welcome from "./onboarding/Welcome"
 
 import ErrorPage from "./ErrorPage"
 
