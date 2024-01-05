@@ -19,7 +19,7 @@ type authContextType = {
    currentUser: User | null
 
    // Email and password actions
-   emailLogin: (email: string, password: string) => Promise<UserCredential>
+   emailSignin: (email: string, password: string) => Promise<UserCredential>
    emailSignup: (email: string, password: string) => Promise<UserCredential>
    resetUserPassword: (email: string) => Promise<void>
    updateUserEmail: (email: string) => Promise<void>
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    const [loading, setLoading] = useState<boolean>(true)
 
    // Email and password actions
-   const emailLogin = (email: string, password: string) =>
+   const emailSignin = (email: string, password: string) =>
       signInWithEmailAndPassword(auth, email, password)
 
    const emailSignup = (email: string, password: string) =>
@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             currentUser,
 
             // Email and password actions
-            emailLogin,
+            emailSignin,
             emailSignup,
             resetUserPassword,
             updateUserEmail,

@@ -3,6 +3,8 @@ export const resolveFirebaseError = (error: string): string => {
 
    if (error.includes("auth/email-already-in-use"))
       resolvedError = "Email address already in use."
+   else if (error.includes("auth/invalid-credential"))
+      resolvedError = "Provided invalid credentials."
    else if (error.includes("auth/invalid-email"))
       resolvedError = "Provided invalid email address."
    else if (error.includes("auth/requires-recent-login"))
