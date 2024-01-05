@@ -10,9 +10,11 @@ app.post("/", (req: Request, res: Response) => {
    const username = req.body.username
    const interests = req.body.interests
    const bday = req.body.bday
+   const name = req.body.name
+   const pfp = req.body.pfp
 
    checkIfAccessTokenIsValid(authorization).then((uid) => { //check if firebase access token is valid
-      createDoc(uid, username).then(() => { //create a new doc in /users
+      createDoc(uid, username, name, pfp).then(() => { //create a new doc in /users
          createNode(uid, interests, bday).then(() => { //create a new node in neo4j
             res.json({ success: true, message: "Node & Document created" }).status(201);
          }).catch((error) => {
@@ -26,7 +28,7 @@ app.post("/", (req: Request, res: Response) => {
    })
 })
 
-async function createDoc(uid: string, username: string) {
+async function createDoc(uid: string, username: string, name: string, pfp: string) {
    const db = admin.firestore();
    const usersRef = db.collection('users').where("username", "==", username); //search where the username is equal to the input username
 
@@ -35,8 +37,10 @@ async function createDoc(uid: string, username: string) {
          .then(async (snapshot) => {
             if (snapshot.empty) { //check if username is already used
                const docRef = db.collection('users').doc(uid);
-               await docRef.set({ //set the username
-                  username: username
+               await docRef.set({ //set the user data into the doc
+                  username: username,
+                  name: name,
+                  pfp: pfp
                });
                resolve(null); //return nothing
             } else
