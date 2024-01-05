@@ -1,6 +1,6 @@
 import { generateJWT } from "@helpers/jwt";
 import { checkIfAccessTokenIsValid } from "@helpers/middlewares";
-import { retriveUserData } from "@helpers/retriver";
+import { retriveUserDataFromUID } from "@helpers/retriver";
 import { Request, Response, Router } from "express";
 import admin from 'firebase-admin';
 
@@ -11,7 +11,7 @@ app.get("/", (req: Request, res: Response) => {
 
    checkIfAccessTokenIsValid(authorization).then(async (uid: string) => { //send the firebase access token to create a session
       createNewSession(uid).then((jwt: string) => {
-         retriveUserData(uid).then((promise) => {
+         retriveUserDataFromUID(uid).then((promise) => {
             const username = promise.username
             res.json({ success: true, jwt: jwt, username: username }).status(200) //return the session jwt and the username of the user for the frontend side
          })
