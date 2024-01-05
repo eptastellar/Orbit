@@ -1,4 +1,4 @@
-import { retriveUserData } from '@helpers/retriver';
+import { retriveUserDataFromUID } from '@helpers/retriver';
 import { Request, Response, Router } from "express";
 import admin from 'firebase-admin';
 
@@ -33,7 +33,7 @@ app.get("/download/:id", async (req: Request, res: Response) => { //get the spec
 
    const doc = await docRef.get();
    if (doc.exists) { //if the document exists
-      const { username, name, pfp } = await retriveUserData(doc.data()?.owner) //retrive post owner informations
+      const { username, name, pfp } = await retriveUserDataFromUID(doc.data()?.owner) //retrive post owner informations
       const content = doc.data()?.content
       const text = doc.data()?.text
       const likes_number = doc.data()?.likes_number

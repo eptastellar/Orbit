@@ -16,11 +16,11 @@ const port = process.env.PORT || 3000;
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use('/', api)
-app.use('auth/sign-in', signin)
-app.use('auth/sign-up', signup)
-app.use('interests', interests)
-app.use('user', checkIfSessionTokenIsValid, user)
-app.use('post', checkIfSessionTokenIsValid, post)
+app.use('/auth/sign-in', signin)
+app.use('/auth/sign-up', signup)
+app.use('/interests', interests)
+app.use('/user', checkIfSessionTokenIsValid, user)
+app.use('/post', checkIfSessionTokenIsValid, post)
 
 app.set('view engine', 'ejs');
 app.use('*', (_: Request, res: Response) => { res.render('404') })
