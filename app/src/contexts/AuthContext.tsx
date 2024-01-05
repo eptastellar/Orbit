@@ -25,7 +25,7 @@ type authContextType = {
    updateUserEmail: (email: string) => Promise<void>
    updateUserPassword: (password: string) => Promise<void>
 
-   // Google authentication actions
+   // Authentication provider actions
    googleLogin: () => Promise<UserCredential>
 
    // Global authentication functions
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    const updateUserPassword = (password: string) =>
       updatePassword(currentUser!, password)
 
-   // Google authentication actions
+   // Authentication provider actions
    const googleLogin = () =>
       signInWithPopup(auth, googleProvider)
 
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             updateUserEmail,
             updateUserPassword,
 
-            // Google authentication actions
+            // Authentication provider actions
             googleLogin,
 
             // Global authentication functions
