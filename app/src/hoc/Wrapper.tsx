@@ -15,7 +15,10 @@ const Wrapper = ({ children, needsAuth }: Props) => function Wrapper() {
    const navigateTo = useNavigate()
 
    useEffect(() => {
-      if (needsAuth && !currentUser) navigateTo("/signin")
+      if (needsAuth) {
+         if (!currentUser) navigateTo("/onboarding")
+         // TODO: Future conditions with the user object
+      }
       if (!needsAuth && currentUser) navigateTo("/")
    }, [])
 
