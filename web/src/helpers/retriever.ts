@@ -1,6 +1,6 @@
 import admin from 'firebase-admin'
 
-export async function retriveUserDataFromUID(uid: string) { //retrive user informations based from the uid
+export async function retrieveUserDataFromUID(uid: string) { //retrieve user informations based from the uid
    const db = admin.firestore()
    const docRef = db.collection('users').doc(uid)
    const doc = await docRef.get()
@@ -12,12 +12,12 @@ export async function retriveUserDataFromUID(uid: string) { //retrive user infor
    return { username, name, pfp } //return these fields
 }
 
-export async function retriveUserDataFromUsername(username: string) { //retrive user informations based from the username
+export async function retrieveUIDFromUsername(username: string): Promise<string> { //retrieve uid based from the username
    const db = admin.firestore()
    const usersRef = db.collection('users').where("username", "==", username);
 
    return new Promise((resolve, reject) => {
-      usersRef.get().then((snapshot) => { //retrive documents where the username is equal to the username param
+      usersRef.get().then((snapshot) => { //retrieve documents where the username is equal to the username param
          if (!snapshot.empty) {
             snapshot.forEach((doc) => {
                const uid = doc.id;

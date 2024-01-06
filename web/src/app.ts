@@ -5,6 +5,7 @@ import interests from '@routes/interests/route';
 import post from '@routes/post/route';
 import api from '@routes/route';
 import user from '@routes/user/route';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 
@@ -13,6 +14,7 @@ dotenv.config();
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
+app.use(cors()) //TODO change to vercel domain
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use('/', api)

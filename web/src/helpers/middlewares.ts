@@ -25,7 +25,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
                   throw new Error('Invalid token')
             })
             .catch((error) => {
-               res.json({ success: false, message: error.message }).status(400) //TODO @TacitNeptune redirect to the login page in the frontend
+               res.json({ success: false, message: error.message }).status(400) //redirect to the login page in the frontend
             })
       }).catch((error) => {
          res.json({ success: false, message: error.message }).status(400)
