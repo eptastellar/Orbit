@@ -53,12 +53,14 @@ async function createDoc(uid: string, username: string, name: string, pfp: strin
 }
 
 async function createNode(uid: string, interests: string[], bday: string[]) {
-   //TODO: @TheInfernalNick usa Promise((resolve, reject) per restituire gli errori per il catch (guarda createDoc)
-   if (neo4j) {
-      const query = `CREATE (:User {name:"${uid}",interests:"${interests}",bday:"${bday}"})`
-      const result = await neo4j.executeWrite(tx => tx.run(query))
-   } else
-      throw new Error('Driver not found')
+   return new Promise(async (resolve, reject) => {
+      if (neo4j) {
+         const query = `CREATE (:User {name:"${uid}",interests:"${interests}",bday:"${bday}"})`
+         const result = await neo4j.executeWrite(tx => tx.run(query))
+         resolve(null)
+      } else
+         reject(new Error('Driver not found'))
+   })
 }
 
 async function getDefaultRandomProfilePicture(): Promise<string> {
