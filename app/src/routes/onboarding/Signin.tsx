@@ -53,13 +53,23 @@ const Signin = () => {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                />
-               <Input
-                  label="Your password"
-                  placeholder="SeCrE7#Pa5sW0rD"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-               />
+               <div className="flex flex-col items-end justify-center gap-1 w-full">
+                  <Input
+                     label="Your password"
+                     placeholder="SeCrE7#Pa5sW0rD"
+                     type="password"
+                     value={password}
+                     onChange={(event) => setPassword(event.target.value)}
+                  />
+                  <p className="text-xs font-medium text-gray-3">
+                     Did you {" "}
+                     <span
+                        className="text-white underline underline-offset-4"
+                     >
+                        forget your password?
+                     </span>
+                  </p>
+               </div>
 
                <p className="text-center text-red-5">
                   {error && resolveFirebaseError(error)}
@@ -69,7 +79,7 @@ const Signin = () => {
                   type="submit"
                   className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
                >
-                  {loading ? <SpinnerText message="Building your rocket..." /> : <p>Join the galaxy</p>}
+                  {loading ? <SpinnerText message="Reaching your rocket..." /> : <p>Join the galaxy</p>}
                </button>
             </form>
 
