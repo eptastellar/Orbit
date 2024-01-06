@@ -11,7 +11,7 @@ const Input = ({ error, label, onChange, placeholder, type, value }: Props) => (
    <div className="flex flex-col w-full gap-1.5">
       <div className="flex justify-between">
          <p className="text-base font-semibold text-white">{label}</p>
-         <p className="text-base font-semibold text-red-5">{error}</p>
+         <p className="text-base font-normal text-red-5">{error}</p>
       </div>
       <input
          type={type}
