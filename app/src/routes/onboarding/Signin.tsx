@@ -88,7 +88,7 @@ const Signin = () => {
                Don't have an account? {" "}
                <span
                   className="font-bold text-white underline underline-offset-4"
-                  onClick={() => navigateTo("/onboarding/signup")}
+                  onClick={() => navigateTo("/onboarding/sign-up")}
                >
                   Sign up.
                </span>

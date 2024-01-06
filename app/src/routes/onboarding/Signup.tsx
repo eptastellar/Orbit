@@ -88,7 +88,7 @@ const Signup = () => {
                Already have an account? {" "}
                <span
                   className="font-bold text-white underline underline-offset-4"
-                  onClick={() => navigateTo("/onboarding/signin")}
+                  onClick={() => navigateTo("/onboarding/sign-in")}
                >
                   Sign in.
                </span>
