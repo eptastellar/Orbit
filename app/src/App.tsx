@@ -22,11 +22,11 @@ const router = createBrowserRouter([
       element: <Welcome />
    },
    {
-      path: "/onboarding/signin",
+      path: "/onboarding/sign-in",
       element: <Signin />
    },
    {
-      path: "/onboarding/signup",
+      path: "/onboarding/sign-up",
       element: <Signup />
    },
    {

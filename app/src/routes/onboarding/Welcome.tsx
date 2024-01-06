@@ -61,7 +61,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => navigateTo("/onboarding/signin")}
+                        onClick={() => navigateTo("/onboarding/sign-in")}
                      />
                      <WelcomeButton
                         btnType="transparent"
@@ -87,7 +87,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => navigateTo("/onboarding/signup")}
+                        onClick={() => navigateTo("/onboarding/sign-up")}
                      />
                      <WelcomeButton
                         btnType="transparent"
