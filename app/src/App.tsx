@@ -8,7 +8,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 // Importing and defining the routes for the router
 import { Providers } from "@/contexts"
-import { ErrorPage, Home, Interests, Signin, Signup, Welcome } from "@/routes"
+import { ErrorPage, ForgotPassword, Home, Interests, Signin, Signup, Welcome } from "@/routes"
 
 const router = createBrowserRouter([
    {
@@ -16,6 +16,7 @@ const router = createBrowserRouter([
       element: <Home />,
       errorElement: <ErrorPage />
    },
+   // Onboarding pages
    {
       path: "/onboarding",
       element: <Welcome />
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
    {
       path: "/onboarding/interests",
       element: <Interests />
+   },
+   {
+      path: "/onboarding/forgot-password",
+      element: <ForgotPassword />
    }
 ])
 

@@ -65,6 +65,7 @@ const Signin = () => {
                      Did you {" "}
                      <span
                         className="text-white underline underline-offset-4"
+                        onClick={() => navigateTo("/onboarding/forgot-password")}
                      >
                         forget your password?
                      </span>
