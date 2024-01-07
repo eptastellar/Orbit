@@ -39,16 +39,25 @@ app.get("/:username", async (req: Request, res: Response) => {
    })
 })
 
-app.get("/:username/posts", async (req: Request, res: Response) => { //TODO add some comments
-   const index = req.body.lastDocId
-   const uid = await retrieveUIDFromUsername(req.params.username)
+app.get("/:username/posts", async (req: Request, res: Response) => {
+   const index = req.body.lastDocId //retrieve the last fetched document
+   const incremental = 5
    const db = admin.firestore()
-   const { username, name, pfp } = await retrieveUserDataFromUID(uid)
-   const postsRef = db.collection('posts').where("owner", "==", uid).orderBy('createdAt', 'desc').startAfter(index).limit(2) //TODO
-   const snapshot = await postsRef.get()
-   const lastDocId = snapshot.docs[snapshot.docs.length - 1]
 
-   const posts = snapshot.docs.map(doc => (
+
+   const uid = await retrieveUIDFromUsername(req.params.username) //get the uid from the username
+   const { username, name, pfp } = await retrieveUserDataFromUID(uid) //get all the user data
+
+   const postsRef = db.collection('posts')
+      .where("owner", "==", uid)
+      .orderBy('createdAt', 'desc')
+      .startAfter(index) //start after the last document fetched
+      .limit(incremental) //the number of document to retrieve each request
+
+   const snapshot = await postsRef.get()
+   const lastDocId = snapshot.docs[snapshot.docs.length - 1] //the last document info
+
+   const posts = snapshot.docs.map(doc => ( //map all the posts
       {
          id: doc.id,
          creation: doc.createTime.seconds,
@@ -65,18 +74,17 @@ app.get("/:username/posts", async (req: Request, res: Response) => { //TODO add 
    ))
 
    if (posts.length != 0)
-      res.json({ success: true, posts: posts, lastDocId: lastDocId }).status(200)
+      res.json({ success: true, posts: posts, lastDocId: lastDocId }).status(200) //also return the last doc id for new requests
    else
       res.json({ message: "No Content" }).status(204) //no content response
 })
 
-
 async function getFriendCount(uid: string): Promise<number> {
-   //@TheInfernalNick return the number of friends in neo4j
+   //TODO @TheInfernalNick return the number of friends in neo4j
    return 0
 }
 
-async function getPostCount(uid: string): Promise<number> {
+async function getPostCount(uid: string): Promise<number> { //get the snapshot size of all the posts where uid is equal to the owner
    const db = admin.firestore()
 
    const postsRef = db.collection('posts').where("owner", "==", uid)
