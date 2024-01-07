@@ -47,3 +47,7 @@ export async function checkIfAccessTokenIsValid(authorization: string): Promise<
       }
    })
 }
+
+export const cronSecretIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
+   next() //TODO
+}

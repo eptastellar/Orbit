@@ -27,7 +27,7 @@
             "src/algorithms/*"
          ],
          "@cron-jobs/*": [
-            "src/cron-jobs/*"
+            "cron-jobs/*"
          ],
       }
    },
