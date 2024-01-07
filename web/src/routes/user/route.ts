@@ -1,3 +1,4 @@
+import neo4j from "@config/neo4j.config"
 import { retrieveUIDFromUsername, retrieveUserDataFromUID } from "@helpers/retriever"
 import { Request, Response, Router } from "express"
 import admin from 'firebase-admin'
@@ -80,8 +81,15 @@ app.get("/:username/posts", async (req: Request, res: Response) => {
 })
 
 async function getFriendCount(uid: string): Promise<number> {
-   //TODO @TheInfernalNick return the number of friends in neo4j
-   return 0
+   return new Promise<number>(async (resolve, reject) => {
+      const query = `MATCH (u:User)-[:Friend]-(t:User) where u.name = "${uid}" RETURN t`
+      if (neo4j) {
+         const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
+         let friends = resultQueryFriends.records.map(row => row.get('t'))
+         resolve(friends.length)
+      } reject(new Error("Driver not Found"))
+
+   })
 }
 
 async function getPostCount(uid: string): Promise<number> { //get the snapshot size of all the posts where uid is equal to the owner
