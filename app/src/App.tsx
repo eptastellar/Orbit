@@ -8,7 +8,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom"
 
 // Importing and defining the routes for the router
 import { Providers } from "@/contexts"
-import { ErrorPage, ForgotPassword, Home, Interests, Signin, Signup, Welcome } from "@/routes"
+import { ErrorPage, ForgotPassword, Home, Interests, Profile, Signin, Signup, Welcome } from "@/routes"
 
 const router = createBrowserRouter([
    {
@@ -22,16 +22,20 @@ const router = createBrowserRouter([
       element: <Welcome />
    },
    {
-      path: "/onboarding/sign-in",
-      element: <Signin />
-   },
-   {
       path: "/onboarding/sign-up",
       element: <Signup />
    },
    {
+      path: "/onboarding/profile",
+      element: <Profile />
+   },
+   {
       path: "/onboarding/interests",
       element: <Interests />
+   },
+   {
+      path: "/onboarding/sign-in",
+      element: <Signin />
    },
    {
       path: "/onboarding/forgot-password",
