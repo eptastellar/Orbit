@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
-import { BackButton, InterestButton, SpinnerText } from "@/components"
+import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
 import { Wrapper } from "@/hoc"
 
 const Interests = () => {
@@ -14,8 +14,20 @@ const Interests = () => {
    const [interests, setInterests] = useState<string[]>([])
    const [interestsList, setInterestsList] = useState<string[]>([])
    const [interestsShown, setInterestsShown] = useState<string[]>([])
+   const [searchQuery, setSearchQuery] = useState<string>("")
 
-   const updateInterestsShown = (interests: string[]) => {
+   const filterInterestsShown = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(event.target.value)
+
+      if (!event.target.value) return randomizeInterestsShown(interestsList)
+
+      const filtered = interestsList
+         .filter((interest) => interest.includes(event.target.value))
+         .slice(0, 20)
+      setInterestsShown(filtered)
+   }
+
+   const randomizeInterestsShown = (interests: string[]) => {
       const shuffled = interests.sort(() => 0.5 - Math.random())
       setInterestsShown(shuffled.slice(0, 20))
    }
@@ -23,13 +35,14 @@ const Interests = () => {
    const handleSelectedInterestClick = (interest: string) => {
       const newInterests = interests.filter((item) => item !== interest)
       setInterests(newInterests)
-      updateInterestsShown(interestsList)
+      randomizeInterestsShown(interestsList)
    }
 
    const handleInterestListClick = (interest: string) => {
       if (interests.length < 5) {
+         setSearchQuery("")
          setInterests((prev) => [...prev, interest])
-         updateInterestsShown(interestsList)
+         randomizeInterestsShown(interestsList)
       }
    }
 
@@ -39,8 +52,9 @@ const Interests = () => {
       setLoading(true)
 
       try {
-         // TODO: Send interests to the database
-         navigateTo("/onboarding/personalization")
+         // TODO: Send user to the database
+         // TODO: Clear data in localstorage
+         navigateTo("/")
       } catch (error: any) { setError(error.message) }
 
       setLoading(false)
@@ -54,7 +68,7 @@ const Interests = () => {
          .then((response) => response.json())
          .then(({ interests }: ResponseType) => {
             setInterestsList(interests)
-            updateInterestsShown(interests)
+            randomizeInterestsShown(interests)
          })
          .catch((e: any) => setError(e.error))
          .finally(() => setTimeout(() => setFetching(false), 250))
@@ -64,7 +78,7 @@ const Interests = () => {
       <div className="flex flex-col items-center justify-between h-full w-full px-8">
          <div className="flex flex-col gap-1.5 center mt-32">
             <h1 className="text-4xl font-bold text-white">
-               About you
+               Polish your profile
             </h1>
             <p className="text-sm font-medium text-gray-3">
                Let's find some matching stars
@@ -72,36 +86,50 @@ const Interests = () => {
          </div>
 
          <form
-            className="flex flex-col h-[314px] w-full gap-4"
+            className="flex flex-col gap-4 h-96 w-full"
             onSubmit={(event) => handleSubmit(event)}
          >
-            <div className="flex flex-col w-full gap-1.5">
-               <div className="flex justify-between">
-                  <p className="text-base font-semibold text-white">Your interests (5 at most)</p>
-               </div>
-               <div className="flex flex-wrap gap-2 px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md">
-                  {interests.length === 0 ? (
-                     <p className="text-gray-3">Ex: Basketball, Cars, Football</p>
-                  ) : interests.map((interest, index) => (
-                     <InterestButton
-                        key={`sel-${index}`}
-                        interest={interest}
-                        onClick={() => handleSelectedInterestClick(interest)}
-                     />
-                  ))}
+            <div className="flex flex-col gap-8 w-full">
+               <Input
+                  label="Search interests"
+                  placeholder="Ex: Basketball, Cars, Football"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => filterInterestsShown(event)}
+               />
+
+               <div className="flex flex-col w-full gap-1.5">
+                  <div className="flex justify-between">
+                     <p className="text-base font-semibold text-white">
+                        Your interests ({interests.length === 0 ? "5 at most" : `chosen ${interests.length}/5`})
+                     </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2 px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md">
+                     {interests.length === 0 ? (
+                        <p className="text-gray-3">Your interests will appear here</p>
+                     ) : interests.map((interest, index) => (
+                        <InterestButton
+                           key={`sel-${index}`}
+                           interest={interest}
+                           onClick={() => handleSelectedInterestClick(interest)}
+                        />
+                     ))}
+                  </div>
                </div>
             </div>
 
-            <div className="flex-grow flex flex-wrap gap-2 px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md overflow-y-scroll">
-               {fetching ? (
-                  <p className="text-gray-3">Fetching interests...</p>
-               ) : interestsShown.map((interest, index) => (
-                  <InterestButton
-                     key={`list-${index}`}
-                     interest={interest}
-                     onClick={() => handleInterestListClick(interest)}
-                  />
-               ))}
+            <div className="flex-grow px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md overflow-y-scroll">
+               <div className="flex flex-wrap gap-2">
+                  {fetching ? (
+                     <p className="text-gray-3">Fetching interests...</p>
+                  ) : interestsShown.map((interest, index) => (
+                     <InterestButton
+                        key={`list-${index}`}
+                        interest={interest}
+                        onClick={() => handleInterestListClick(interest)}
+                     />
+                  ))}
+               </div>
             </div>
 
             <p className="text-center text-red-5">{error}</p>
