@@ -81,7 +81,7 @@ const Welcome = () => {
                         text="Sign up with Google"
                         onClick={async () => {
                            await googleLogin()
-                           navigateTo("/onboarding/interests")
+                           navigateTo("/onboarding/profile")
                         }}
                      />
                      <WelcomeButton
