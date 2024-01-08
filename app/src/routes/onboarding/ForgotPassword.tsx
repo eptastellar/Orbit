@@ -13,9 +13,13 @@ const ForgotPassword = () => {
    const [success, setSuccess] = useState<boolean>(false)
 
    const [email, setEmail] = useState<string>("")
+   const [confirmEmail, setConfirmEmail] = useState<string>("")
 
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
+
+      if (email !== confirmEmail)
+         return setError("Emails do not match.")
 
       setLoading(true)
 
@@ -53,6 +57,13 @@ const ForgotPassword = () => {
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
+               />
+               <Input
+                  label="Confirm email"
+                  placeholder="astro@email.com"
+                  type="email"
+                  value={confirmEmail}
+                  onChange={(event) => setConfirmEmail(event.target.value)}
                />
 
                <p className="text-center text-red-5">
