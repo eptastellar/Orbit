@@ -40,8 +40,12 @@ export async function checkIfAccessTokenIsValid(authorization: string): Promise<
          baas()
          const jwt = authorization.split("Bearer ")[1] //remove bearer from the authentication param
          const decodedjwt = await admin.auth().verifyIdToken(jwt) //verify token using firebase, it also check if the token is expired
-         const uid: string = decodedjwt.uid
-         resolve(uid) //return the uid of the user
+
+         if (decodedjwt.email_verified) { //check if the email is verified
+            const uid: string = decodedjwt.uid
+            resolve(uid) //return the uid of the user
+         } else
+            reject(new Error('Email not verified'))
       } catch (error) {
          reject(new Error('Invalid token'))
       }
