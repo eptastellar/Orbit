@@ -86,7 +86,7 @@ const Interests = () => {
          </div>
 
          <form
-            className="flex flex-col gap-4 h-96 w-full"
+            className="flex flex-col gap-4 h-104 w-full"
             onSubmit={(event) => handleSubmit(event)}
          >
             <div className="flex flex-col gap-8 w-full">
@@ -138,8 +138,15 @@ const Interests = () => {
                type="submit"
                className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
             >
-               {loading ? <SpinnerText message="Building your rocket..." /> : <p>Save interests</p>}
+               {loading ? <SpinnerText message="Building your rocket..." /> : <p>Start to orbit!</p>}
             </button>
+
+            <p className="text-center text-xs text-gray-3">
+               When creating an account, you accept <br />
+               <span className="text-semibold text-white underline underline-offset-4">
+                  Orbit’s Terms & Conditions
+               </span>.
+            </p>
          </form>
 
          <div className="mb-12">
