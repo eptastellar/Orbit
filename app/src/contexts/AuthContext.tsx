@@ -3,6 +3,7 @@ import {
    UserCredential,
    createUserWithEmailAndPassword,
    onAuthStateChanged,
+   sendEmailVerification,
    sendPasswordResetEmail,
    signInWithEmailAndPassword,
    signInWithPopup,
@@ -42,8 +43,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    const emailSignin = (email: string, password: string) =>
       signInWithEmailAndPassword(auth, email, password)
 
-   const emailSignup = (email: string, password: string) =>
+   const emailSignup = (email: string, password: string) => (
       createUserWithEmailAndPassword(auth, email, password)
+         .then((user) => {
+            sendEmailVerification(user.user)
+            return user
+         })
+   )
 
    const resetUserPassword = (email: string) =>
       sendPasswordResetEmail(auth, email)
@@ -62,12 +68,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    const logout = () =>
       signOut(auth)
 
-   useEffect(() =>
-      onAuthStateChanged(auth, user => {
-         setCurrentUser(user)
-         setLoading(false)
-      }), []
-   )
+   useEffect(() => onAuthStateChanged(auth, user => {
+      setCurrentUser(user)
+      setLoading(false)
+   }), [])
 
    return (
       <AuthContext.Provider

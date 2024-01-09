@@ -28,7 +28,7 @@ const Signup = () => {
 
       try {
          await emailSignup(email, password)
-         navigateTo("/onboarding/interests")
+         navigateTo("/onboarding/confirmation")
       } catch (error: any) { setError(error.message) }
 
       setLoading(false)
