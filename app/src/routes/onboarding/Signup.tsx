@@ -87,7 +87,7 @@ const Signup = () => {
             <p className="text-base font-medium text-gray-3">
                Already have an account? {" "}
                <span
-                  className="font-bold text-white underline underline-offset-4"
+                  className="font-bold text-white underline underline-offset-4 cursor-pointer"
                   onClick={() => navigateTo("/onboarding/sign-in")}
                >
                   Sign in.

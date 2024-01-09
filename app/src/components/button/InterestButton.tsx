@@ -5,7 +5,7 @@ type Props = {
 
 const InterestButton = ({ interest, onClick }: Props) => (
    <div
-      className="px-3 py-1 bg-blue-3 rounded-full"
+      className="px-3 py-1 bg-blue-3 rounded-full cursor-pointer"
       onClick={onClick}
    >
       <p className="text-xs font-semibold text-black">{interest}</p>

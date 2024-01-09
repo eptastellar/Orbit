@@ -64,7 +64,7 @@ const Signin = () => {
                   <p className="text-xs font-medium text-gray-3">
                      Did you {" "}
                      <span
-                        className="text-white underline underline-offset-4"
+                        className="text-white underline underline-offset-4 cursor-pointer"
                         onClick={() => navigateTo("/onboarding/forgot-password")}
                      >
                         forget your password?
@@ -87,7 +87,7 @@ const Signin = () => {
             <p className="text-base font-medium text-gray-3">
                Don't have an account? {" "}
                <span
-                  className="font-bold text-white underline underline-offset-4"
+                  className="font-bold text-white underline underline-offset-4 cursor-pointer"
                   onClick={() => navigateTo("/onboarding/sign-up")}
                >
                   Sign up.
