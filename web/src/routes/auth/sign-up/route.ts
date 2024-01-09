@@ -2,6 +2,7 @@ import neo4j from '@config/neo4j.config';
 import { checkIfAccessTokenIsValid } from "@helpers/middlewares";
 import { Request, Response, Router } from "express";
 import admin from 'firebase-admin';
+import { createNewSession } from '../sign-in/route';
 
 const app: Router = Router();
 
@@ -16,7 +17,9 @@ app.post("/", (req: Request, res: Response) => {
    checkIfAccessTokenIsValid(authorization).then((uid) => { //check if firebase access token is valid
       createDoc(uid, username, name, pfp).then(() => { //create a new doc in /users
          createNode(uid, interests, bday).then(() => { //create a new node in neo4j
-            res.json({ success: true, message: "Node & Document created" }).status(201);
+            createNewSession(uid).then((jwt) => {
+               res.json({ success: true, jwt: jwt, username: username }).status(200) //return the session jwt and the username of the user for the frontend side
+            })
          }).catch((error) => {
             res.json({ success: false, message: error.message }).status(500);
          })
