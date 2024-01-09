@@ -16,6 +16,9 @@ const config: Config = {
             "gray-7": "#262626",
             "red-5": "#E11D48",
             "white": "#FBFBFB",
+         },
+         height: {
+            "104": "416px"
          }
       },
    },
