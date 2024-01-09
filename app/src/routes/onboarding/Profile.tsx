@@ -87,7 +87,7 @@ const Profile = () => {
             onSubmit={(event) => handleSubmit(event)}
          >
             <label
-               className={`flex center h-32 w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500`}
+               className={`flex center h-32 w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
                style={{
                   background: profilePictureUrl ? "#1D5C96" :
                      `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`

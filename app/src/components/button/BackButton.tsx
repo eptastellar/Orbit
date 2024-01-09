@@ -6,7 +6,7 @@ const BackButton = () => {
 
    return (
       <div
-         className="flex center gap-2 px-4 py-2 text-white bg-blue-7 rounded-md"
+         className="flex center gap-2 px-4 py-2 text-white bg-blue-7 rounded-md cursor-pointer"
          onClick={() => navigateTo(-1)}
       >
          <PiArrowLeft />

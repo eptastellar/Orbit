@@ -106,7 +106,7 @@ const Interests = () => {
                   </div>
                   <div className="flex flex-wrap gap-2 px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md">
                      {interests.length === 0 ? (
-                        <p className="text-gray-3">Your interests will appear here</p>
+                        <p className="text-gray-3 cursor-default">Your interests will appear here</p>
                      ) : interests.map((interest, index) => (
                         <InterestButton
                            key={`sel-${index}`}
@@ -143,7 +143,10 @@ const Interests = () => {
 
             <p className="text-center text-xs text-gray-3">
                When creating an account, you accept <br />
-               <span className="text-semibold text-white underline underline-offset-4">
+               <span
+                  className="text-semibold text-white underline underline-offset-4 cursor-pointer"
+                  onClick={() => navigateTo("/terms-conditions")}
+               >
                   Orbit’s Terms & Conditions
                </span>.
             </p>

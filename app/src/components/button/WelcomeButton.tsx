@@ -7,7 +7,7 @@ type Props = {
 
 const WelcomeButton = ({ btnType, image, text, onClick }: Props) => (
    <div
-      className={`flex gap-2 center w-full p-3 rounded-md ${btnType === "ring" ? "ring-inset ring-2 ring-blue-5" : btnType === "transparent" ? "" : "bg-white"}`}
+      className={`flex gap-2 center w-full p-3 rounded-md cursor-pointer ${btnType === "ring" ? "ring-inset ring-2 ring-blue-5" : btnType === "transparent" ? "" : "bg-white"}`}
       onClick={onClick}
    >
       {image && <img src={image} alt="Icon" height={28} width={28} />}
