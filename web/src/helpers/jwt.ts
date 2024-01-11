@@ -23,7 +23,7 @@ export async function validateJWT(token: string): Promise<JWTPayload> { //need t
          const { payload } = await jwtVerify(token, secret); //validate the user token and return the user payload
          resolve(payload);
       } catch (error) {
-         reject(new Error('Invalid token'))
+         reject(new Error('auth/invalid-token'))
       }
    })
 }

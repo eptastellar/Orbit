@@ -25,7 +25,7 @@ export async function retrieveUIDFromUsername(username: string): Promise<string>
                resolve(uid); //return the uid of the username
             });
          } else
-            reject(new Error('Username doesn\'t exists'))
+            reject(new Error('auth/invalid-username'))
       })
    })
 }

@@ -1,10 +1,10 @@
 import neo4j from '@config/neo4j.config'
 import { createNewSession } from '@helpers/jwt'
 import { checkIfAccessTokenIsValid } from "@helpers/middlewares"
-import { isValidBday } from '@helpers/validate'
+import { isValidBday, isValidUsername } from '@helpers/validate'
 import { Request, Response, Router } from "express"
 import admin from 'firebase-admin'
-import { DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
+import { DocumentReference, Firestore } from 'firebase-admin/firestore'
 
 const app: Router = Router();
 
@@ -34,19 +34,20 @@ app.get("/", (req: Request, res: Response) => {
 })
 
 app.get('/validate', (req: Request, res: Response) => {
-   const username = req.body.username
+   const username: string = req.body.username
    const bday: number = req.body.bday
 
-   if (!isValidBday(bday))
-      res.json({})
-
-   isValidUsername(username).then(() => {
-      res.json({})
+   isValidBday(bday).then(() => {
+      res.json({ success: true, status: 200 })
    }).catch((error) => {
       res.json({ success: false, status: 400, message: error.message })
    })
 
-
+   isValidUsername(username).then(() => {
+      res.json({ success: true, status: 200 })
+   }).catch((error) => {
+      res.json({ success: false, status: 400, message: error.message })
+   })
 })
 
 async function createDoc(uid: string, username: string, name: string, pfp: string, bday: number): Promise<null> {
@@ -70,29 +71,6 @@ async function createDoc(uid: string, username: string, name: string, pfp: strin
    })
 }
 
-async function isValidUsername(username: string): Promise<null> {
-   const db: Firestore = admin.firestore();
-   const usersRef: Query = db.collection('users').where("username", "==", username); //search where the username is equal to the input username
-
-   return new Promise((resolve, reject) => {
-      if (username.length > 24)
-         reject(new Error('Username too long'))
-
-      const regex = '[^a-zA-Z0-9_\-.]'
-      if (username.match(regex) || !username.startsWith('@'))
-         reject(new Error('Invalid character'))
-
-
-      usersRef.get()
-         .then(async (snapshot: QuerySnapshot) => {
-            if (snapshot.empty) //check if username is already used
-               resolve(null)
-            else
-               reject(new Error('Username already exists'));
-         })
-   })
-}
-
 async function createNode(uid: string, interests: string[]): Promise<null> {
    return new Promise(async (resolve, reject) => {
       if (neo4j) {
@@ -100,7 +78,7 @@ async function createNode(uid: string, interests: string[]): Promise<null> {
          await neo4j.executeWrite(tx => tx.run(query))
          resolve(null)
       } else
-         reject(new Error('Driver not found'))
+         reject(new Error('server/driver-not-found'))
    })
 }
 

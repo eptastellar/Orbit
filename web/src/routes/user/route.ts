@@ -80,7 +80,7 @@ app.get("/:username/posts", async (req: Request, res: Response) => {
    if (posts.length != 0)
       res.json({ success: true, status: 200, posts: posts, lastDocId: lastDocId }) //also return the last doc id for new requests
    else
-      res.json({ success: null, status: 204, message: "No Content" }) //no content response
+      res.json({ success: false, status: 204, message: "resource/no-content" }) //no content response
 })
 
 async function getFriendCount(uid: string): Promise<number> {
@@ -91,7 +91,7 @@ async function getFriendCount(uid: string): Promise<number> {
          let friends = resultQueryFriends.records.map(row => row.get('t'))
          resolve(friends.length)
       }
-      reject(new Error("Driver not Found"))
+      reject(new Error("server/driver-not-found"))
    })
 }
 
