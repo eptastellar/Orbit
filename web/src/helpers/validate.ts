@@ -4,10 +4,10 @@ import { Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore';
 
 export function isValidBday(bday: number): Promise<null> {
    return new Promise((resolve, reject) => {
-      if (!bday || bday > Date.now() || bday < -2208988800)
+      if (!bday || bday > Date.now() / 1000 || bday < -2208988800)
          reject(new Error('validation/invalid-birthdate'))
 
-      if (((Date.now() - 441806400) - bday) <= 0)
+      if (((Date.now() / 1000 - 441806400) - bday) <= 0)
          reject(new Error('validation/too-young'))
 
       resolve(null)
