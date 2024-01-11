@@ -1,8 +1,9 @@
 import admin from 'firebase-admin'
+import { DocumentReference, Firestore } from 'firebase-admin/firestore'
 
 export async function retrieveUserDataFromUID(uid: string) { //retrieve user informations based from the uid
-   const db = admin.firestore()
-   const docRef = db.collection('users').doc(uid)
+   const db: Firestore = admin.firestore()
+   const docRef: DocumentReference = db.collection('users').doc(uid)
    const doc = await docRef.get()
 
    const username = doc.data()?.username
@@ -13,7 +14,7 @@ export async function retrieveUserDataFromUID(uid: string) { //retrieve user inf
 }
 
 export async function retrieveUIDFromUsername(username: string): Promise<string> { //retrieve uid based from the username
-   const db = admin.firestore()
+   const db: Firestore = admin.firestore()
    const usersRef = db.collection('users').where("username", "==", username);
 
    return new Promise((resolve, reject) => {
