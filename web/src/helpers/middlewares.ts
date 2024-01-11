@@ -4,8 +4,8 @@ import admin from 'firebase-admin';
 import { validateJWT } from "./jwt";
 
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
-   const authorization = req.headers.authorization
-   const jwt = authorization?.split("Bearer ")[1]
+   const authorization = req.headers.authorization!
+   const jwt = authorization.split("Bearer ")[1]
 
    if (jwt) {
       validateJWT(jwt).then((payload) => { //validate if the token is signed

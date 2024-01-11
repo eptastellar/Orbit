@@ -8,7 +8,7 @@ import { DocumentReference, Firestore } from 'firebase-admin/firestore'
 
 const app: Router = Router();
 
-app.get("/", (req: Request, res: Response) => {
+app.post("/", (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!
    const username: string = req.body.username
    const interests: string[] = req.body.interests
@@ -33,18 +33,16 @@ app.get("/", (req: Request, res: Response) => {
    })
 })
 
-app.get('/validate', (req: Request, res: Response) => {
+app.post('/validate', (req: Request, res: Response) => {
    const username: string = req.body.username
    const bday: number = req.body.bday
-
-   isValidBday(bday).then(() => {
-      res.json({ success: true, status: 200 })
-   }).catch((error) => {
-      res.json({ success: false, status: 400, message: error.message })
-   })
-
+   
    isValidUsername(username).then(() => {
-      res.json({ success: true, status: 200 })
+      isValidBday(bday).then(() => {
+         res.json({ success: true, status: 200 })
+      }).catch((error) => {
+         res.json({ success: false, status: 400, message: error.message })
+      })
    }).catch((error) => {
       res.json({ success: false, status: 400, message: error.message })
    })
