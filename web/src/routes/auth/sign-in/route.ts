@@ -8,7 +8,7 @@ import { DocumentData, DocumentReference, Firestore } from 'firebase-admin/fires
 const app: Router = Router();
 
 app.get("/", (req: Request, res: Response) => {
-   const authorization: string = req.headers.authorization as string
+   const authorization: string = req.headers.authorization!
 
    checkIfAccessTokenIsValid(authorization).then(async (uid: string) => { //send the firebase access token to create a session
       checkIfDocumentExists(uid).then(() => { //check if the user is fully signed up even in firestore
