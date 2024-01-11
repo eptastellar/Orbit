@@ -1,3 +1,5 @@
+import admin from 'firebase-admin';
+import { DocumentData, DocumentReference, Firestore } from "firebase-admin/firestore";
 import { JWTPayload, SignJWT, jwtVerify } from "jose";
 
 export async function generateJWT(uid: string) {
@@ -24,4 +26,37 @@ export async function validateJWT(token: string): Promise<JWTPayload> { //need t
          reject(new Error('Invalid token'))
       }
    })
+}
+
+
+export async function createNewSession(uid: string): Promise<string> {
+   const db: Firestore = admin.firestore();
+
+   const docRef: DocumentReference = db.collection('sessions').doc(uid); //create a new doc in the collection /sessions
+   const doc: DocumentData = (await docRef.get()).data()! //get data inside the document
+   const token: string = doc.token
+
+   return new Promise(async (resolve, _) => {
+      if (token) {
+         validateJWT(token).then(async (decodedToken: JWTPayload) => { //decode the token
+            const expTime: number = decodedToken.exp! * 1000
+
+            if (Date.now() > expTime) //check if the token is expired
+               resolve(await refreshSession(docRef, uid)) //if is expired create a new session token
+            else
+               resolve(token) //if the token is still valid return it
+         })
+      } else
+         resolve(await refreshSession(docRef, uid)) //if the document is empty refresh the session
+   })
+}
+
+async function refreshSession(docRef: DocumentReference, uid: string): Promise<string> {
+   const jwt: string = await generateJWT(uid) //generate a new session token
+
+   await docRef.set({ //refresh the token in the session
+      token: jwt
+   })
+
+   return jwt
 }

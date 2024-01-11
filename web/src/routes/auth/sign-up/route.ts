@@ -1,65 +1,103 @@
-import neo4j from '@config/neo4j.config';
-import { checkIfAccessTokenIsValid } from "@helpers/middlewares";
-import { Request, Response, Router } from "express";
-import admin from 'firebase-admin';
-import { createNewSession } from '../sign-in/route';
+import neo4j from '@config/neo4j.config'
+import { createNewSession } from '@helpers/jwt'
+import { checkIfAccessTokenIsValid } from "@helpers/middlewares"
+import { isValidBday } from '@helpers/validate'
+import { Request, Response, Router } from "express"
+import admin from 'firebase-admin'
+import { DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 const app: Router = Router();
 
-app.post("/", (req: Request, res: Response) => {
-   const authorization: string = req.headers.authorization as string
-   const username = req.body.username
-   const interests = req.body.interests
-   const bday = req.body.bday
-   const name = req.body.name
-   const pfp = req.body.pfp
+app.get("/", (req: Request, res: Response) => {
+   const authorization: string = req.headers.authorization!
+   const username: string = req.body.username
+   const interests: string[] = req.body.interests
+   const bday: number = req.body.bday
+   const name: string = req.body.name
+   const pfp: string = req.body.pfp
 
-   checkIfAccessTokenIsValid(authorization).then((uid) => { //check if firebase access token is valid
-      createDoc(uid, username, name, pfp).then(() => { //create a new doc in /users
-         createNode(uid, interests, bday).then(() => { //create a new node in neo4j
-            createNewSession(uid).then((jwt) => {
-               res.json({ success: true, jwt: jwt, username: username }).status(200) //return the session jwt and the username of the user for the frontend side
+   checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
+      createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
+         createNode(uid, interests).then(() => { //create a new node in neo4j
+            createNewSession(uid).then((jwt: string) => {
+               res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
             })
          }).catch((error) => {
-            res.json({ success: false, message: error.message }).status(500);
+            res.json({ success: false, status: 500, message: error.message })
          })
       }).catch((error) => {
-         res.json({ success: false, message: error.message }).status(400);
+         res.json({ success: false, status: 400, message: error.message })
       })
    }).catch((error) => {
-      res.json({ success: false, message: error.message }).status(401)
+      res.json({ success: false, status: 401, message: error.message })
    })
 })
 
-async function createDoc(uid: string, username: string, name: string, pfp: string) {
-   const db = admin.firestore();
-   const usersRef = db.collection('users').where("username", "==", username); //search where the username is equal to the input username
+app.get('/validate', (req: Request, res: Response) => {
+   const username = req.body.username
+   const bday: number = req.body.bday
+
+   if (!isValidBday(bday))
+      res.json({})
+
+   isValidUsername(username).then(() => {
+      res.json({})
+   }).catch((error) => {
+      res.json({ success: false, status: 400, message: error.message })
+   })
+
+
+})
+
+async function createDoc(uid: string, username: string, name: string, pfp: string, bday: number): Promise<null> {
+   return new Promise((resolve, reject) => {
+      isValidUsername(username).then(async () => {
+         const db: Firestore = admin.firestore()
+         const docRef: DocumentReference = db.collection('users').doc(uid)
+
+         pfp = pfp ? pfp : await getDefaultRandomProfilePicture()  //set the pfp url to the one sent from the client, or if is null, select a random one
+
+         await docRef.set({ //set the user data into the doc
+            username: username,
+            name: name,
+            pfp: pfp,
+            bday: bday
+         });
+         resolve(null) //return nothing
+      }).catch((error) => {
+         reject(error)
+      })
+   })
+}
+
+async function isValidUsername(username: string): Promise<null> {
+   const db: Firestore = admin.firestore();
+   const usersRef: Query = db.collection('users').where("username", "==", username); //search where the username is equal to the input username
 
    return new Promise((resolve, reject) => {
+      if (username.length > 24)
+         reject(new Error('Username too long'))
+
+      const regex = '[^a-zA-Z0-9_\-.]'
+      if (username.match(regex) || !username.startsWith('@'))
+         reject(new Error('Invalid character'))
+
+
       usersRef.get()
-         .then(async (snapshot) => {
-            if (snapshot.empty) { //check if username is already used
-               const docRef = db.collection('users').doc(uid);
-
-               pfp = pfp || await getDefaultRandomProfilePicture()  //set the pfp url to the one sent from the client, or if is null, select a random one
-
-               await docRef.set({ //set the user data into the doc
-                  username: username,
-                  name: name,
-                  pfp: pfp
-               });
-               resolve(null); //return nothing
-            } else
+         .then(async (snapshot: QuerySnapshot) => {
+            if (snapshot.empty) //check if username is already used
+               resolve(null)
+            else
                reject(new Error('Username already exists'));
          })
    })
 }
 
-async function createNode(uid: string, interests: string[], bday: string[]) {
+async function createNode(uid: string, interests: string[]): Promise<null> {
    return new Promise(async (resolve, reject) => {
       if (neo4j) {
-         const query = `CREATE (:User {name:"${uid}",interests:"${interests}",bday:"${bday}"})`
-         const result = await neo4j.executeWrite(tx => tx.run(query))
+         const query = `CREATE (:User {name:"${uid}",interests:"${interests}"})`
+         await neo4j.executeWrite(tx => tx.run(query))
          resolve(null)
       } else
          reject(new Error('Driver not found'))
@@ -67,11 +105,10 @@ async function createNode(uid: string, interests: string[], bday: string[]) {
 }
 
 async function getDefaultRandomProfilePicture(): Promise<string> {
-   const bucket = admin.storage().bucket();
-   const prefix = 'default/pfps';
+   const bucket = admin.storage().bucket()
+   const prefix: string = 'default/pfps'
 
    return new Promise((resolve, reject) => {
-
       bucket.getFiles({ prefix: prefix }, (err, files) => { // get the files from the bucket with the defined prefix
          if (err)
             reject(err);
