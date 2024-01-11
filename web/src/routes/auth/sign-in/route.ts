@@ -35,9 +35,9 @@ async function checkIfDocumentExists(uid: string): Promise<null> {
          if (doc.exists)
             resolve(null);
          else
-            reject(new Error('Sign up first')); //if the document doesn't exists in firestore
+            reject(new Error('auth/user-not-signed-up')); //if the document doesn't exists in firestore
       }).catch(() => {
-         reject(new Error('Sign up first')); //if the document doesn't exists in firestore
+         reject(new Error('auth/user-not-signed-up')); //if the document doesn't exists in firestore
       });
    });
 }

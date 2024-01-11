@@ -21,9 +21,7 @@ app.post("/upload", async (req: Request, res: Response) => {
       // comments_number: 0, //TODO
       createdAt: Date.now() //unix format
    }).then(() => {
-      res.json({ success: true, status: 201, message: 'Created', post: docRef.id }) //return the post id
-   }).catch(() => {
-      res.json({ success: false, status: 500, message: 'Invalid input' })
+      res.json({ success: true, status: 201, post: docRef.id }) //return the post id
    })
 });
 
@@ -54,7 +52,7 @@ app.get("/download/:id", async (req: Request, res: Response) => { //get the spec
          pfp: pfp,
       })
    } else
-      res.json({ success: false, status: 400, message: 'Post doesn\'t exists' })
+      res.json({ success: false, status: 404, message: 'resource/post-not-found' })
 });
 
 export default app;

@@ -22,7 +22,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
                   res.locals.uid = uid //save the uid of the user to manipulate only his data
                   next()
                } else
-                  throw new Error('Invalid token')
+                  throw new Error('auth/invalid-token')
             })
             .catch((error) => {
                res.json({ success: false, message: error.message }).status(400) //redirect to the login page in the frontend
@@ -31,7 +31,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
          res.json({ success: false, message: error.message }).status(400)
       })
    } else
-      res.json({ success: false, message: 'Invalid token' }).status(400)
+      res.json({ success: false, message: 'auth/invalid-token' }).status(400)
 }
 
 export async function checkIfAccessTokenIsValid(authorization: string): Promise<string> {
@@ -45,9 +45,9 @@ export async function checkIfAccessTokenIsValid(authorization: string): Promise<
             const uid: string = decodedjwt.uid
             resolve(uid) //return the uid of the user
          } else
-            reject(new Error('Email not verified'))
+            reject(new Error('auth/email-unverified'))
       } catch (error) {
-         reject(new Error('Invalid token'))
+         reject(new Error('auth/invalid-token'))
       }
    })
 }
