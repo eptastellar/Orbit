@@ -26,6 +26,8 @@
       <code><b>/auth/sign-up</b></code>
    </summary>
 
+   <h4>Request</h4>
+
    <h5>Body</h5>
    <table>
       <th><code>Name</code></th>
@@ -51,4 +53,23 @@
          <td>Firebase Auth JWT</td>
       </tr>
    </table>
+
+   <h4>Response</h4>
+   <details>
+      <summary><code><b>
+      { success: true, status: 200, jwt: jwt, username: username }
+      </b></code></summary>
+      <table>
+      <th><code>Name</code></th>
+      <th><code>Description</code></th>
+      <tr>
+         <td>jwt</td>
+         <td>Session JWT</td>
+      </tr>
+      <tr>
+         <td>username</td>
+         <td>Personal user logged username</td>
+      </tr>
+      </table>
+   </details>
 </details>
