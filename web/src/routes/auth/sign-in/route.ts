@@ -18,12 +18,8 @@ app.get("/", (req: Request, res: Response) => {
                res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
             })
          })
-      }).catch((error) => {
-         res.json({ success: false, status: 401, message: error.message })
-      })
-   }).catch((error) => {
-      res.json({ success: false, status: 401, message: error.message })
-   })
+      }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
+   }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
 });
 
 async function checkIfDocumentExists(uid: string): Promise<null> {
@@ -41,7 +37,5 @@ async function checkIfDocumentExists(uid: string): Promise<null> {
       });
    });
 }
-
-
 
 export default app;

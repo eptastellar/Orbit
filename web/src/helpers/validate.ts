@@ -1,3 +1,4 @@
+import { interests } from '@assets/interests';
 import { baas } from '@config/firebase-admin.config';
 import admin from 'firebase-admin';
 import { Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore';
@@ -38,5 +39,15 @@ export async function isValidUsername(username: string): Promise<null> {
             else
                reject(new Error('validation/username-already-in-use'));
          })
+   })
+}
+
+export async function areValidInterests(interestsList: string[]): Promise<null> {
+   return new Promise((resolve, reject) => {
+      interestsList.forEach(element => {
+         if (!interests.includes(element))
+            reject(new Error('validate/invalid-interests'))
+      });
+      resolve(null)
    })
 }

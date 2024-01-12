@@ -1,7 +1,7 @@
 import neo4j from '@config/neo4j.config'
 import { createNewSession } from '@helpers/jwt'
 import { checkIfAccessTokenIsValid } from "@helpers/middlewares"
-import { isValidBday, isValidUsername } from '@helpers/validate'
+import { areValidInterests, isValidBday, isValidUsername } from '@helpers/validate'
 import { Request, Response, Router } from "express"
 import admin from 'firebase-admin'
 import { DocumentReference, Firestore } from 'firebase-admin/firestore'
@@ -16,36 +16,36 @@ app.post("/", (req: Request, res: Response) => {
    const name: string = req.body.name
    const pfp: string = req.body.pfp
 
-   checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
-      createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
-         createNode(uid, interests).then(() => { //create a new node in neo4j
-            createNewSession(uid).then((jwt: string) => {
-               res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
-            })
-         }).catch((error) => {
-            res.json({ success: false, status: 500, message: error.message })
-         })
-      }).catch((error) => {
-         res.json({ success: false, status: 400, message: error.message })
+   Promise.all([ //validate all user data
+      isValidUsername(username),
+      isValidBday(bday),
+      areValidInterests(interests)
+   ])
+      .then(() => {
+         checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
+            createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
+               createNode(uid, interests).then(() => { //create a new node in neo4j
+                  createNewSession(uid).then((jwt: string) => {
+                     console.log("ciao");
+                     res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
+                  })
+               }).catch((error) => { res.json({ success: false, status: 500, message: error.message }) })
+            }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+         }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
       })
-   }).catch((error) => {
-      res.json({ success: false, status: 401, message: error.message })
-   })
+      .catch((error) => { res.json({ success: false, status: 400, message: error.message }) });
 })
 
 app.post('/validate', (req: Request, res: Response) => {
    const username: string = req.body.username
    const bday: number = req.body.bday
-   
-   isValidUsername(username).then(() => {
-      isValidBday(bday).then(() => {
-         res.json({ success: true, status: 200 })
-      }).catch((error) => {
-         res.json({ success: false, status: 400, message: error.message })
-      })
-   }).catch((error) => {
-      res.json({ success: false, status: 400, message: error.message })
-   })
+
+   Promise.all([ //validate all user data
+      isValidUsername(username),
+      isValidBday(bday)
+   ])
+      .then(() => { res.json({ success: true, status: 200 }) })
+      .catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
 })
 
 async function createDoc(uid: string, username: string, name: string, pfp: string, bday: number): Promise<null> {
@@ -54,11 +54,12 @@ async function createDoc(uid: string, username: string, name: string, pfp: strin
          const db: Firestore = admin.firestore()
          const docRef: DocumentReference = db.collection('users').doc(uid)
 
+         const validName: string | null = name ? name : null
          pfp = pfp ? pfp : await getDefaultRandomProfilePicture()  //set the pfp url to the one sent from the client, or if is null, select a random one
 
          await docRef.set({ //set the user data into the doc
             username: username,
-            name: name,
+            name: validName,
             pfp: pfp,
             bday: bday
          });
@@ -70,6 +71,7 @@ async function createDoc(uid: string, username: string, name: string, pfp: strin
 }
 
 async function createNode(uid: string, interests: string[]): Promise<null> {
+   //TODO: need fix
    return new Promise(async (resolve, reject) => {
       if (neo4j) {
          const query = `CREATE (:User {name:"${uid}",interests:"${interests}"})`
