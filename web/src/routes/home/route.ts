@@ -1,5 +1,6 @@
+import neo from "@config/neo4j.config";
 import { Request, Response, Router } from "express";
-import admin from 'firebase-admin';
+import admin from "firebase-admin";
 
 const app: Router = Router();
 
@@ -21,8 +22,18 @@ app.get("/posts", async (req: Request, res: Response) => {
 });
 
 async function getFriendList(uid: string): Promise<string[]> {
-   //TODO @TheInfernalNick return the list of friends uid
-   return []
+   let tempArray: string[] = []
+   return new Promise(async (resolve, reject) => {
+      if (neo) {
+         const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = "${uid}" RETURN p`
+         const resultMap = await neo.executeRead(tx => tx.run(queryFriends))
+         let uids = resultMap.records.map(row => row.get("p"))
+         uids.forEach(element => {
+            tempArray.push(element.properties['name'])
+         });
+         resolve(tempArray)
+      } reject(new Error("server/driver-not-found"))
+   })
 }
 
 export default app;
