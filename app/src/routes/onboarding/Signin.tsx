@@ -44,7 +44,7 @@ const Signin = () => {
          <div className="flex flex-col center gap-4 w-full">
             <form
                className="flex flex-col w-full gap-4"
-               onSubmit={(event) => handleSubmit(event)}
+               onSubmit={handleSubmit}
             >
                <Input
                   label="Your personal email"

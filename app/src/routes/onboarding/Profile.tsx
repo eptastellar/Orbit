@@ -114,7 +114,7 @@ const Profile = () => {
 
          <form
             className="flex flex-col center gap-4 w-full"
-            onSubmit={(event) => handleSubmit(event)}
+            onSubmit={handleSubmit}
          >
             <label
                className={`flex center h-32 w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
@@ -133,7 +133,7 @@ const Profile = () => {
                <input
                   type="file"
                   accept="image/gif, image/jpeg, image/png"
-                  onChange={(event) => handleUpload(event)}
+                  onChange={handleUpload}
                   className="hidden"
                />
             </label>
@@ -143,7 +143,7 @@ const Profile = () => {
                placeholder="@4stroNebul4"
                type="text"
                value={username}
-               onChange={(event) => updateUsername(event)}
+               onChange={updateUsername}
             />
             <div className="flex flex-col items-end justify-center gap-1 w-full">
                <Input
