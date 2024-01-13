@@ -1,4 +1,5 @@
 import deleteMessages from '@cron-jobs/deleteMessages';
+import keepAliveNeo from '@cron-jobs/keepAliveNeo';
 import { checkIfSessionTokenIsValid, cronSecretIsValid } from '@helpers/middlewares';
 import signin from '@routes/auth/sign-in/route';
 import signup from '@routes/auth/sign-up/route';
@@ -28,6 +29,7 @@ app.use('/home', checkIfSessionTokenIsValid, home)
 app.use('/post', checkIfSessionTokenIsValid, post)
 
 app.use('/cron/delete-messages', cronSecretIsValid, deleteMessages)
+app.use('/cron/keepAliveNeo', cronSecretIsValid, keepAliveNeo)
 
 app.set('view engine', 'ejs');
 app.use('*', (_: Request, res: Response) => { res.render('404') })
