@@ -87,7 +87,7 @@ const Interests = () => {
 
          <form
             className="flex flex-col gap-4 h-104 w-full"
-            onSubmit={(event) => handleSubmit(event)}
+            onSubmit={handleSubmit}
          >
             <div className="flex flex-col gap-8 w-full">
                <Input
@@ -95,7 +95,7 @@ const Interests = () => {
                   placeholder="Ex: Basketball, Cars, Football"
                   type="text"
                   value={searchQuery}
-                  onChange={(event) => filterInterestsShown(event)}
+                  onChange={filterInterestsShown}
                />
 
                <div className="flex flex-col w-full gap-1.5">
