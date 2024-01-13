@@ -29,7 +29,7 @@ app.use('/home', checkIfSessionTokenIsValid, home)
 app.use('/post', checkIfSessionTokenIsValid, post)
 
 app.use('/cron/delete-messages', cronSecretIsValid, deleteMessages)
-app.use('/cron/keepAliveNeo', cronSecretIsValid, keepAliveNeo)
+app.use('/cron/keep-alive-neo', cronSecretIsValid, keepAliveNeo)
 
 app.set('view engine', 'ejs');
 app.use('*', (_: Request, res: Response) => { res.render('404') })
