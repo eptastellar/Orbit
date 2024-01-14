@@ -1,8 +1,10 @@
-## Technical documentation
+# Technical documentation
 
 #### Introduction
 
 ---
+
+## API documentation
 
 #### Authentication
 
@@ -15,6 +17,22 @@
    <tr>
       <td>auth/invalid-token</td>
       <td>Firebase or session's token are invalid</td>
+   </tr>
+   <tr>
+      <td>auth/email-unverified</td>
+      <td>User personal email is unverified</td>
+   </tr>
+   <tr>
+      <td>auth/invalid-username</td>
+      <td>Requested username is already in use </td>
+   </tr>
+   <tr>
+      <td>auth/user-not-signed-up</td>
+      <td>User need to be signed up to make any request</td>
+   </tr>
+   <tr>
+      <td>auth/expired-token</td>
+      <td>Returned if the session (4w) or access token (1h) are expired</td>
    </tr>
 </table>
 
@@ -56,9 +74,8 @@
 
    <h4>Response</h4>
    <details>
-      <summary><code><b>
-      { success: true, status: 200, jwt: jwt, username: username }
-      </b></code></summary>
+      <summary><code>{ success: true, status: 200, jwt: jwt, username: username }</code></summary>
+      </br>
       <table>
       <th><code>Name</code></th>
       <th><code>Description</code></th>
@@ -73,3 +90,41 @@
       </table>
    </details>
 </details>
+
+---
+
+#### Validation
+
+> ##### Response status
+
+> ##### Endpoints
+
+---
+
+#### Resource
+
+> ##### Response status
+
+> ##### Endpoints
+
+---
+
+#### Server
+
+> ##### Response status
+
+<table>
+   <th>Status</th>
+   <th>Summary</th>
+
+   <tr>
+      <td>server/driver-not-found</td>
+      <td>Neo4j driver has crushed</td>
+   </tr>
+</table>
+
+> ##### Endpoints
+>
+> <code>None</code>
+
+---
