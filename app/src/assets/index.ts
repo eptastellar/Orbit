@@ -1,7 +1,14 @@
 import apple from "./icons/apple.png"
+import chatList from "./icons/chat-list.svg"
 import google from "./icons/google.png"
+import groupList from "./icons/group-list.svg"
 
 import emailVerification from "./illustrations/email-verification.svg"
+import emptyChat from "./illustrations/empty-chat.svg"
+import passwordReset from "./illustrations/password-reset.svg"
+import privacyPolicy from "./illustrations/privacy-policy.svg"
+import supernovaAccepted from "./illustrations/supernova-accepted.svg"
+import supernovaRejected from "./illustrations/supernova-rejected.svg"
 
 import logoBlack1024 from "./logos/black/1024.png"
 import logoBlack128 from "./logos/black/128.png"
@@ -33,9 +40,16 @@ const logoWhite = {
 
 export {
    apple,
+   chatList,
    emailVerification,
+   emptyChat,
    google,
+   groupList,
    logoBlack,
    logoWhite,
+   passwordReset,
+   privacyPolicy,
+   supernovaAccepted,
+   supernovaRejected,
    welcomeBg
 }
