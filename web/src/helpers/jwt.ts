@@ -22,10 +22,10 @@ export async function validateJWT(token: string): Promise<JWTPayload> { //need t
          const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
          const { payload } = await jwtVerify(token, secret); //validate the user token and return the user payload
 
-         if (payload.exp! > Date.now() / 1000)
+         if (payload.exp! < Date.now() / 1000) //check if the token is expired
             reject(new Error('auth/expired-token'))
 
-         resolve(payload);
+         resolve(payload); //return the token payload
       } catch (error) {
          reject(new Error('auth/invalid-token'))
       }
