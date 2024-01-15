@@ -13,7 +13,6 @@ app.post("/", (req: Request, res: Response) => {
    const username: string = req.body.username
    const interests: string[] = req.body.interests
    const bday: number = req.body.bday
-   const name: string = req.body.name
    const pfp: string = req.body.pfp
 
    Promise.all([ //validate all user data
@@ -23,10 +22,10 @@ app.post("/", (req: Request, res: Response) => {
    ])
       .then(() => {
          checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
+            const name: string = username.substring(1)
             createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
                createNode(uid, interests).then(() => { //create a new node in neo4j
                   createNewSession(uid).then((jwt: string) => {
-                     console.log("ciao");
                      res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
                   })
                }).catch((error) => { res.json({ success: false, status: 500, message: error.message }) })
