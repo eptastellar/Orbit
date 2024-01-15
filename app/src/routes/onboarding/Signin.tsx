@@ -8,7 +8,7 @@ import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 import { resolveServerError } from "@/libraries/serverErrors"
 
 const Signin = () => {
-   const { emailSignin, getUserId } = useAuthContext()
+   const { emailSignin } = useAuthContext()
 
    const navigateTo = useNavigate()
 
