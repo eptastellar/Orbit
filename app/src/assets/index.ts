@@ -1,6 +1,8 @@
 import apple from "./icons/apple.png"
 import google from "./icons/google.png"
 
+import emailVerification from "./illustrations/email-verification.svg"
+
 import logoBlack1024 from "./logos/black/1024.png"
 import logoBlack128 from "./logos/black/128.png"
 import logoBlack256 from "./logos/black/256.png"
@@ -31,6 +33,7 @@ const logoWhite = {
 
 export {
    apple,
+   emailVerification,
    google,
    logoBlack,
    logoWhite,
