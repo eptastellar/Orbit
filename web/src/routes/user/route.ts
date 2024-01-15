@@ -1,5 +1,6 @@
 import neo4j from "@config/neo4j.config"
 import { retrieveUIDFromUsername, retrieveUserDataFromUID } from "@helpers/retriever"
+import { isValidLastDocId } from "@helpers/validate"
 import { Request, Response, Router } from "express"
 import admin from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
@@ -43,47 +44,17 @@ app.get("/:username", async (req: Request, res: Response) => {
 })
 
 app.get("/:username/posts", async (req: Request, res: Response) => {
-   retrieveUIDFromUsername(req.params.username).then(async (uid: string) => { //get the uid from the username
-      const db: Firestore = admin.firestore();
-      const lastDocId: string = req.body.lastDocId; //retrieve the last fetched document
-      const incremental: number = 3;
+   const db: Firestore = admin.firestore();
+   const lastDocId: string = req.body.lastDocId; //retrieve the last fetched document
+   const incremental: number = 3;
 
-      let docRef = db.collection("posts")
-         .where("owner", "==", uid)
-         .orderBy("createdAt", "desc")
-         .limit(incremental);
-
-      if (lastDocId) {
-         const lastDoc = await db.collection('posts').doc(lastDocId).get()
-         docRef = docRef.startAfter(lastDoc);
-      }
-
-      const snapshot = await docRef.get();
-      const { username, name, pfp } = await retrieveUserDataFromUID(uid); //get all the user data
-
-      const posts = snapshot.docs.map((doc) => ({ //map all the posts
-         id: doc.id,
-         creation: doc.createTime.seconds,
-         type: doc.data().type,
-         content: doc.data().content,
-         likes_number: doc.data().likes_number,
-
-         user_data: {
-            username: username,
-            name: name,
-            pfp: pfp,
-         },
-      }))
-
-      const latestDoc = snapshot.docs[snapshot.docs.length - 1]
-
-      if (posts.length > 0)
-         res.json({ success: true, status: 200, posts: posts, lastDocId: latestDoc.ref.id })
-      else
-         res.json({ success: false, status: 204, message: "resource/no-content" }) //no content response
-   }).catch((error: Error) => {
-      res.json({ success: false, status: 404, message: error.message });
-   });
+   isValidLastDocId(lastDocId).then(() => {
+      retrieveUIDFromUsername(req.params.username).then(async (uid: string) => { //get the uid from the username
+         getUserPosts(uid, lastDocId).then((fetch) => {
+            res.json({ success: true, status: 200, posts: fetch.posts, lastDocId: fetch.lastDocId })
+         }).catch((error) => { res.json({ success: false, status: 204, message: error.message }) })
+      }).catch((error) => { res.json({ success: false, status: 404, message: error.message }) });
+   }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
 });
 
 
@@ -110,6 +81,52 @@ async function getPostCount(uid: string): Promise<number> { //get the snapshot s
 async function getMeteorCount(uid: string): Promise<number> {
    //TODO
    return 0
+}
+
+type Fetch = {
+   posts: DocumentData[]
+   lastDocId: string
+}
+
+async function getUserPosts(uid: string, lastDocId: string): Promise<Fetch> {
+   return new Promise(async (resolve, reject) => {
+      const db: Firestore = admin.firestore()
+      const incremental: number = 3
+
+      let docRef: Query = db.collection("posts")
+         .where("owner", "==", uid)
+         .orderBy("createdAt", "desc")
+         .limit(incremental);
+
+      if (lastDocId) {
+         const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
+         docRef = docRef.startAfter(lastDoc);
+      }
+
+      const snapshot: DocumentData = await docRef.get();
+      const { username, name, pfp } = await retrieveUserDataFromUID(uid); //get all the user data
+
+      const posts: DocumentData[] = snapshot.docs.map((doc: DocumentData) => ({ //map all the posts
+         id: doc.id,
+         creation: doc.createTime.seconds,
+         type: doc.data().type,
+         content: doc.data().content,
+         likes_number: doc.data().likes_number,
+
+         user_data: {
+            username: username,
+            name: name,
+            pfp: pfp,
+         },
+      }))
+
+      if (posts.length > 0) {
+         const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+         const fetch: Fetch = { posts, lastDocId }
+         resolve(fetch)
+      } else
+         reject(new Error('resource/no-content'))
+   })
 }
 
 export default app
