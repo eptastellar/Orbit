@@ -20,7 +20,7 @@ const Wrapper = ({ children, isConfirmPage, needsAuth }: Props) => function Wrap
    useEffect(() => {
       if (needsAuth) {
          if (!currentUser) navigateTo("/onboarding")
-         else if (!currentUser.emailVerified && !isConfirmPage) navigateTo("/onboarding/confirmation")
+         else if (!currentUser.emailVerified && !isConfirmPage) navigateTo("/onboarding/verification")
          else if (currentUser.emailVerified && isConfirmPage) navigateTo("/onboarding/profile")
          // TODO: Future conditions with the server session token
       }
