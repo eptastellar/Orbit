@@ -1,5 +1,6 @@
 type Props = {
    error?: string
+   id?: string
    label: string
    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
    placeholder: string
@@ -7,13 +8,14 @@ type Props = {
    value: string
 }
 
-const Input = ({ error, label, onChange, placeholder, type, value }: Props) => (
+const Input = ({ error, id, label, onChange, placeholder, type, value }: Props) => (
    <div className="flex flex-col w-full gap-1.5">
       <div className="flex justify-between">
          <p className="text-base font-semibold text-white">{label}</p>
          <p className="text-base font-normal text-red-5">{error}</p>
       </div>
       <input
+         id={id}
          type={type}
          placeholder={placeholder}
          value={value}

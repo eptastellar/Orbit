@@ -9,15 +9,22 @@ import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
 
 const Profile = () => {
+   // Context hooks
    const navigateTo = useNavigate()
 
+   // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
    const [progress, setProgress] = useState<number>(0)
 
+   // Interaction states
    const [pfpUrl, setPfpUrl] = useState<string>(localStorage.getItem("profilePicture") ?? "")
    const [username, setUsername] = useState<string>(localStorage.getItem("username") ?? "")
-   const [birthdate, setBirthdate] = useState<string>(localStorage.getItem("birthdate") ?? "")
+   const [birthdate, setBirthdate] = useState<string[]>(localStorage.getItem("birthdate")?.split("/") ?? [])
+
+   const [bdayYear, setBdayYear] = useState<string>(birthdate[0] ?? "")
+   const [bdayMonth, setBdayMonth] = useState<string>(birthdate[1] ?? "")
+   const [bdayDay, setBdayDay] = useState<string>(birthdate[2] ?? "")
 
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null
@@ -45,60 +52,61 @@ const Profile = () => {
    }
 
    const updateBirthdate = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.value.length < birthdate.length) setBirthdate(event.target.value)
-      else if (event.target.value.length <= 10) {
-         if (event.target.value.length === 4) setBirthdate(event.target.value + "/")
-         else if (event.target.value.length === 7) {
-            if (event.target.value.endsWith("/") || event.target.value.endsWith(" "))
-               setBirthdate(event.target.value.substring(0, 5) + "0" + event.target.value.substring(5, 6) + "/")
-            else setBirthdate(event.target.value + "/")
-         }
-         else if (event.target.value.length === 7) setBirthdate(event.target.value + "/")
-         else setBirthdate(event.target.value)
+      if (event.target.value !== "" && isNaN(parseInt(event.target.value))) return
+
+      if (event.target.id === "birthdate-year") {
+         setBdayYear(event.target.value)
+         setBirthdate((prev) => [event.target.value, prev[1], prev[2]])
+         if (event.target.value.length === 4) document.getElementById("birthdate-month")?.focus()
+      } else if (event.target.id === "birthdate-month") {
+         setBdayMonth(event.target.value)
+         setBirthdate((prev) => [prev[0], event.target.value, prev[2]])
+         if (event.target.value.length === 2) document.getElementById("birthdate-day")?.focus()
+      } else if (event.target.id === "birthdate-day") {
+         setBdayDay(event.target.value)
+         setBirthdate((prev) => [prev[0], prev[1], event.target.value])
       }
    }
 
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
-      if (birthdate.length !== 10)
-         return setError("Invalid birthdate.")
+      // Preliminary checks
+      if (!username) return setError("Input a username.")
+      if (!birthdate[0] || !birthdate[1] || !birthdate[2] || birthdate[0].length !== 4)
+         return setError("Enter all birthdate fields.")
+
+      const unixBirthdate = Math.floor(new Date(birthdate.join("/")).getTime() / 1000)
+      if (!unixBirthdate) return setError("Invalid birthdate.")
 
       setLoading(true)
 
-      try {
-         const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
-         if (!unixBirthdate) return setError("Invalid birthdate.")
+      // Check form validity with api endpoint
+      const requestBody = JSON.stringify({
+         username: username,
+         bday: unixBirthdate
+      })
 
-         // Check form validity with api endpoint
-         const requestBody = JSON.stringify({
-            username: username,
-            bday: unixBirthdate
-         })
-
-         const params: RequestInit = {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: requestBody
-         }
-
-         type ResponseType = { success: boolean, message: string }
-         fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up/validate`, params)
-            .then((response) => response.json())
-            .then(({ success, message }: ResponseType) => {
-               if (success) {
-                  setError("")
-
-                  localStorage.setItem("username", username)
-                  localStorage.setItem("birthdate", birthdate)
-                  navigateTo("/onboarding/interests")
-               } else setError(resolveServerError(message))
-            })
-            .finally(() => setLoading(false))
-      } catch (error: any) {
-         setError(error.message)
-         setLoading(false)
+      const params: RequestInit = {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: requestBody
       }
+
+      type ResponseType = { success: boolean, message: string }
+      fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up/validate`, params)
+         .then((response) => response.json())
+         .then(({ success, message }: ResponseType) => {
+            if (success) {
+               setError("")
+
+               // Set temporary user localStorage values
+               localStorage.setItem("username", username)
+               localStorage.setItem("birthdate", birthdate.join("/"))
+               navigateTo("/onboarding/interests")
+            } else setError(resolveServerError(message))
+         })
+         .finally(() => setLoading(false))
    }
 
    return (
@@ -146,13 +154,37 @@ const Profile = () => {
                onChange={updateUsername}
             />
             <div className="flex flex-col items-end justify-center gap-1 w-full">
-               <Input
-                  label="Birthdate"
-                  placeholder="YYYY / MM / DD"
-                  type="text"
-                  value={birthdate}
-                  onChange={(event) => updateBirthdate(event)}
-               />
+               <div className="flex flex-col w-full gap-1.5">
+                  <p className="text-base font-semibold text-white">Birthdate</p>
+                  <div className="flex gap-2 w-full">
+                     <input
+                        id="birthdate-year"
+                        type="text"
+                        placeholder="YYYY"
+                        value={bdayYear}
+                        onChange={updateBirthdate}
+                        className="w-1/2 px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
+                     />
+                     <div className="flex gap-2 w-1/2">
+                        <input
+                           id="birthdate-month"
+                           type="text"
+                           placeholder="MM"
+                           value={bdayMonth}
+                           onChange={updateBirthdate}
+                           className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
+                        />
+                        <input
+                           id="birthdate-day"
+                           type="text"
+                           placeholder="DD"
+                           value={bdayDay}
+                           onChange={updateBirthdate}
+                           className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
+                        />
+                     </div>
+                  </div>
+               </div>
                <p className="text-[10px] font-medium text-gray-3">
                   You won't be able to change this later.
                </p>
