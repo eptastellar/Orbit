@@ -15,15 +15,15 @@ const Profile = () => {
    const [error, setError] = useState<string>("")
    const [progress, setProgress] = useState<number>(0)
 
-   const [profilePictureUrl, setProfilePictureUrl] = useState<string>(localStorage.getItem("profilePicture") ?? "")
+   const [pfpUrl, setPfpUrl] = useState<string>(localStorage.getItem("profilePicture") ?? "")
    const [username, setUsername] = useState<string>(localStorage.getItem("username") ?? "")
-   const [birthdate, setBirthdate] = useState(localStorage.getItem("birthdate") ?? "")
+   const [birthdate, setBirthdate] = useState<string>(localStorage.getItem("birthdate") ?? "")
 
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null
 
       if (file) {
-         setProfilePictureUrl("")
+         setPfpUrl("")
          localStorage.removeItem("profilePicture")
 
          const uploadTask = uploadBytesResumable(ref(storage, `uploads/pfps/${crypto.randomUUID()}`), file)
@@ -33,7 +33,7 @@ const Profile = () => {
             (error) => setError(error.message),
             () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                localStorage.setItem("profilePicture", downloadURL)
-               setProfilePictureUrl(downloadURL)
+               setPfpUrl(downloadURL)
             })
          )
       }
@@ -119,13 +119,13 @@ const Profile = () => {
             <label
                className={`flex center h-32 w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
                style={{
-                  background: profilePictureUrl ? "#1D5C96" :
+                  background: pfpUrl ? "#1D5C96" :
                      `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`
                }}
             >
                <div className="flex center h-full w-full bg-gray-7 rounded-full overflow-hidden">
-                  {profilePictureUrl ? (
-                     <img src={profilePictureUrl} alt="Profile picture" className="h-full w-full object-cover" />
+                  {pfpUrl ? (
+                     <img src={pfpUrl} alt="Profile picture" className="h-full w-full object-cover" />
                   ) : (
                      <PiCameraPlus className="text-white text-5xl" />
                   )}
