@@ -14,6 +14,36 @@ const Welcome = () => {
    const navigateTo = useNavigate()
 
    const [activeView, setActiveView] = useState<Views>("default")
+   const [googleLoading, setGoogleLoading] = useState<boolean>(false)
+
+   const handleGoogleAuth = () => {
+      setGoogleLoading(true)
+
+      googleLogin()
+         .then(async (user) => {
+            const params: RequestInit = {
+               method: "GET",
+               headers: { "Authorization": "Bearer " + await user.user.getIdToken() }
+            }
+
+            type ResponseType = {
+               success: boolean
+               message: string
+               jwt: string
+               username: string
+            }
+            fetch(`${import.meta.env.VITE_API_URL}/auth/sign-in`, params)
+               .then((response) => response.json())
+               .then(({ success, jwt, username }: ResponseType) => {
+                  if (success) {
+                     localStorage.setItem("sessionToken", jwt)
+                     navigateTo(`/u/${username}`)
+                  } else navigateTo("/onboarding/profile")
+               })
+               .finally(() => setGoogleLoading(false))
+         })
+         .catch(() => setGoogleLoading(false))
+   }
 
    return (
       <>
@@ -52,11 +82,8 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="white"
                         image={google}
-                        text="Sign in with Google"
-                        onClick={async () => {
-                           await googleLogin()
-                           navigateTo("/")
-                        }}
+                        text={googleLoading ? "Loading..." : "Sign in with Google"}
+                        onClick={handleGoogleAuth}
                      />
                      <WelcomeButton
                         btnType="ring"
@@ -78,11 +105,8 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="white"
                         image={google}
-                        text="Sign up with Google"
-                        onClick={async () => {
-                           await googleLogin()
-                           navigateTo("/onboarding/profile")
-                        }}
+                        text={googleLoading ? "Loading..." : "Sign up with Google"}
+                        onClick={handleGoogleAuth}
                      />
                      <WelcomeButton
                         btnType="ring"
