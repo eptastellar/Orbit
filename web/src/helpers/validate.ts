@@ -54,3 +54,19 @@ export async function areValidInterests(interestsList: string[]): Promise<null> 
       resolve(null)
    })
 }
+
+export async function isValidLastDocId(lastDocId: string): Promise<null> {
+   return new Promise(async (resolve, reject) => {
+      const db = admin.firestore()
+
+      if (lastDocId) {
+         const docRef = await db.collection('posts').doc(lastDocId).get()
+
+         if (docRef.exists)
+            resolve(null)
+         else
+            reject(new Error('validate/invalid-last-doc-id'))
+      } else
+         resolve(null)
+   })
+}
