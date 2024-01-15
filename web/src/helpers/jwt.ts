@@ -38,7 +38,7 @@ export async function createNewSession(uid: string): Promise<string> {
 
    const docRef: DocumentReference = db.collection('sessions').doc(uid); //create a new doc in the collection /sessions
    const doc: DocumentData = (await docRef.get()).data()! //get data inside the document
-   const token: string = doc.token
+   const token: string = doc?.token
 
    return new Promise(async (resolve, _) => {
       if (token) {
