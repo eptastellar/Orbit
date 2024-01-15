@@ -5,9 +5,10 @@ import { BackButton, Input, SpinnerText } from "@/components"
 import { useAuthContext } from "@/contexts"
 import { Wrapper } from "@/hoc"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
+import { resolveServerError } from "@/libraries/serverErrors"
 
 const Signin = () => {
-   const { emailSignin } = useAuthContext()
+   const { emailSignin, getUserId } = useAuthContext()
 
    const navigateTo = useNavigate()
 
@@ -19,15 +20,40 @@ const Signin = () => {
 
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
-
       setLoading(true)
 
-      try {
-         await emailSignin(email, password)
-         navigateTo("/")
-      } catch (error: any) { setError(error.message) }
+      emailSignin(email, password)
+         .then(async (user) => {
+            const params: RequestInit = {
+               method: "GET",
+               headers: { "Authorization": "Bearer " + await user.user.getIdToken() }
+            }
 
-      setLoading(false)
+            type ResponseType = {
+               success: boolean
+               message: string
+               jwt: string
+               username: string
+            }
+            fetch(`${import.meta.env.VITE_API_URL}/auth/sign-in`, params)
+               .then((response) => response.json())
+               .then(({ success, message, jwt, username }: ResponseType) => {
+                  if (success) {
+                     setError("")
+
+                     localStorage.setItem("sessionToken", jwt)
+                     navigateTo(`/u/${username}`)
+                  } else if (message === "auth/user-not-signed-up")
+                     navigateTo("/onboarding/profile")
+                  else setError(resolveServerError(message))
+
+                  setLoading(false)
+               })
+         })
+         .catch((error: any) => {
+            setError(resolveFirebaseError(error.message))
+            setLoading(false)
+         })
    }
 
    return (
@@ -72,9 +98,7 @@ const Signin = () => {
                   </p>
                </div>
 
-               <p className="text-center text-red-5">
-                  {error && resolveFirebaseError(error)}
-               </p>
+               <p className="text-center text-red-5">{error}</p>
 
                <button
                   type="submit"
