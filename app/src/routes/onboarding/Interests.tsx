@@ -29,7 +29,7 @@ const Interests = () => {
       if (!event.target.value) return randomizeInterestsShown(interestsList)
 
       const filtered = interestsList
-         .filter((interest) => interest.includes(event.target.value))
+         .filter((interest) => interest.toLowerCase().includes(event.target.value.toLowerCase()))
          .slice(0, 20)
       setInterestsShown(filtered)
    }
@@ -43,15 +43,16 @@ const Interests = () => {
 
    const handleSelectedInterestClick = (interest: string) => {
       const newInterests = interests.filter((item) => item !== interest)
-      setInterests(newInterests)
+      setInterests(newInterests.sort())
       randomizeInterestsShown(interestsList)
    }
 
    const handleInterestListClick = (interest: string) => {
       if (interests.length < 5) {
          setSearchQuery("")
-         setInterests((prev) => [...prev, interest])
+         setInterests((prev) => [...prev, interest].sort())
          randomizeInterestsShown(interestsList)
+         document.getElementById("search-box")?.focus()
       }
    }
 
@@ -63,58 +64,53 @@ const Interests = () => {
       const username = localStorage.getItem("username")
       const birthdate = localStorage.getItem("birthdate")
 
-      if (!profilePicture || !username || !birthdate)
+      if (!username || !birthdate)
          return navigateTo("/onboarding/profile")
 
       setLoading(true)
 
-      try {
-         const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
-         if (!unixBirthdate) return navigateTo("/onboarding/profile")
+      const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
+      if (!unixBirthdate) return navigateTo("/onboarding/profile")
 
-         // Send the user object to the api endpoint
-         const requestBody = JSON.stringify({
-            pfp: profilePicture,
-            username: username,
-            bday: unixBirthdate,
-            interests: interests
-         })
+      // Send the user object to the api endpoint
+      const requestBody = JSON.stringify({
+         pfp: profilePicture,
+         username: username,
+         bday: unixBirthdate,
+         interests: interests
+      })
 
-         const params: RequestInit = {
-            method: "POST",
-            headers: {
-               "authorization": await getUserId(),
-               "Content-Type": "application/json"
-            },
-            body: requestBody
-         }
-
-         type ResponseType = {
-            success: boolean
-            message: string
-            jwt: string
-            username: string
-         }
-         fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up`, params)
-            .then((response) => response.json())
-            .then(({ success, message, jwt, username }: ResponseType) => {
-               if (success) {
-                  setError("")
-
-                  localStorage.setItem("sessionToken", jwt)
-
-                  // Remove temporary user localStorage values
-                  localStorage.removeItem("profilePicture")
-                  localStorage.removeItem("username")
-                  localStorage.removeItem("birthdate")
-                  navigateTo(`/u/${username}`)
-               } else setError(resolveServerError(message))
-            })
-            .finally(() => setLoading(false))
-      } catch (error: any) {
-         setError(error.message)
-         setLoading(false)
+      const params: RequestInit = {
+         method: "POST",
+         headers: {
+            "Authorization": "Bearer " + await getUserId(),
+            "Content-Type": "application/json"
+         },
+         body: requestBody
       }
+
+      type ResponseType = {
+         success: boolean
+         message: string
+         jwt: string
+         username: string
+      }
+      fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up`, params)
+         .then((response) => response.json())
+         .then(({ success, message, jwt, username }: ResponseType) => {
+            if (success) {
+               setError("")
+
+               localStorage.setItem("sessionToken", jwt)
+
+               // Remove temporary user localStorage values
+               localStorage.removeItem("profilePicture")
+               localStorage.removeItem("username")
+               localStorage.removeItem("birthdate")
+               navigateTo(`/u/${username}`)
+            } else setError(resolveServerError(message))
+         })
+         .finally(() => setLoading(false))
    }
 
    // Load all interests on page load
@@ -149,6 +145,7 @@ const Interests = () => {
          >
             <div className="flex flex-col gap-8 w-full">
                <Input
+                  id="search-box"
                   label="Search interests"
                   placeholder="Ex: Basketball, Cars, Football"
                   type="text"
