@@ -44,7 +44,7 @@ export async function isValidUsername(username: string): Promise<null> {
 
 export async function areValidInterests(interestsList: string[]): Promise<null> {
    return new Promise((resolve, reject) => {
-      if (interests.length > 5 || interests.length < 1)
+      if (interests.length > 5 && interests.length < 1)
          reject(new Error('validate/invalid-number-of-interests'))
 
       interestsList.forEach(element => {

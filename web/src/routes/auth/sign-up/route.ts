@@ -39,12 +39,11 @@ app.post('/validate', (req: Request, res: Response) => {
    const username: string = req.body.username
    const bday: number = req.body.bday
 
-   Promise.all([ //validate all user data
-      isValidUsername(username),
-      isValidBday(bday)
-   ])
-      .then(() => { res.json({ success: true, status: 200 }) })
-      .catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+   isValidUsername(username).then(() => {
+      isValidBday(bday).then(() => {
+         res.json({ success: true, status: 200 })
+      }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+   }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
 })
 
 async function createDoc(uid: string, username: string, name: string, pfp: string, bday: number): Promise<null> {
