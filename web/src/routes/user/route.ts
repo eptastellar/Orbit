@@ -43,45 +43,49 @@ app.get("/:username", async (req: Request, res: Response) => {
 })
 
 app.get("/:username/posts", async (req: Request, res: Response) => {
-   const db: Firestore = admin.firestore()
-   const index: string = req.body.lastDocId //retrieve the last fetched document
-   const docRef = db.collection('posts').doc(index) //TODO: need to fix
-   const incremental: number = 5
+   retrieveUIDFromUsername(req.params.username).then(async (uid: string) => { //get the uid from the username
+      const db: Firestore = admin.firestore();
+      const lastDocId: string = req.body.lastDocId; //retrieve the last fetched document
+      const incremental: number = 3;
 
-   const uid: string = await retrieveUIDFromUsername(req.params.username) //get the uid from the username
-   const { username, name, pfp } = await retrieveUserDataFromUID(uid) //get all the user data
+      let docRef = db.collection("posts")
+         .where("owner", "==", uid)
+         .orderBy("createdAt", "desc")
+         .limit(incremental);
 
-   const postsRef = db.collection('posts')
-      .where("owner", "==", uid)
-      .orderBy('createdAt', 'desc')
-      .startAfter(docRef) //start after the last document fetched
-      .limit(incremental) //the number of document to retrieve each request
+      if (lastDocId) {
+         const lastDoc = await db.collection('posts').doc(lastDocId).get()
+         docRef = docRef.startAfter(lastDoc);
+      }
 
-   const snapshot: QuerySnapshot = await postsRef.get()
-   const doc: DocumentData = snapshot.docs[snapshot.docs.length - 1] //the last document info
-   const lastDocId = doc._ref._path.segments[1]
+      const snapshot = await docRef.get();
+      const { username, name, pfp } = await retrieveUserDataFromUID(uid); //get all the user data
 
-   const posts = snapshot.docs.map(doc => ( //map all the posts
-      {
+      const posts = snapshot.docs.map((doc) => ({ //map all the posts
          id: doc.id,
          creation: doc.createTime.seconds,
          type: doc.data().type,
          content: doc.data().content,
          likes_number: doc.data().likes_number,
-         //TODO: comments_number: doc.data().comments_number,
+
          user_data: {
             username: username,
             name: name,
             pfp: pfp,
-         }
-      }
-   ))
+         },
+      }))
 
-   if (posts.length != 0)
-      res.json({ success: true, status: 200, posts: posts, lastDocId: lastDocId }) //also return the last doc id for new requests
-   else
-      res.json({ success: false, status: 204, message: "resource/no-content" }) //no content response
-})
+      const latestDoc = snapshot.docs[snapshot.docs.length - 1]
+
+      if (posts.length > 0)
+         res.json({ success: true, status: 200, posts: posts, lastDocId: latestDoc.ref.id })
+      else
+         res.json({ success: false, status: 204, message: "resource/no-content" }) //no content response
+   }).catch((error: Error) => {
+      res.json({ success: false, status: 404, message: error.message });
+   });
+});
+
 
 async function getFriendCount(uid: string): Promise<number> {
    return new Promise<number>(async (resolve, reject) => {

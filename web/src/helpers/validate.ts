@@ -16,12 +16,12 @@ export function isValidBday(bday: number): Promise<null> {
 }
 
 export async function isValidUsername(username: string): Promise<null> {
-   baas()
-   const db: Firestore = admin.firestore();
-
    return new Promise((resolve, reject) => {
+      baas()
+      const db: Firestore = admin.firestore();
       const regex = /[^a-zA-Z0-9\_\-\.]/
-      if (!username || !username.startsWith('@') || username.substring(1).match(regex))
+
+      if (!username || !username.startsWith('@') || username.substring(1).match(regex)) //check if the username i approved by the regex
          reject(new Error('validation/invalid-username'))
 
       if (username.length > 24 + 1)
@@ -44,6 +44,9 @@ export async function isValidUsername(username: string): Promise<null> {
 
 export async function areValidInterests(interestsList: string[]): Promise<null> {
    return new Promise((resolve, reject) => {
+      if (interests.length > 5 || interests.length < 1)
+         reject(new Error('validate/invalid-number-of-interests'))
+
       interestsList.forEach(element => {
          if (!interests.includes(element))
             reject(new Error('validate/invalid-interests'))
