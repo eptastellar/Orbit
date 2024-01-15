@@ -2,15 +2,22 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
+import { useAuthContext } from "@/contexts"
 import { Wrapper } from "@/hoc"
+import { resolveServerError } from "@/libraries/serverErrors"
 
 const Interests = () => {
+   // Context hooks
+   const { getUserId } = useAuthContext()
+
    const navigateTo = useNavigate()
 
+   // Fetching and async states
    const [fetching, setFetching] = useState<boolean>(true)
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
 
+   // Interaction states
    const [interests, setInterests] = useState<string[]>([])
    const [interestsList, setInterestsList] = useState<string[]>([])
    const [interestsShown, setInterestsShown] = useState<string[]>([])
@@ -28,8 +35,10 @@ const Interests = () => {
    }
 
    const randomizeInterestsShown = (interests: string[]) => {
-      const shuffled = interests.sort(() => 0.5 - Math.random())
-      setInterestsShown(shuffled.slice(0, 20))
+      const shuffled = interests
+         .sort(() => 0.5 - Math.random())
+         .slice(0, 20)
+      setInterestsShown(shuffled)
    }
 
    const handleSelectedInterestClick = (interest: string) => {
@@ -49,17 +58,66 @@ const Interests = () => {
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
+      // Preliminary checks
+      const profilePicture = localStorage.getItem("profilePicture")
+      const username = localStorage.getItem("username")
+      const birthdate = localStorage.getItem("birthdate")
+
+      if (!profilePicture || !username || !birthdate)
+         return navigateTo("/onboarding/profile")
+
       setLoading(true)
 
       try {
-         // TODO: Send user to the database
-         // TODO: Clear data in localstorage
-         navigateTo("/")
-      } catch (error: any) { setError(error.message) }
+         const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
+         if (!unixBirthdate) return navigateTo("/onboarding/profile")
 
-      setLoading(false)
+         // Send the user object to the api endpoint
+         const requestBody = JSON.stringify({
+            pfp: profilePicture,
+            username: username,
+            bday: unixBirthdate,
+            interests: interests
+         })
+
+         const params: RequestInit = {
+            method: "POST",
+            headers: {
+               "authorization": await getUserId(),
+               "Content-Type": "application/json"
+            },
+            body: requestBody
+         }
+
+         type ResponseType = {
+            success: boolean
+            message: string
+            jwt: string
+            username: string
+         }
+         fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up`, params)
+            .then((response) => response.json())
+            .then(({ success, message, jwt, username }: ResponseType) => {
+               if (success) {
+                  setError("")
+
+                  localStorage.setItem("sessionToken", jwt)
+
+                  // Remove temporary user localStorage values
+                  localStorage.removeItem("profilePicture")
+                  localStorage.removeItem("username")
+                  localStorage.removeItem("birthdate")
+                  navigateTo(`/u/${username}`)
+               } else setError(resolveServerError(message))
+            })
+            .finally(() => setLoading(false))
+      } catch (error: any) {
+         setError(error.message)
+         setLoading(false)
+      }
    }
 
+   // Load all interests on page load
    useEffect(() => {
       const params: RequestInit = { method: "GET" }
 
