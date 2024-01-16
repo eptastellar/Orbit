@@ -67,10 +67,10 @@ const Interests = () => {
       if (!username || !birthdate)
          return navigateTo("/onboarding/profile")
 
-      setLoading(true)
-
       const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
       if (!unixBirthdate) return navigateTo("/onboarding/profile")
+
+      setLoading(true)
 
       // Send the user object to the api endpoint
       const requestBody = JSON.stringify({
@@ -124,8 +124,8 @@ const Interests = () => {
             setInterestsList(interests)
             randomizeInterestsShown(interests)
          })
-         .catch((e: any) => setError(e.error))
-         .finally(() => setTimeout(() => setFetching(false), 250))
+         .catch((error: any) => setError(error.error))
+         .finally(() => setFetching(false))
    }, [])
 
    return (
@@ -214,4 +214,4 @@ const Interests = () => {
    )
 }
 
-export default Wrapper({ children: <Interests />, needsAuth: true })
+export default Wrapper({ children: <Interests />, firebaseAuth: true })

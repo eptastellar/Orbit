@@ -7,13 +7,16 @@ import { Wrapper } from "@/hoc"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
 const Signup = () => {
+   // Context hooks
    const { emailSignup } = useAuthContext()
 
    const navigateTo = useNavigate()
 
+   // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
 
+   // Interaction states
    const [email, setEmail] = useState<string>("")
    const [password, setPassword] = useState<string>("")
    const [confirmPassword, setConfirmPassword] = useState<string>("")
@@ -26,12 +29,10 @@ const Signup = () => {
 
       setLoading(true)
 
-      try {
-         await emailSignup(email, password)
-         navigateTo("/onboarding/verification")
-      } catch (error: any) { setError(error.message) }
-
-      setLoading(false)
+      emailSignup(email, password)
+         .then(() => navigateTo("/onboarding/verification"))
+         .catch((error: any) => setError(resolveFirebaseError(error.message)))
+         .finally(() => setLoading(false))
    }
 
    return (
@@ -72,9 +73,7 @@ const Signup = () => {
                   onChange={(event) => setConfirmPassword(event.target.value)}
                />
 
-               <p className="text-center text-red-5">
-                  {error && resolveFirebaseError(error)}
-               </p>
+               <p className="text-center text-red-5">{error}</p>
 
                <button
                   type="submit"

@@ -209,4 +209,4 @@ const Profile = () => {
    )
 }
 
-export default Wrapper({ children: <Profile />, needsAuth: true })
+export default Wrapper({ children: <Profile />, firebaseAuth: true })

@@ -4,4 +4,4 @@ const Home = () => (
    <div>Home</div>
 )
 
-export default Wrapper({ children: <Home />, needsAuth: true })
+export default Wrapper({ children: <Home />, serverAuth: true })

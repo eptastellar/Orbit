@@ -7,24 +7,29 @@ import { useAuthContext } from "@/contexts"
 type Props = {
    children: JSX.Element
    isConfirmPage?: boolean // Skip auth check on the confirmation page
-   needsAuth?: boolean
+   firebaseAuth?: boolean
+   serverAuth?: boolean
 }
 
-const Wrapper = ({ children, isConfirmPage, needsAuth }: Props) => function Wrapper() {
+const Wrapper = ({ children, isConfirmPage, firebaseAuth, serverAuth }: Props) => function Wrapper() {
+   // Context hooks
    const { currentUser } = useAuthContext()
 
    const navigateTo = useNavigate()
 
+   // Loading and session states
    const [loading, setLoading] = useState<boolean>(true)
+   const sessionToken = localStorage.getItem("sessionToken")
 
    useEffect(() => {
-      if (needsAuth) {
-         if (!currentUser) navigateTo("/onboarding")
+      if (firebaseAuth) {
+         if (sessionToken) navigateTo("/")
+         else if (!currentUser) navigateTo("/onboarding")
          else if (!currentUser.emailVerified && !isConfirmPage) navigateTo("/onboarding/verification")
          else if (currentUser.emailVerified && isConfirmPage) navigateTo("/onboarding/profile")
-         // TODO: Future conditions with the server session token
       }
-      if (!needsAuth && currentUser) navigateTo("/")
+      else if (!firebaseAuth && currentUser) navigateTo("/")
+      else if (serverAuth && (!currentUser || !sessionToken)) navigateTo("/onboarding")
 
       setLoading(false)
    }, [])

@@ -6,12 +6,15 @@ import { Wrapper } from "@/hoc"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
 const ForgotPassword = () => {
+   // Context hooks
    const { resetUserPassword } = useAuthContext()
 
+   // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
    const [success, setSuccess] = useState<boolean>(false)
 
+   // Interaction states
    const [email, setEmail] = useState<string>("")
    const [confirmEmail, setConfirmEmail] = useState<string>("")
 
@@ -23,16 +26,15 @@ const ForgotPassword = () => {
 
       setLoading(true)
 
-      try {
-         await resetUserPassword(email)
-         setError("")
-         setSuccess(true)
-      } catch (error: any) {
-         setError(error.message)
-         setSuccess(false)
-      }
-
-      setLoading(false)
+      resetUserPassword(email)
+         .then(() => {
+            setError("")
+            setSuccess(true)
+         })
+         .catch((error: any) => {
+            setError(resolveFirebaseError(error.message))
+            setSuccess(false)
+         })
    }
 
    return (
@@ -66,9 +68,7 @@ const ForgotPassword = () => {
                   onChange={(event) => setConfirmEmail(event.target.value)}
                />
 
-               <p className="text-center text-red-5">
-                  {error && resolveFirebaseError(error)}
-               </p>
+               <p className="text-center text-red-5">{error}</p>
 
                <button
                   type="submit"
