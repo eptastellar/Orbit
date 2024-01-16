@@ -83,7 +83,7 @@ const Interests = () => {
       const params: RequestInit = {
          method: "POST",
          headers: {
-            "Authorization": "Bearer " + await getUserId(),
+            "Authorization": "Bearer " + await getUserId(true),
             "Content-Type": "application/json"
          },
          body: requestBody
