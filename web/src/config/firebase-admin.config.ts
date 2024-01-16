@@ -1,7 +1,7 @@
-import { ServiceAccount, cert, getApps, initializeApp } from 'firebase-admin/app';
+import { ServiceAccount, cert, getApps, initializeApp } from 'firebase-admin/app'
 
-export function baas() {
-   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+export function firebase(): void {
+   const privateKey = process.env.FIREBASE_PRIVATE_KEY
 
    if (privateKey) {
       const formattedPrivateKey: string = formatPrivateKey(privateKey)
@@ -23,5 +23,5 @@ export function baas() {
 }
 
 function formatPrivateKey(key: string): string {
-   return key.replace(/\\n/g, "\n");
+   return key.replace(/\\n/g, '\n')
 }
