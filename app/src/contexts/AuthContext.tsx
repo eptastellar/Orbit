@@ -18,7 +18,7 @@ import { auth, googleProvider } from "@/libraries/firebase"
 
 type authContextType = {
    currentUser: User | null
-   getUserId: () => Promise<string>
+   getUserId: (forceRefresh?: boolean) => Promise<string>
 
    // Email and password actions
    emailSignin: (email: string, password: string) => Promise<UserCredential>
@@ -40,7 +40,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    const [currentUser, setCurrentUser] = useState<User | null>(null)
    const [loading, setLoading] = useState<boolean>(true)
 
-   const getUserId = async () => await currentUser?.getIdToken() ?? ""
+   const getUserId = async (forceRefresh?: boolean) =>
+      await currentUser?.getIdToken(forceRefresh) ?? ""
 
    // Email and password actions
    const emailSignin = (email: string, password: string) =>

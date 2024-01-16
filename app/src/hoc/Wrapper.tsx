@@ -28,8 +28,8 @@ const Wrapper = ({ children, isConfirmPage, firebaseAuth, serverAuth }: Props) =
          else if (!currentUser.emailVerified && !isConfirmPage) navigateTo("/onboarding/verification")
          else if (currentUser.emailVerified && isConfirmPage) navigateTo("/onboarding/profile")
       }
-      else if (!firebaseAuth && currentUser) navigateTo("/")
       else if (serverAuth && (!currentUser || !sessionToken)) navigateTo("/onboarding")
+      else if (!firebaseAuth && currentUser) navigateTo("/")
 
       setLoading(false)
    }, [])
