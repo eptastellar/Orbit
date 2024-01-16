@@ -72,7 +72,7 @@ async function createNode(uid: string, interests: string[]): Promise<null> {
    //TODO: need fix
    return new Promise(async (resolve, reject) => {
       if (neo4j) {
-         const query = `CREATE (:User {name:"${uid}",interests:"${interests}"})`
+         const query = `MERGE (:User {name:"${uid}",interests:"${interests}"})`
          await neo4j.executeWrite(tx => tx.run(query))
          resolve(null)
       } else
