@@ -8,18 +8,22 @@ import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 import { resolveServerError } from "@/libraries/serverErrors"
 
 const Signin = () => {
+   // Context hooks
    const { emailSignin } = useAuthContext()
 
    const navigateTo = useNavigate()
 
+   // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
 
+   // Interaction states
    const [email, setEmail] = useState<string>("")
    const [password, setPassword] = useState<string>("")
 
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
+
       setLoading(true)
 
       emailSignin(email, password)
@@ -46,14 +50,11 @@ const Signin = () => {
                   } else if (message === "auth/user-not-signed-up")
                      navigateTo("/onboarding/profile")
                   else setError(resolveServerError(message))
-
-                  setLoading(false)
                })
+               .finally(() => setLoading(false))
          })
-         .catch((error: any) => {
-            setError(resolveFirebaseError(error.message))
-            setLoading(false)
-         })
+         .catch((error: any) => setError(resolveFirebaseError(error.message)))
+         .finally(() => setLoading(false))
    }
 
    return (

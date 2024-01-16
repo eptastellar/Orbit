@@ -9,7 +9,7 @@ import {
    signInWithPopup,
    signOut,
    updateEmail,
-   updatePassword,
+   updatePassword
 } from "firebase/auth"
 import { createContext, useContext, useEffect, useState } from "react"
 

@@ -4,6 +4,7 @@ import { emailVerification } from "@/assets"
 import { Wrapper } from "@/hoc"
 
 const Verification = () => {
+   // Context hooks
    const navigateTo = useNavigate()
 
    return (
@@ -41,4 +42,4 @@ const Verification = () => {
    )
 }
 
-export default Wrapper({ children: <Verification />, needsAuth: true, isConfirmPage: true })
+export default Wrapper({ children: <Verification />, firebaseAuth: true, isConfirmPage: true })

@@ -9,18 +9,20 @@ import { Wrapper } from "@/hoc"
 type Views = "default" | "signin" | "signup"
 
 const Welcome = () => {
+   // Context hooks
    const { googleLogin } = useAuthContext()
 
    const navigateTo = useNavigate()
 
+   // Interaction states
    const [activeView, setActiveView] = useState<Views>("default")
    const [googleLoading, setGoogleLoading] = useState<boolean>(false)
 
    const handleGoogleAuth = () => {
       setGoogleLoading(true)
 
-      googleLogin()
-         .then(async (user) => {
+      googleLogin() // Login with google
+         .then(async (user) => { // Login with the server
             const params: RequestInit = {
                method: "GET",
                headers: { "Authorization": "Bearer " + await user.user.getIdToken() }
@@ -40,9 +42,11 @@ const Welcome = () => {
                      navigateTo(`/u/${username}`)
                   } else navigateTo("/onboarding/profile")
                })
+               .catch((error: any) => console.error(error))
                .finally(() => setGoogleLoading(false))
          })
-         .catch(() => setGoogleLoading(false))
+         .catch((error: any) => console.error(error))
+         .finally(() => setGoogleLoading(false))
    }
 
    return (
