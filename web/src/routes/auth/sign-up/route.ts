@@ -1,14 +1,14 @@
 import neo4j from '@config/neo4j.config'
 import { createNewSession } from '@helpers/jwt'
-import { checkIfAccessTokenIsValid } from "@helpers/middlewares"
+import { checkIfAccessTokenIsValid } from '@helpers/middlewares'
 import { areValidInterests, isValidBday, isValidUsername } from '@helpers/validate'
-import { Request, Response, Router } from "express"
+import { Request, Response, Router } from 'express'
 import admin from 'firebase-admin'
 import { DocumentReference, Firestore } from 'firebase-admin/firestore'
 
-const app: Router = Router();
+const app: Router = Router()
 
-app.post("/", (req: Request, res: Response) => {
+app.post('/', (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!
    const username: string = req.body.username
    const interests: string[] = req.body.interests
@@ -19,20 +19,18 @@ app.post("/", (req: Request, res: Response) => {
       isValidUsername(username),
       isValidBday(bday),
       areValidInterests(interests)
-   ])
-      .then(() => {
-         checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
-            const name: string = username.substring(1)
-            createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
-               createNode(uid, interests).then(() => { //create a new node in neo4j
-                  createNewSession(uid).then((jwt: string) => {
-                     res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
-                  })
-               }).catch((error) => { res.json({ success: false, status: 500, message: error.message }) })
-            }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
-         }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
-      })
-      .catch((error) => { res.json({ success: false, status: 400, message: error.message }) });
+   ]).then(() => {
+      checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
+         const name: string = username.substring(1)
+         createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
+            createNode(uid, interests).then(() => { //create a new node in neo4j
+               createNewSession(uid).then((jwt: string) => {
+                  res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
+               })
+            }).catch((error) => { res.json({ success: false, status: 500, message: error.message }) })
+         }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+      }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
+   }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
 })
 
 app.post('/validate', (req: Request, res: Response) => {
@@ -52,31 +50,27 @@ async function createDoc(uid: string, username: string, name: string, pfp: strin
          const db: Firestore = admin.firestore()
          const docRef: DocumentReference = db.collection('users').doc(uid)
 
-         const validName: string | null = name ? name : null
-         pfp = pfp ? pfp : await getDefaultRandomProfilePicture()  //set the pfp url to the one sent from the client, or if is null, select a random one
+         const validName: string | null = name ? name : null //set the name to null if name is invalid
+         pfp = pfp ? pfp : await getDefaultRandomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
 
          await docRef.set({ //set the user data into the doc
             username: username,
             name: validName,
             pfp: pfp,
             bday: bday
-         });
+         })
          resolve(null) //return nothing
-      }).catch((error) => {
-         reject(error)
-      })
+      }).catch((error) => { reject(error) })
    })
 }
 
 async function createNode(uid: string, interests: string[]): Promise<null> {
-   //TODO: need fix
    return new Promise(async (resolve, reject) => {
       if (neo4j) {
-         const query = `MERGE (:User {name:"${uid}",interests:"${interests}"})`
+         const query = `MERGE (:User {name:'${uid}',interests:'${interests}'})`
          await neo4j.executeWrite(tx => tx.run(query))
          resolve(null)
-      } else
-         reject(new Error('server/driver-not-found'))
+      } else reject(new Error('server/driver-not-found'))
    })
 }
 
@@ -85,11 +79,8 @@ async function getDefaultRandomProfilePicture(): Promise<string> {
    const prefix: string = 'default/pfps'
 
    return new Promise((resolve, reject) => {
-      bucket.getFiles({ prefix: prefix }, (err, files) => { // get the files from the bucket with the defined prefix
-         if (err)
-            reject(err);
-
-         const urls: string[] = [];
+      bucket.getFiles({ prefix: prefix }, (_, files) => { // get the files from the bucket with the defined prefix
+         const urls: string[] = []
          if (files) {
             files.splice(0, 1) // remove the first file from the files array
 
@@ -102,13 +93,13 @@ async function getDefaultRandomProfilePicture(): Promise<string> {
                )
             ).then(results => {
                results.forEach(result => { // push the result of each promise (the generated URL) into the urls array
-                  urls.push(result[0]);
-               });
-               resolve(urls[Math.floor(Math.random() * urls.length)]); // resolve the promise with a random URL from the urls array
-            });
+                  urls.push(result[0])
+               })
+               resolve(urls[Math.floor(Math.random() * urls.length)]) // resolve the promise with a random URL from the urls array
+            })
          }
-      });
-   });
+      })
+   })
 }
 
 export default app

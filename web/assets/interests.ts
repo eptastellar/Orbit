@@ -1,4 +1,4 @@
-export const interests = [
+export const interests: string[] = [
    "ABC",
    "abc television network",
    "Acoustics",
