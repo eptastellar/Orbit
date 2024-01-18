@@ -1,8 +1,6 @@
 import neo4j from '@config/neo4j.config'
 
 export const supernova = async (user: string): Promise<string> => {
-
-   //DEFINING THE VARIABELS NEEDED TO WORK
    let startingPoint: string | undefined = user
    let friendList: Map<string, number> = new Map()
    let arrayFriends: Array<string> = []
@@ -12,45 +10,46 @@ export const supernova = async (user: string): Promise<string> => {
    let startingPointInterests: Array<string> = []
    let arrayInterests: Array<string> = []
 
+   //query to retrieve the starting user node
    let queryStartingPoint = `MATCH (u:User) WHERE u.name = "${startingPoint}" RETURN u`
+   //query to find friends connected to the starting user node
    let queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
 
-   //TODO: COMMENTA TUTTO SENNò NON CI CAPISCI NA SEGA
    return new Promise<string>(async (resolve, reject) => {
       if (neo4j) {
+         //retrieve the starting user node and its interests
          const resultStartingPoint = await neo4j.executeRead(tx => tx.run(queryStartingPoint))
          const startingNode = resultStartingPoint.records.map(row => row.get('u'))
-         //Salvo gli interessi del nodo di partenza
          startingPointInterests = startingNode.at(0).properties["interests"]
 
+         //retrieve friends of the starting user and calculate compatibility
          const result = await neo4j.executeRead(tx => tx.run(queryFriends))
          let results = result.records.map(row => row.get('t'))
          results.forEach(element => {
-            //console.log(element.properties["interests"])
             arrayInterests = []
             if (element.properties["interests"] !== undefined) {
                let interests: string = element.properties["interests"]
                let cleanInput = interests.slice(1, -1)
                arrayInterests = cleanInput.split(",")
             }
-            //Setto tutta la mappa con il nome del nodo e la loro compatibilità con il nodo principale
             friendList.set(element.properties["name"], checkInterestsCompatibility(startingPointInterests, arrayInterests))
          });
          arrayFriends = sortFriendsMap(friendList)
 
-         //itera finchè troverà amici collegati a quella persona, quando finisce esce dal ciclo senza restituire niente
+         //explore the network of friends until a suitable match is found
          while (friendList.size > 0) {
+            //TODO fixa i commenti
             //controlla se quella persona è già stata trovata dentro all'algoritmo almeno una volta, in caso negativo la aggiunge, in caso positivo salta all'amico dopo
             if (!friendListSearched.includes(arrayFriends[0])) {
                friendList.delete(arrayFriends[0])
                startingPoint = arrayFriends.shift()
                friendListSearched.push(startingPoint)
             } else continue
-            //QUERY PER GLI AMICI, restituisce tutti gli amici dell'utente U che avrà nome startingPoint
+
             queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
             const result1 = await neo4j.executeRead(tx => tx.run(queryFriends))
             results = result1.records.map(row => row.get('t'))
-            //TODO : Non mi sembra ancora scalabile, potrei semplicemente essere stanco, è da ricontrollare
+            //TODO : Non mi sembra ancora scalabile, è da ricontrollare
 
             //Itera attraverso tutti gli amici che sono stati trovati per quell'utente
             for await (let element of results) {
@@ -69,18 +68,14 @@ export const supernova = async (user: string): Promise<string> => {
                   //aggiunge alla lista di persone già cercate per ottimizzare l'algoritmo
                   alreadySearched.push(friend)
                }
-
             }
          }
          reject(new Error("Not Found"))
-      }
-      reject(new Error("Internal Server Error"))
+      } else reject(new Error("Internal Server Error"))
    })
-
-
-
 }
-//Controlla quanti interessi sono uguali tra il nodo di partenza e quello dell'amico da ricercare
+
+//calculate the number of shared interests between two users
 const checkInterestsCompatibility = (startingNode: Array<string>, friendToBeChecked: Array<string>) => {
    let compatibility: number = 0
    if (friendToBeChecked == undefined) friendToBeChecked = [""]
@@ -94,15 +89,16 @@ const checkInterestsCompatibility = (startingNode: Array<string>, friendToBeChec
    })
    return compatibility
 }
-//Questa funzione ritorna un array di stringhe sortato in base al numero associato alla stringa nella mappa
+
+//sort friends by compatibility score in descending order
 const sortFriendsMap = (friendsMap: Map<string, number>) => {
    let temp: Array<string> = []
    let tempNumbers: Array<number> = []
 
    friendsMap.forEach(check)
-   //Controlla se per ogni valore presente nella mappa trova un valore maggiore del suo, in caso negativo mette la stringa al primo posto e aggiunge all'array temporaneo il valore al primo posto, se sarà il valore minore lo mette in coda all'array temporaneo, se non è ne il minore ne il maggiore allora trova l'indice del valore maggiore del suo e si metterà al suo posto shiftando tutto l'array dopo di lui
+   //sort the map entries based on their associated numeric values
    function check(value: number, key: string, map: Map<string, number>) {
-      //TODO: FIXA L'ORDINE DI STA MERDA
+      //TODO: FIXA L'ORDINE
       if (value <= Math.max(...tempNumbers)) {
          tempNumbers.push(value)
          temp.push(key)
@@ -125,6 +121,7 @@ const sortFriendsMap = (friendsMap: Map<string, number>) => {
    return temp
 }
 
+//shift array elements to insert a new value at the given index
 function shiftArrays(tempNumbers: Array<number>, temp: Array<string>, index: number) {
    for (let i = temp.length; i >= index; i--) {
       tempNumbers[i + 1] = tempNumbers[i]
