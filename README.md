@@ -22,7 +22,7 @@ Orbit is a groundbreaking app developed by our team, designed to connect people 
 
 🔎 **Qr codes scanning**: Our primary feature is the ability for two individuals to become friends by scanning each other's QR codes. This unique approach eliminates the need for traditional friend requests or matching algorithms, providing a seamless and immediate connection.
 
-🌌 **Supernova:** But that's not all. With a supernova, Orbit occasionally matches users together randomly, creating unexpected friendships and fostering serendipitous encounters.
+🌌 **Supernova:** But that's not all. With a supernova, Orbit occasionally matches users together based on friends lists and interests, creating unexpected friendships and fostering serendipitous encounters.
 
 🔗 **Additional features**: Inside Orbit, users can post, chat, and form groups, much like other social media platforms. However, we've taken this concept a step further by making it more interactive and engaging. Users can initiate group chats for more focused conversations.
 
