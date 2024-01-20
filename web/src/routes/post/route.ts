@@ -1,11 +1,11 @@
-import { retrieveUserDataFromUID } from '@helpers/retriever';
-import { Request, Response, Router } from "express";
-import admin from 'firebase-admin';
-import { DocumentData, DocumentReference, Firestore } from 'firebase-admin/firestore';
+import { retrieveUserDataFromUID } from '@helpers/retriever'
+import { Request, Response, Router } from 'express'
+import admin from 'firebase-admin'
+import { DocumentData, DocumentReference, Firestore } from 'firebase-admin/firestore'
 
-const app: Router = Router();
+const app: Router = Router()
 
-app.post("/upload", async (req: Request, res: Response) => {
+app.post('/upload', async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const type: string = req.body.type
    const content: string = req.body.content
@@ -23,15 +23,15 @@ app.post("/upload", async (req: Request, res: Response) => {
    }).then(() => {
       res.json({ success: true, status: 201, post: docRef.id }) //return the post id
    })
-});
+})
 
-app.get("/download/:id", async (req: Request, res: Response) => { //get the specific post based from is id
-   const id: string = req.params.id;
+app.get('/download/:id', async (req: Request, res: Response) => { //get the specific post based from is id
+   const id: string = req.params.id
 
    const db: Firestore = admin.firestore()
    const docRef: DocumentReference = db.collection('posts').doc(id) //set the docRef to posts and id
 
-   const doc: DocumentData = await docRef.get();
+   const doc: DocumentData = await docRef.get()
    if (doc.exists) { //if the document exists
       const { username, name, pfp } = await retrieveUserDataFromUID(doc.data()?.owner) //retrive post owner informations
       const content: string = doc.data()?.content
@@ -53,6 +53,6 @@ app.get("/download/:id", async (req: Request, res: Response) => { //get the spec
       })
    } else
       res.json({ success: false, status: 404, message: 'resource/post-not-found' })
-});
+})
 
-export default app;
+export default app

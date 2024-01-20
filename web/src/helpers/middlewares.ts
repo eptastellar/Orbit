@@ -8,21 +8,21 @@ import { validateJWT } from './jwt'
 
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
    const authorization: string = req.headers.authorization!
-   const jwt: string = authorization.split('Bearer ')[1]
 
-   validateJWT(jwt).then((payload: JWTPayload) => { //validate if the token is signed
+   validateJWT(authorization).then((payload: JWTPayload) => { //validate if the token is signed
       firebase()
       const uid: string = payload.uid as string
       const db: Firestore = admin.firestore()
 
       const docRef: DocumentReference = db.collection('sessions').doc(uid)
+      const jwt: string = authorization.split('Bearer ')[1]
 
       docRef.get().then(async (snapshot: DocumentSnapshot) => {
          if (jwt == snapshot.data()?.token) { //check if the token is the same saved in firestore
             res.locals.uid = uid //save the uid of the user to manipulate only his data
             next()
          } else throw new Error('auth/invalid-token')
-      }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+      }).catch((error: Error) => { res.json({ success: false, status: 400, message: error.message }) })
    }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
 }
 

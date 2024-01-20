@@ -1,13 +1,12 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, Router } from 'express'
 
-const app: Router = Router();
+const app: Router = Router()
 
-app.get("/", (_: Request, res: Response) => {
+app.get('/', (_: Request, res: Response) => {
    res.json({
-      "uptime": process.uptime(),
-      "status": 200,
-      "platform": process.platform
-   });
-});
+      'uptime': process.uptime(),
+      'platform': process.platform
+   }).status(200)
+})
 
-export default app;
+export default app

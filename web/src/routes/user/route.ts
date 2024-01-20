@@ -1,13 +1,13 @@
-import neo4j from "@config/neo4j.config"
-import { retrieveUIDFromUsername, retrieveUserDataFromUID } from "@helpers/retriever"
-import { isValidLastDocId } from "@helpers/validate"
-import { Request, Response, Router } from "express"
+import neo4j from '@config/neo4j.config'
+import { retrieveUIDFromUsername, retrieveUserDataFromUID } from '@helpers/retriever'
+import { isValidLastDocId } from '@helpers/validate'
+import { Request, Response, Router } from 'express'
 import admin from 'firebase-admin'
-import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
+import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 const app: Router = Router()
 
-app.get("/:username", async (req: Request, res: Response) => {
+app.get('/:username', async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const username: string = req.params.username
 
@@ -43,37 +43,37 @@ app.get("/:username", async (req: Request, res: Response) => {
    })
 })
 
-app.get("/:username/posts", async (req: Request, res: Response) => {
-   const db: Firestore = admin.firestore();
-   const lastDocId: string = req.body.lastDocId; //retrieve the last fetched document
-   const incremental: number = 3;
+app.get('/:username/posts', async (req: Request, res: Response) => {
+   const db: Firestore = admin.firestore()
+   const lastDocId: string = req.body.lastDocId //retrieve the last fetched document
+   const incremental: number = 3
 
    isValidLastDocId(lastDocId).then(() => {
       retrieveUIDFromUsername(req.params.username).then(async (uid: string) => { //get the uid from the username
          getUserPosts(uid, lastDocId).then((fetch) => {
             res.json({ success: true, status: 200, posts: fetch.posts, lastDocId: fetch.lastDocId })
          }).catch((error) => { res.json({ success: false, status: 204, message: error.message }) })
-      }).catch((error) => { res.json({ success: false, status: 404, message: error.message }) });
+      }).catch((error) => { res.json({ success: false, status: 404, message: error.message }) })
    }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
-});
+})
 
 
 async function getFriendCount(uid: string): Promise<number> {
    return new Promise<number>(async (resolve, reject) => {
-      const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = "${uid}" RETURN t`
+      const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
       if (neo4j) {
          const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
          let friends = resultQueryFriends.records.map(row => row.get('t'))
          resolve(friends.length)
       }
-      reject(new Error("server/driver-not-found"))
+      reject(new Error('server/driver-not-found'))
    })
 }
 
 async function getPostCount(uid: string): Promise<number> { //get the snapshot size of all the posts where uid is equal to the owner
    const db: Firestore = admin.firestore()
 
-   const postsRef: Query = db.collection('posts').where("owner", "==", uid)
+   const postsRef: Query = db.collection('posts').where('owner', '==', uid)
    const snapshot: QuerySnapshot = await postsRef.get()
    return snapshot.size
 }
@@ -93,18 +93,18 @@ async function getUserPosts(uid: string, lastDocId: string): Promise<Fetch> {
       const db: Firestore = admin.firestore()
       const incremental: number = 3
 
-      let docRef: Query = db.collection("posts")
-         .where("owner", "==", uid)
-         .orderBy("createdAt", "desc")
-         .limit(incremental);
+      let docRef: Query = db.collection('posts')
+         .where('owner', '==', uid)
+         .orderBy('createdAt', 'desc')
+         .limit(incremental)
 
       if (lastDocId) {
          const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
-         docRef = docRef.startAfter(lastDoc);
+         docRef = docRef.startAfter(lastDoc)
       }
 
-      const snapshot: DocumentData = await docRef.get();
-      const { username, name, pfp } = await retrieveUserDataFromUID(uid); //get all the user data
+      const snapshot: DocumentData = await docRef.get()
+      const { username, name, pfp } = await retrieveUserDataFromUID(uid) //get all the user data
 
       const posts: DocumentData[] = snapshot.docs.map((doc: DocumentData) => ({ //map all the posts
          id: doc.id,
