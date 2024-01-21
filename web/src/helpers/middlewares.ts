@@ -18,7 +18,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
       const jwt: string = authorization.split('Bearer ')[1]
 
       docRef.get().then(async (snapshot: DocumentSnapshot) => {
-         if (jwt == snapshot.data()?.token) { //check if the token is the same saved in firestore
+         if (jwt == snapshot.data()?.jwt) { //check if the token is the same saved in firestore
             res.locals.uid = uid //save the uid of the user to manipulate only his data
             next()
          } else throw new Error('auth/invalid-token')
