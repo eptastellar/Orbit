@@ -21,8 +21,6 @@ import logoWhite256 from "./logos/white/256.png"
 import logoWhite512 from "./logos/white/512.png"
 import logoWhite64 from "./logos/white/64.png"
 
-import welcomeBg from "./welcome-bg.mp4"
-
 const logoBlack = {
    "64px": logoBlack64,
    "128px": logoBlack128,
@@ -50,6 +48,5 @@ export {
    passwordReset,
    privacyPolicy,
    supernovaAccepted,
-   supernovaRejected,
-   welcomeBg
+   supernovaRejected
 }

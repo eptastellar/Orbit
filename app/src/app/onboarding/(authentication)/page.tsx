@@ -1,10 +1,11 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+"use client"
 
-import { apple, google, welcomeBg } from "@/assets"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
+import { apple, google } from "@/assets"
 import { WelcomeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { Wrapper } from "@/hoc"
 
 type Views = "default" | "signin" | "signup"
 
@@ -12,7 +13,8 @@ const Welcome = () => {
    // Context hooks
    const { googleLogin } = useAuthContext()
 
-   const navigateTo = useNavigate()
+   // Next router for navigation
+   const router = useRouter()
 
    // Interaction states
    const [activeView, setActiveView] = useState<Views>("default")
@@ -34,13 +36,13 @@ const Welcome = () => {
                jwt: string
                username: string
             }
-            fetch(`${import.meta.env.VITE_API_URL}/auth/sign-in`, params)
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
                .then(({ success, jwt, username }: ResponseType) => {
                   if (success) {
                      localStorage.setItem("sessionToken", jwt)
-                     navigateTo(`/u/${username}`)
-                  } else navigateTo("/onboarding/profile")
+                     router.push(`/u/${username}`)
+                  } else router.push("/onboarding/profile")
                })
                .catch((error: any) => console.error(error))
                .finally(() => setGoogleLoading(false))
@@ -54,8 +56,8 @@ const Welcome = () => {
          <video
             className="absolute h-full w-full object-cover"
 
-            src={welcomeBg}
-            autoPlay loop muted
+            src="/welcome-bg.mp4"
+            autoPlay disablePictureInPicture loop muted playsInline preload="" unselectable="on"
          />
 
          <div className="absolute flex flex-col items-center justify-between h-full w-full p-8 bg-black/50">
@@ -92,7 +94,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => navigateTo("/onboarding/sign-in")}
+                        onClick={() => router.push("/onboarding/sign-in")}
                      />
                      <WelcomeButton
                         btnType="transparent"
@@ -115,7 +117,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => navigateTo("/onboarding/sign-up")}
+                        onClick={() => router.push("/onboarding/sign-up")}
                      />
                      <WelcomeButton
                         btnType="transparent"
@@ -130,4 +132,4 @@ const Welcome = () => {
    )
 }
 
-export default Wrapper({ children: <Welcome /> })
+export default Welcome

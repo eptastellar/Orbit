@@ -1,11 +1,13 @@
-import { useNavigate } from "react-router-dom"
+"use client"
+
+import Image from "next/image"
+import { useRouter } from "next/navigation"
 
 import { emailVerification } from "@/assets"
-import { Wrapper } from "@/hoc"
 
 const Verification = () => {
-   // Context hooks
-   const navigateTo = useNavigate()
+   // Next router for navigation
+   const router = useRouter()
 
    return (
       <div className="flex flex-col items-center justify-between h-full w-full px-8">
@@ -19,7 +21,7 @@ const Verification = () => {
          </div>
 
          <div className="flex flex-col center gap-8 w-full">
-            <img
+            <Image
                src={emailVerification}
                alt="Email sent illustration"
                className="w-3/4"
@@ -34,7 +36,7 @@ const Verification = () => {
          <button
             type="submit"
             className="w-full mb-12 py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-            onClick={() => navigateTo(0)}
+            onClick={() => router.refresh()}
          >
             Refresh
          </button>
@@ -42,4 +44,4 @@ const Verification = () => {
    )
 }
 
-export default Wrapper({ children: <Verification />, firebaseAuth: true, isConfirmPage: true })
+export default Verification

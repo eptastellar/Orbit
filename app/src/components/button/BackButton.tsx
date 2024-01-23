@@ -1,17 +1,17 @@
+import { useRouter } from "next/navigation"
 import { PiArrowLeft } from "react-icons/pi"
-import { useNavigate } from "react-router-dom"
 
 const BackButton = () => {
-   const navigateTo = useNavigate()
+   const router = useRouter()
 
    return (
-      <div
-         className="flex center gap-2 px-4 py-2 text-white bg-blue-7 rounded-md cursor-pointer"
-         onClick={() => navigateTo(-1)}
+      <button
+         className="flex gap-2 center px-4 py-2 text-white bg-blue-7 rounded-md cursor-pointer"
+         onClick={() => router.back()}
       >
          <PiArrowLeft />
          <p className="text-base font-semibold">Back</p>
-      </div>
+      </button>
    )
 }
 

@@ -1,16 +1,18 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 import { BackButton, Input, SpinnerText } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { Wrapper } from "@/hoc"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
 const Signup = () => {
    // Context hooks
    const { emailSignup } = useAuthContext()
 
-   const navigateTo = useNavigate()
+   // Next router for navigation
+   const router = useRouter()
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
@@ -30,7 +32,7 @@ const Signup = () => {
       setLoading(true)
 
       emailSignup(email, password)
-         .then(() => navigateTo("/onboarding/verification"))
+         .then(() => router.push("/onboarding/verification"))
          .catch((error: any) => setError(resolveFirebaseError(error.message)))
          .finally(() => setLoading(false))
    }
@@ -87,7 +89,7 @@ const Signup = () => {
                Already have an account? {" "}
                <span
                   className="font-bold text-white underline underline-offset-4 cursor-pointer"
-                  onClick={() => navigateTo("/onboarding/sign-in")}
+                  onClick={() => router.push("/onboarding/sign-in")}
                >
                   Sign in.
                </span>
@@ -101,4 +103,4 @@ const Signup = () => {
    )
 }
 
-export default Wrapper({ children: <Signup /> })
+export default Signup
