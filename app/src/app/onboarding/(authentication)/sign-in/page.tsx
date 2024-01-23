@@ -1,9 +1,10 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 import { BackButton, Input, SpinnerText } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { Wrapper } from "@/hoc"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 import { resolveServerError } from "@/libraries/serverErrors"
 
@@ -11,7 +12,8 @@ const Signin = () => {
    // Context hooks
    const { emailSignin } = useAuthContext()
 
-   const navigateTo = useNavigate()
+   // Next router for navigation
+   const router = useRouter()
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
@@ -39,16 +41,16 @@ const Signin = () => {
                jwt: string
                username: string
             }
-            fetch(`${import.meta.env.VITE_API_URL}/auth/sign-in`, params)
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
                .then(({ success, message, jwt, username }: ResponseType) => {
                   if (success) {
                      setError("")
 
                      localStorage.setItem("sessionToken", jwt)
-                     navigateTo(`/u/${username}`)
+                     router.push(`/u/${username}`)
                   } else if (message === "auth/user-not-signed-up")
-                     navigateTo("/onboarding/profile")
+                     router.push("/onboarding/profile")
                   else setError(resolveServerError(message))
                })
                .finally(() => setLoading(false))
@@ -92,7 +94,7 @@ const Signin = () => {
                      Did you {" "}
                      <span
                         className="text-white underline underline-offset-4 cursor-pointer"
-                        onClick={() => navigateTo("/onboarding/forgot-password")}
+                        onClick={() => router.push("/onboarding/forgot-password")}
                      >
                         forget your password?
                      </span>
@@ -113,7 +115,7 @@ const Signin = () => {
                Don't have an account? {" "}
                <span
                   className="font-bold text-white underline underline-offset-4 cursor-pointer"
-                  onClick={() => navigateTo("/onboarding/sign-up")}
+                  onClick={() => router.push("/onboarding/sign-up")}
                >
                   Sign up.
                </span>
@@ -127,4 +129,4 @@ const Signin = () => {
    )
 }
 
-export default Wrapper({ children: <Signin /> })
+export default Signin

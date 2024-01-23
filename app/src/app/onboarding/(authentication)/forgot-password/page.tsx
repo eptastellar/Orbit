@@ -1,8 +1,9 @@
+"use client"
+
 import { useState } from "react"
 
 import { BackButton, Input, SpinnerText } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { Wrapper } from "@/hoc"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
 const ForgotPassword = () => {
@@ -93,4 +94,4 @@ const ForgotPassword = () => {
    )
 }
 
-export default Wrapper({ children: <ForgotPassword /> })
+export default ForgotPassword

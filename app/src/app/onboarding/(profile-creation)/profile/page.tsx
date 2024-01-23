@@ -1,16 +1,18 @@
+"use client"
+
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { PiCameraPlus } from "react-icons/pi"
-import { useNavigate } from "react-router-dom"
 
 import { BackButton, Input, SpinnerText } from "@/components"
-import { Wrapper } from "@/hoc"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
+import Image from "next/image"
 
 const Profile = () => {
-   // Context hooks
-   const navigateTo = useNavigate()
+   // Next router for navigation
+   const router = useRouter()
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
@@ -47,6 +49,8 @@ const Profile = () => {
    }
 
    const updateUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (event.target.value.substring(1).match(/[^a-zA-Z0-9\_\-\.]/)) return
+
       if (!event.target.value.startsWith("@")) setUsername("@" + event.target.value)
       else setUsername(event.target.value)
    }
@@ -72,9 +76,9 @@ const Profile = () => {
       event.preventDefault()
 
       // Preliminary checks
-      if (!username) return setError("Input a username.")
+      if (!username) return setError("Fill in the username.")
       if (!birthdate[0] || !birthdate[1] || !birthdate[2] || birthdate[0].length !== 4)
-         return setError("Enter all birthdate fields.")
+         return setError("Fill in all birthdate fields.")
 
       const unixBirthdate = Math.floor(new Date(birthdate.join("/")).getTime() / 1000)
       if (!unixBirthdate) return setError("Invalid birthdate.")
@@ -94,7 +98,7 @@ const Profile = () => {
       }
 
       type ResponseType = { success: boolean, message: string }
-      fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up/validate`, params)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up/validate`, params)
          .then((response) => response.json())
          .then(({ success, message }: ResponseType) => {
             if (success) {
@@ -103,7 +107,7 @@ const Profile = () => {
                // Set temporary user localStorage values
                localStorage.setItem("username", username)
                localStorage.setItem("birthdate", birthdate.join("/"))
-               navigateTo("/onboarding/interests")
+               router.push("/onboarding/interests")
             } else setError(resolveServerError(message))
          })
          .finally(() => setLoading(false))
@@ -132,11 +136,10 @@ const Profile = () => {
                }}
             >
                <div className="flex center h-full w-full bg-gray-7 rounded-full overflow-hidden">
-                  {pfpUrl ? (
-                     <img src={pfpUrl} alt="Profile picture" className="h-full w-full object-cover" />
-                  ) : (
-                     <PiCameraPlus className="text-white text-5xl" />
-                  )}
+                  {pfpUrl
+                     ? <Image src={pfpUrl} alt="Profile picture" className="h-full w-full object-cover" />
+                     : <PiCameraPlus className="text-white text-5xl" />
+                  }
                </div>
                <input
                   type="file"
@@ -209,4 +212,4 @@ const Profile = () => {
    )
 }
 
-export default Wrapper({ children: <Profile />, firebaseAuth: true })
+export default Profile

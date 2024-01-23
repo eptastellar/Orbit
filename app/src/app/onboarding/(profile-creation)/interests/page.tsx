@@ -1,16 +1,18 @@
+"use client"
+
+import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
 
 import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { Wrapper } from "@/hoc"
 import { resolveServerError } from "@/libraries/serverErrors"
 
 const Interests = () => {
    // Context hooks
    const { getUserId } = useAuthContext()
 
-   const navigateTo = useNavigate()
+   // Next router for navigation
+   const router = useRouter()
 
    // Fetching and async states
    const [fetching, setFetching] = useState<boolean>(true)
@@ -65,10 +67,10 @@ const Interests = () => {
       const birthdate = localStorage.getItem("birthdate")
 
       if (!username || !birthdate)
-         return navigateTo("/onboarding/profile")
+         return router.push("/onboarding/profile")
 
       const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
-      if (!unixBirthdate) return navigateTo("/onboarding/profile")
+      if (!unixBirthdate) return router.push("/onboarding/profile")
 
       setLoading(true)
 
@@ -95,7 +97,7 @@ const Interests = () => {
          jwt: string
          username: string
       }
-      fetch(`${import.meta.env.VITE_API_URL}/auth/sign-up`, params)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`, params)
          .then((response) => response.json())
          .then(({ success, message, jwt, username }: ResponseType) => {
             if (success) {
@@ -107,7 +109,7 @@ const Interests = () => {
                localStorage.removeItem("profilePicture")
                localStorage.removeItem("username")
                localStorage.removeItem("birthdate")
-               navigateTo(`/u/${username}`)
+               router.push(`/u/${username}`)
             } else setError(resolveServerError(message))
          })
          .finally(() => setLoading(false))
@@ -118,7 +120,7 @@ const Interests = () => {
       const params: RequestInit = { method: "GET" }
 
       type ResponseType = { interests: string[] }
-      fetch(`${import.meta.env.VITE_API_URL}/interests`, params)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/interests`, params)
          .then((response) => response.json())
          .then(({ interests }: ResponseType) => {
             setInterestsList(interests)
@@ -200,7 +202,7 @@ const Interests = () => {
                When creating an account, you accept <br />
                <span
                   className="text-semibold text-white underline underline-offset-4 cursor-pointer"
-                  onClick={() => navigateTo("/terms-conditions")}
+                  onClick={() => router.push("/terms-conditions")}
                >
                   Orbit’s Terms & Conditions
                </span>.
@@ -214,4 +216,4 @@ const Interests = () => {
    )
 }
 
-export default Wrapper({ children: <Interests />, firebaseAuth: true })
+export default Interests
