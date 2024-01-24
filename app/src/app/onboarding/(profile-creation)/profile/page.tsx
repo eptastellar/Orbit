@@ -137,7 +137,7 @@ const Profile = () => {
             >
                <div className="flex center h-full w-full bg-gray-7 rounded-full overflow-hidden">
                   {pfpUrl
-                     ? <Image src={pfpUrl} alt="Profile picture" className="h-full w-full object-cover" />
+                     ? <Image src={pfpUrl} alt="Profile picture" height={128} width={128} className="h-full w-full object-cover" />
                      : <PiCameraPlus className="text-white text-5xl" />
                   }
                </div>
