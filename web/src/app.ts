@@ -1,5 +1,4 @@
-import deleteMessages from '@cron-jobs/deleteMessages'
-import keepAliveNeo from '@cron-jobs/keepAliveNeo'
+import keepAliveNeo from '@cron-jobs/keep-alive-neo'
 import { checkIfSessionTokenIsValid, checkIfcronSecretIsValid } from '@helpers/middlewares'
 import signin from '@routes/auth/sign-in/route'
 import signup from '@routes/auth/sign-up/route'
@@ -26,10 +25,9 @@ app.use('/user', checkIfSessionTokenIsValid, user)
 app.use('/home', checkIfSessionTokenIsValid, home)
 app.use('/post', checkIfSessionTokenIsValid, post)
 
-app.use('/cron/delete-messages', checkIfcronSecretIsValid, deleteMessages)
 app.use('/cron/keep-alive-neo', checkIfcronSecretIsValid, keepAliveNeo)
 
 app.set('view engine', 'ejs')
 app.use('*', (_: Request, res: Response) => { res.render('404') })
 
-app.listen(process.env.PORT, () => { console.log(`[⚡server]: server is running on port: http://localhost:${process.env.PORT}`) }) //TODO REMOVE IN PRODUCTION
+app.listen(process.env.PORT, () => { console.log(`⚡[server]: server is running on port: http://localhost:${process.env.PORT}`) }) //TODO REMOVE IN PRODUCTION

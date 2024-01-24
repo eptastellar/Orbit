@@ -12,7 +12,7 @@
       "baseUrl": ".",
       "paths": {
          "@assets/*": [
-            "assets/*"
+            "src/assets/*"
          ],
          "@routes/*": [
             "src/routes/*"
@@ -27,7 +27,7 @@
             "src/algorithms/*"
          ],
          "@cron-jobs/*": [
-            "cron-jobs/*"
+            "src/cron-jobs/*"
          ],
       }
    },
