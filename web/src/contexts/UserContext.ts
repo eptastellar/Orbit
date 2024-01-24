@@ -54,3 +54,18 @@ export async function getMeteorCount(uid: string): Promise<number> {
    //TODO
    return 0
 }
+
+export async function getFriendList(uid: string): Promise<string[]> {
+   let tempArray: string[] = []
+   return new Promise(async (resolve, reject) => {
+      if (neo4j) {
+         const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
+         const resultMap = await neo4j.executeRead(tx => tx.run(queryFriends))
+         let uids = resultMap.records.map(row => row.get('p'))
+         uids.forEach(element => {
+            tempArray.push(element.properties['name'])
+         })
+         resolve(tempArray)
+      } reject(new Error('server/driver-not-found'))
+   })
+}

@@ -1,6 +1,8 @@
+import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
 import signin from '@routes/auth/sign-in/route'
 import signup from '@routes/auth/sign-up/route'
 import healthz from '@routes/healthz/route'
+import home from '@routes/home/route'
 import interests from '@routes/interests/route'
 import user from '@routes/user/route'
 import cors from 'cors'
@@ -17,7 +19,8 @@ app.use('/', healthz)
 app.use('/auth/sign-in', signin)
 app.use('/auth/sign-up', signup)
 app.use('/interests', interests)
-app.use('/u', user)
+app.use('/home', checkIfSessionTokenIsValid, home)
+app.use('/u', checkIfSessionTokenIsValid, user)
 
 app.set('view engine', 'ejs')
 app.use('*', (_: Request, res: Response) => { res.render('404') })
