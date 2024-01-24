@@ -36,6 +36,7 @@ const ForgotPassword = () => {
             setError(resolveFirebaseError(error.message))
             setSuccess(false)
          })
+         .finally(() => setLoading(false))
    }
 
    return (
