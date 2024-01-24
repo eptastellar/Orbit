@@ -4,7 +4,7 @@ import { Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 firebase()
 const db: Firestore = firestore()
-
+//TODO: add text and image control for harmful behavior
 export function isValidBday(bday: number): Promise<null> {
    return new Promise((resolve, reject) => {
       if (!bday || bday > Date.now() / 1000 || bday < -2208988800)
@@ -62,5 +62,13 @@ export async function isValidLastDocId(lastDocId: string): Promise<null> {
             resolve(null)
          else reject(new Error('validation/invalid-last-doc-id'))
       } else resolve(null)
+   })
+}
+
+export async function isValidContentType(type: string): Promise<null> {
+   return new Promise((resolve, reject) => {
+      if (type == "text" || type == "image" || type == "audio")
+         resolve(null)
+      reject(new Error('validation/invalid-content-type'))
    })
 }

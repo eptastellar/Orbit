@@ -1,7 +1,7 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { retrieveUserDataFromUID } from '@contexts/UserContext'
 import { PostFetch } from '@local-types/index'
-import { DocumentData, Query } from 'firebase-admin/firestore'
+import { DocumentData, DocumentReference, Query } from 'firebase-admin/firestore'
 
 firebase()
 const db = firestore()
@@ -73,5 +73,22 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
             resolve(fetch)
          } else reject(new Error('resources/no-content'))
       })
+   })
+}
+
+export async function uploadPost(uid: string, type: string, content: string): Promise<string> {
+   return new Promise((resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('posts').doc() //set the docRef to posts
+
+         docRef.set({ //set the post information in firestore
+            owner: uid,
+            type: type,
+            content: content,
+            likes_number: 0,
+            createdAt: Date.now() //unix format
+         })
+         resolve(docRef.id)
+      } catch (error) { reject(new Error('server/upload-failed')) }
    })
 }
