@@ -32,6 +32,9 @@
          "@cron-jobs/*": [
             "src/cron-jobs/*"
          ],
+         "@local-types/*": [
+            "src/types/*"
+         ]
       }
    },
    "ts-node": {
