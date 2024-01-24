@@ -23,3 +23,4 @@ export function firebase(): void {
 }
 
 export function firestore(): Firestore { return admin.firestore() }
+export function firestorage() { return admin.storage().bucket() }

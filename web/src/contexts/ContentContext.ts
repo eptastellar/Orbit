@@ -1,10 +1,12 @@
-import admin from 'firebase-admin'
+import { firebase, firestorage } from '@config/firebase-admin.config'
+
+firebase()
+const bucket = firestorage()
 
 export async function randomProfilePicture(): Promise<string> {
-   const bucket = admin.storage().bucket()
    const prefix: string = 'default/images'
 
-   return new Promise((resolve, reject) => {
+   return new Promise((resolve, _) => {
       bucket.getFiles({ prefix: prefix }, (_, files) => { // get the files from the bucket with the defined prefix
          const urls: string[] = []
          if (files) {

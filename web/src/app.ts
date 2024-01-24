@@ -1,6 +1,7 @@
 import signin from '@routes/auth/sign-in/route'
 import signup from '@routes/auth/sign-up/route'
 import healthz from '@routes/healthz/route'
+import interests from '@routes/interests/route'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express, { Express, Request, Response } from 'express'
@@ -14,6 +15,7 @@ app.use(express.json())
 app.use('/', healthz)
 app.use('/auth/sign-in', signin)
 app.use('/auth/sign-up', signup)
+app.use('/interests', interests)
 
 app.set('view engine', 'ejs')
 app.use('*', (_: Request, res: Response) => { res.render('404') })

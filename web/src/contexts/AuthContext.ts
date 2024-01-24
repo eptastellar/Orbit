@@ -121,15 +121,17 @@ export async function createDoc(uid: string, username: string, pfp: string, bday
          const name: string = username.substring(1)
          const docRef: DocumentReference = db.collection('users').doc(uid)
 
-         pfp = pfp ? pfp : await randomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
+         if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
+            pfp = pfp ? pfp : await randomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
 
-         await docRef.set({ //set the user data into the doc
-            username: username,
-            name: name,
-            pfp: pfp,
-            bday: bday
-         })
-         resolve(null) //return nothing
+            await docRef.set({ //set the user data into the doc
+               username: username,
+               name: name,
+               pfp: pfp,
+               bday: bday
+            })
+            resolve(null) //return nothing
+         } else reject(new Error('auth/user-already-exists'))
       }).catch((error) => { reject(error) })
    })
 }
