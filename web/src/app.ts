@@ -4,6 +4,7 @@ import signup from '@routes/auth/sign-up/route'
 import healthz from '@routes/healthz/route'
 import home from '@routes/home/route'
 import interests from '@routes/interests/route'
+import post from '@routes/post/route'
 import user from '@routes/user/route'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -21,8 +22,9 @@ app.use('/auth/sign-up', signup)
 app.use('/interests', interests)
 app.use('/home', checkIfSessionTokenIsValid, home)
 app.use('/u', checkIfSessionTokenIsValid, user)
+app.use('/p', checkIfSessionTokenIsValid, post)
 
 app.set('view engine', 'ejs')
 app.use('*', (_: Request, res: Response) => { res.render('404') })
 
-app.listen(process.env.PORT, () => { console.log(`⚡[server]: server is running on port: http://localhost:${process.env.PORT}`) }) //TODO REMOVE IN PRODUCTION
+app.listen(process.env.PORT, () => { console.log(`⚡[server]: server is running on port: http://localhost:${process.env.PORT}`) })
