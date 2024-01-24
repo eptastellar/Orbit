@@ -1,10 +1,6 @@
-import neo4j from '@config/neo4j.config'
-import { createNewSession } from '@helpers/jwt'
-import { checkIfAccessTokenIsValid } from '@helpers/middlewares'
+import { checkIfAccessTokenIsValid, createDoc, createNewSession, createNode } from '@contexts/AuthContext'
 import { areValidInterests, isValidBday, isValidUsername } from '@helpers/validate'
 import { Request, Response, Router } from 'express'
-import admin from 'firebase-admin'
-import { DocumentReference, Firestore } from 'firebase-admin/firestore'
 
 const app: Router = Router()
 
@@ -21,85 +17,30 @@ app.post('/', (req: Request, res: Response) => {
       areValidInterests(interests)
    ]).then(() => {
       checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
-         const name: string = username.substring(1)
-         createDoc(uid, username, name, pfp, bday).then(() => { //create a new doc in /users
-            createNode(uid, interests).then(() => { //create a new node in neo4j
+         Promise.all([
+            createDoc(uid, username, pfp, bday), //create a new doc in /users
+            createNode(uid, interests) //create a new node in neo4j
+         ]) //return the session jwt and the username of the user for the frontend side
+            .then(() => {
                createNewSession(uid).then((jwt: string) => {
-                  res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
+                  res.status(201).json({ success: true, jwt: jwt, username: username })
                })
-            }).catch((error) => { res.json({ success: false, status: 500, message: error.message }) })
-         }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
-      }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
-   }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+            })
+            .catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
+   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 })
 
 app.post('/validate', (req: Request, res: Response) => {
    const username: string = req.body.username
    const bday: number = req.body.bday
 
-   isValidUsername(username).then(() => {
-      isValidBday(bday).then(() => {
-         res.json({ success: true, status: 200 })
-      }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
-   }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+   Promise.all([
+      isValidUsername(username),
+      isValidBday(bday)
+   ])
+      .then(() => { res.status(200).json({ success: true }) })
+      .catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 })
-
-async function createDoc(uid: string, username: string, name: string, pfp: string, bday: number): Promise<null> {
-   return new Promise((resolve, reject) => {
-      isValidUsername(username).then(async () => {
-         const db: Firestore = admin.firestore()
-         const docRef: DocumentReference = db.collection('users').doc(uid)
-
-         const validName: string | null = name ? name : null //set the name to null if name is invalid
-         pfp = pfp ? pfp : await getDefaultRandomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
-
-         await docRef.set({ //set the user data into the doc
-            username: username,
-            name: validName,
-            pfp: pfp,
-            bday: bday
-         })
-         resolve(null) //return nothing
-      }).catch((error) => { reject(error) })
-   })
-}
-
-async function createNode(uid: string, interests: string[]): Promise<null> {
-   return new Promise(async (resolve, reject) => {
-      if (neo4j) {
-         const query = `MERGE (:User {name:'${uid}',interests:'${interests}'})`
-         await neo4j.executeWrite(tx => tx.run(query))
-         resolve(null)
-      } else reject(new Error('server/driver-not-found'))
-   })
-}
-
-async function getDefaultRandomProfilePicture(): Promise<string> {
-   const bucket = admin.storage().bucket()
-   const prefix: string = 'default/pfps'
-
-   return new Promise((resolve, reject) => {
-      bucket.getFiles({ prefix: prefix }, (_, files) => { // get the files from the bucket with the defined prefix
-         const urls: string[] = []
-         if (files) {
-            files.splice(0, 1) // remove the first file from the files array
-
-            Promise.all(
-               files.map(file => // map over the files array and create a new promise for each file
-                  file.getSignedUrl({
-                     action: 'read',
-                     expires: Date.now() + 30 * 24 * 60 * 60 * 1000 * 12 * 10, // expiration set to 10 years from now
-                  })
-               )
-            ).then(results => {
-               results.forEach(result => { // push the result of each promise (the generated URL) into the urls array
-                  urls.push(result[0])
-               })
-               resolve(urls[Math.floor(Math.random() * urls.length)]) // resolve the promise with a random URL from the urls array
-            })
-         }
-      })
-   })
-}
 
 export default app
