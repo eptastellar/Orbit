@@ -1,6 +1,10 @@
-import { firebase, firestorage } from '@config/firebase-admin.config'
+import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
+import { retrieveUserDataFromUID } from '@contexts/UserContext'
+import { PostFetch } from '@local-types/index'
+import { DocumentData, Query } from 'firebase-admin/firestore'
 
 firebase()
+const db = firestore()
 const bucket = firestorage()
 
 export async function randomProfilePicture(): Promise<string> {
@@ -26,6 +30,48 @@ export async function randomProfilePicture(): Promise<string> {
                resolve(urls[Math.floor(Math.random() * urls.length)]) // resolve the promise with a random URL from the urls array
             })
          }
+      })
+   })
+}
+
+export async function fetchPosts(uids: string[], lastDocId: string): Promise<PostFetch> {
+   const limit: number = 3
+
+   return new Promise(async (resolve, reject) => {
+      uids.forEach(async (uid: string) => {
+         let docRef: Query = db.collection('posts')
+            .where('owner', '==', uid)
+            .orderBy('createdAt', 'desc')
+            .limit(limit)
+
+         if (lastDocId) {
+            const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
+            docRef = docRef.startAfter(lastDoc)
+         }
+
+         const snapshot: DocumentData = await docRef.get()
+         const { username, name, pfp } = await retrieveUserDataFromUID(uid) //get all the user data
+
+         //TODO: fetch comments
+         const posts: DocumentData[] = snapshot.docs.map((doc: DocumentData) => ({ //map all the posts
+            id: doc.id,
+            creation: doc.createTime.seconds,
+            type: doc.data().type,
+            content: doc.data().content,
+            likes_number: doc.data().likes_number,
+
+            user_data: {
+               username: username,
+               name: name,
+               pfp: pfp,
+            },
+         }))
+
+         if (posts.length > 0) {
+            const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+            const fetch: PostFetch = { posts, lastDocId }
+            resolve(fetch)
+         } else reject(new Error('resources/no-content'))
       })
    })
 }
