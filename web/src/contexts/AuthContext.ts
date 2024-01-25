@@ -25,8 +25,8 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
             res.locals.uid = uid //save the uid of the user to manipulate only his data
             next()
          } else throw new Error('auth/invalid-token')
-      }).catch((error: Error) => { res.json({ success: false, status: 400, message: error.message }) })
-   }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ success: false, message: error.message }) })
+   }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
 }
 
 export async function checkIfAccessTokenIsValid(authorization: string): Promise<string> {
