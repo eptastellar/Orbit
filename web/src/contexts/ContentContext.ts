@@ -34,48 +34,46 @@ export async function randomProfilePicture(): Promise<string> {
    })
 }
 
-export async function fetchPosts(friendList: string[], lastDocId: string): Promise<PostFetch> {
-   //TODO Bisogna sistemare il fatto che se ci sono meno post di quanti vuole il limite allora ritorni comunque quello che ha preso finora
+export async function fetchPosts(uids: string[], lastDocId: string): Promise<PostFetch> {
+   const limit: number = 3
+
    return new Promise(async (resolve, reject) => {
-      const incremental: number = 3
-      let posts: DocumentData[] = []
+      let docRef: Query = db.collection('posts')
+         .where('owner', 'in', uids)
+         .orderBy('createdAt', 'desc')
+         .limit(limit)
 
-      friendList.forEach(async (friendId: string) => {
-         let docRef: Query = db.collection('posts')
-            .where('owner', '==', friendId)
-            .orderBy('createdAt', 'desc')
-            .limit(incremental - posts.length)
+      if (lastDocId) {
+         const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
+         docRef = docRef.startAfter(lastDoc)
+      }
 
-         if (lastDocId) {
-            const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
-            docRef = docRef.startAfter(lastDoc)
-         }
+      const snapshot: DocumentData = await docRef.get()
 
-         const snapshot: DocumentData = await docRef.get()
-         const { username, name, pfp } = await retrieveUserDataFromUID(friendId) //get all the user data
-
-         posts.push(snapshot.docs.map((doc: DocumentData) => ({ //map all the posts
+      const posts: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+         const { username, name, pfp } = await retrieveUserDataFromUID(doc.data().owner)
+         return {
             id: doc.id,
             creation: doc.createTime.seconds,
             type: doc.data().type,
             content: doc.data().content,
             likes_number: doc.data().likes_number,
-
             user_data: {
                username: username,
                name: name,
                pfp: pfp,
             },
-         })))
-
-         if (posts.length == 0) {
-            reject(new Error('resource/no-content'))
-         } else if (posts.length == incremental - 1) {
-            const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-            const fetch: PostFetch = { posts, lastDocId }
-            resolve(fetch)
          }
-      })
+      }))
+
+      console.log(posts);
+
+      if (posts.length > 0) {
+         const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+         const fetch: PostFetch = { posts, lastDocId }
+         resolve(fetch)
+      } else
+         reject(new Error('resources/no-content'))
    })
 }
 
