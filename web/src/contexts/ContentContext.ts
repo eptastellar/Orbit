@@ -34,15 +34,17 @@ export async function randomProfilePicture(): Promise<string> {
    })
 }
 
-export async function fetchPosts(uids: string[], lastDocId: string): Promise<PostFetch> {
-   const limit: number = 3
-
+export async function fetchPosts(friendList: string[], lastDocId: string): Promise<PostFetch> {
+   //TODO Bisogna sistemare il fatto che se ci sono meno post di quanti vuole il limite allora ritorni comunque quello che ha preso finora
    return new Promise(async (resolve, reject) => {
-      uids.forEach(async (uid: string) => {
+      const incremental: number = 3
+      let posts: DocumentData[] = []
+
+      friendList.forEach(async (friendId: string) => {
          let docRef: Query = db.collection('posts')
-            .where('owner', '==', uid)
+            .where('owner', '==', friendId)
             .orderBy('createdAt', 'desc')
-            .limit(limit)
+            .limit(incremental - posts.length)
 
          if (lastDocId) {
             const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
@@ -50,10 +52,9 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
          }
 
          const snapshot: DocumentData = await docRef.get()
-         const { username, name, pfp } = await retrieveUserDataFromUID(uid) //get all the user data
+         const { username, name, pfp } = await retrieveUserDataFromUID(friendId) //get all the user data
 
-         //TODO: fetch comments
-         const posts: DocumentData[] = snapshot.docs.map((doc: DocumentData) => ({ //map all the posts
+         posts.push(snapshot.docs.map((doc: DocumentData) => ({ //map all the posts
             id: doc.id,
             creation: doc.createTime.seconds,
             type: doc.data().type,
@@ -65,13 +66,15 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
                name: name,
                pfp: pfp,
             },
-         }))
+         })))
 
-         if (posts.length > 0) {
+         if (posts.length == 0) {
+            reject(new Error('resource/no-content'))
+         } else if (posts.length == incremental - 1) {
             const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
             const fetch: PostFetch = { posts, lastDocId }
             resolve(fetch)
-         } else reject(new Error('resources/no-content'))
+         }
       })
    })
 }
