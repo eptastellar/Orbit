@@ -21,7 +21,7 @@ const AuthenticationRules = ({ children }: { children: React.ReactNode }) => {
          router.push("/onboarding/verification")
       else if (currentUser) router.push("/onboarding/profile")
       else setLoading(false)
-   }, [currentUser])
+   }, [])
 
    return loading ? <LoadingOverlay /> : children
 }

@@ -21,7 +21,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
       if (!currentUser || !currentUser.emailVerified || !sessionToken)
          router.push("/onboarding")
       else setLoading(false)
-   }, [currentUser])
+   }, [])
 
    return loading ? <LoadingOverlay /> : (
       <div className="h-screen w-screen bg-black">

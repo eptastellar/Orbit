@@ -21,7 +21,7 @@ const VerificationRules = ({ children }: { children: React.ReactNode }) => {
          router.push("/onboarding/profile")
       else if (!currentUser) router.push("/onboarding")
       else setLoading(false)
-   }, [currentUser])
+   }, [])
 
    return loading ? <LoadingOverlay /> : children
 }

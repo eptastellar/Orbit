@@ -21,7 +21,7 @@ const ProfileCreationRules = ({ children }: { children: React.ReactNode }) => {
          router.push("/onboarding/verification")
       else if (!currentUser) router.push("/onboarding")
       else setLoading(false)
-   }, [currentUser])
+   }, [])
 
    return loading ? <LoadingOverlay /> : children
 }
