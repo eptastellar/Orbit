@@ -10,11 +10,15 @@ export const resolveServerError = (error: string): string => {
       resolvedError = "Email address not verified. Check your inbox."
    else if (error.includes("auth/user-not-signed-up"))
       resolvedError = "Profile not created."
+   else if (error.includes("auth/user-already-exists"))
+      resolvedError = "A profile has already been created with this account."
    // Validation errors
    else if (error.includes("validation/username-too-long"))
       resolvedError = "Username must have 24 characters at most."
    else if (error.includes("validation/username-too-short"))
       resolvedError = "Username must have at least 6 characters."
+   else if (error.includes("validation/invalid-content-type"))
+      resolvedError = "The specified post type is not valid."
    else if (error.includes("validation/invalid-username"))
       resolvedError = "Username must only contain letters, numbers or the following symbols [. - _]."
    else if (error.includes("validation/username-already-in-use"))
