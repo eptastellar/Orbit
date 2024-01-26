@@ -1,5 +1,5 @@
 import { firebase } from '@config/firebase-admin.config'
-import neo4j from '@config/neo4j.config'
+import { neo } from '@config/neo4j.config'
 import { randomProfilePicture } from '@contexts/ContentContext'
 import { isValidUsername } from '@helpers/validate'
 import express, { NextFunction } from 'express'
@@ -7,8 +7,10 @@ import admin, { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from 'firebase-admin/firestore'
 import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier'
 import { JWTPayload, SignJWT, jwtVerify } from 'jose'
+import { Session } from 'neo4j-driver'
 
 firebase()
+const neo4j: Session = neo()
 const db: Firestore = firestore()
 
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
