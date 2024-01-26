@@ -1,9 +1,6 @@
-import { createNewSession } from '@helpers/jwt'
-import { checkIfAccessTokenIsValid } from '@helpers/middlewares'
-import { retrieveUserDataFromUID } from '@helpers/retriever'
+import { checkIfAccessTokenIsValid, checkIfDocumentExists, createNewSession } from '@contexts/AuthContext'
+import { retrieveUserDataFromUID } from '@contexts/UserContext'
 import { Request, Response, Router } from 'express'
-import admin from 'firebase-admin'
-import { DocumentData, DocumentReference, Firestore } from 'firebase-admin/firestore'
 
 const app: Router = Router()
 
@@ -15,24 +12,11 @@ app.get('/', (req: Request, res: Response) => {
          createNewSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
             retrieveUserDataFromUID(uid).then((promise) => {
                const username: string = promise.username
-               res.json({ success: true, status: 200, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
+               res.status(202).json({ success: true, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
             })
          })
-      }).catch((error) => { res.json({ success: false, status: 400, message: error.message }) })
-   }).catch((error) => { res.json({ success: false, status: 401, message: error.message }) })
+      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+   }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
 })
-
-async function checkIfDocumentExists(uid: string): Promise<null> {
-   return new Promise((resolve, reject) => {
-      const db: Firestore = admin.firestore()
-      const docRef: DocumentReference = db.collection('users').doc(uid)
-
-      docRef.get().then((doc: DocumentData) => {
-         if (doc.exists)
-            resolve(null)
-         else reject(new Error('auth/user-not-signed-up')) //if the document doesn't exists in firestore
-      }).catch(() => { reject(new Error('auth/user-not-signed-up')) }) //if the document doesn't exists in firestore
-   })
-}
 
 export default app

@@ -1,7 +1,9 @@
 import { interests } from '@assets/interests'
-import { firebase } from '@config/firebase-admin.config'
-import admin from 'firebase-admin'
+import { firebase, firestore } from '@config/firebase-admin.config'
 import { Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
+
+firebase()
+const db: Firestore = firestore()
 
 export function isValidBday(bday: number): Promise<null> {
    return new Promise((resolve, reject) => {
@@ -17,8 +19,6 @@ export function isValidBday(bday: number): Promise<null> {
 
 export async function isValidUsername(username: string): Promise<null> {
    return new Promise((resolve, reject) => {
-      firebase()
-      const db: Firestore = admin.firestore()
       const regex: RegExp = /[^a-zA-Z0-9\_\-\.]/
 
       if (!username || !username.startsWith('@') || username.substring(1).match(regex)) //check if the username i approved by the regex
@@ -55,8 +55,6 @@ export async function areValidInterests(interestsList: string[]): Promise<null> 
 
 export async function isValidLastDocId(lastDocId: string): Promise<null> {
    return new Promise(async (resolve, reject) => {
-      const db: Firestore = admin.firestore()
-
       if (lastDocId) {
          const docRef = await db.collection('posts').doc(lastDocId).get()
 

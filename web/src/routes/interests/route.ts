@@ -4,7 +4,7 @@ import { Request, Response, Router } from 'express'
 const app: Router = Router()
 
 app.get('/', (_: Request, res: Response) => {
-   res.json({ success: true, status: 200, interests })
+   res.status(200).json({ success: true, interests })
 })
 
 export default app

@@ -1,13 +1,13 @@
+import admin from 'firebase-admin'
 import { ServiceAccount, cert, getApps, initializeApp } from 'firebase-admin/app'
+import { Firestore } from 'firebase-admin/firestore'
 
 export function firebase(): void {
-   const privateKey = process.env.FIREBASE_PRIVATE_KEY
+   const privateKey: string = process.env.FIREBASE_PRIVATE_KEY!
 
    if (privateKey) {
-      const formattedPrivateKey: string = formatPrivateKey(privateKey)
-
       const firebaseAccount: ServiceAccount = {
-         privateKey: formattedPrivateKey,
+         privateKey: privateKey.replace(/\\n/g, '\n'),
          projectId: process.env.FIREBASE_PROJECT_ID,
          clientEmail: process.env.FIREBASE_CLIENT_EMAIL
       }
@@ -22,6 +22,5 @@ export function firebase(): void {
    }
 }
 
-function formatPrivateKey(key: string): string {
-   return key.replace(/\\n/g, '\n')
-}
+export function firestore(): Firestore { return admin.firestore() }
+export function firestorage() { return admin.storage().bucket() }

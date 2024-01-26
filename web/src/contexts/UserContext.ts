@@ -28,3 +28,28 @@ export async function retrieveUIDFromUsername(username: string): Promise<string>
       })
    })
 }
+
+// export async function getFriendCount(uid: string): Promise<number> {
+//    return new Promise<number>(async (resolve, reject) => {
+//       const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
+//       if (neo4j) {
+//          const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
+//          let friends = resultQueryFriends.records.map(row => row.get('t'))
+//          resolve(friends.length)
+//       }
+//       reject(new Error('server/driver-not-found'))
+//    })
+// }
+
+// export async function getPostCount(uid: string): Promise<number> { //get the snapshot size of all the posts where uid is equal to the owner
+//    const db: Firestore = admin.firestore()
+
+//    const postsRef: Query = db.collection('posts').where('owner', '==', uid)
+//    const snapshot: QuerySnapshot = await postsRef.get()
+//    return snapshot.size
+// }
+
+// export async function getMeteorCount(uid: string): Promise<number> {
+//    //TODO
+//    return 0
+// }
