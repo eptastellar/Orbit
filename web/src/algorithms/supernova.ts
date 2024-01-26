@@ -1,4 +1,7 @@
-import neo4j from '@config/neo4j.config'
+import { neo } from '@config/neo4j.config'
+import { Session } from 'neo4j-driver'
+
+const neo4j: Session = neo()
 
 export const supernova = async (user: string): Promise<string> => {
    let startingPoint: string | undefined = user
