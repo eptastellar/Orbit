@@ -1,9 +1,11 @@
 import { firebase } from '@config/firebase-admin.config'
-import neo4j from '@config/neo4j.config'
+import { neo } from '@config/neo4j.config'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
+import { Session } from 'neo4j-driver'
 
 firebase()
+const neo4j: Session = neo()
 const db: Firestore = firestore()
 
 export async function retrieveUserDataFromUID(uid: string) { //retrieve user informations based from the uid
