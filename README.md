@@ -1,6 +1,6 @@
 # Orbit
 
-The way to connect. 
+The way to connect.
 > Join us in exploring the future of global connections.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![GitHub Last Commit](https://img.shields.io/github/last-commit/eptastellar/Orbit)&nbsp;&nbsp;
@@ -51,65 +51,7 @@ Orbit is a social media application that allows users to maintain and develop th
 
 ## ✍ Authors
 
-<table>
-   <tr>
-      <td align="center" style = "min-width: 100px;">
-         <a href="https://github.com/mzyxnuel">
-            <img src="https://avatars.githubusercontent.com/u/137792640" width="100px;" alt="mzyxnuel"/><br />
-            <p><b>mzyxnuel</p>
-         </a>
-         </a>
-      </td>
-      <td align="center" style = "min-width: 100px;">
-         <a href="https://github.com/74C17N3P7UN3">
-            <img src="https://avatars.githubusercontent.com/u/89161150" width="100px;" alt="74C17N3P7UN3"/><br />
-            <p><b>74C17N3P7UN3</b></p>
-         </a>
-         <a title="Code">💻</a>
-         <a title="Design">🎨</a>
-         <a title="Infrastructure (Hosting, Build-Tools, etc.)">🚇</a> <br />
-         <a title="Content">🖋</a>
-         <a title="Ideas, Planning, & Feedback">🤔</a>
-         <a title="Reviewed Pull Requests">👀</a>
-      </td>
-      <td align="center" style = "min-width: 100px;">
-         <a href="https://github.com/TheInfernalNick">
-            <img src="https://avatars.githubusercontent.com/u/82029415" width="100px;" alt="TheInfernalNick"/><br />
-            <p><b>TheInfernalNick</b></p>
-         </a>
-         <a title="Code">💻</a>
-         <a title="Ideas, Planning, & Feedback">🤔</a>
-         <a title="Documentation">📖</a> <br />
-         <a title="Testing">⚠️</a>
-      </td>
-      <td align="center" style = "min-width: 100px;">
-         <a href="https://github.com/MarcoMattei04">
-            <img src="https://avatars.githubusercontent.com/u/151754542"
-               width="100px;" alt="MarcoMattei04"/><br />
-            <p><b>MarcoMattei04</b></p>
-         </a>
-         <a title="Documentation">📖</a>
-         <a title="Design">🎨</a>
-         <a title="Code">💻</a> <br/>
-         <a title="Testing">⚠️</a>
-         <a title="User Testing">📓</a>
-      </td>
-      <td align="center" style = "min-width: 100px;">
-         <a href="https://github.com/itspomo">
-            <img src="https://avatars.githubusercontent.com/u/102945599" width="100px;" alt="itspomo"/><br />
-            <p><b>itspomo</b></p>
-         </a>
-         <a title="Promotion">📣</a>
-         <a title="Audio">🔊</a>
-         <a title="Testing">⚠️</a> <br />
-         <a title="User Testing">📓</a>
-      </td>
-   </tr>
-</table>
-
-## ✍ Authors
-
-![Authors](https://opencollective.com/eptastellar-orbit/contributors.svg?width=890&button=false)
+![Authors](https://opencollective.com/eptastellar-orbit/contributors.svg?width=400&button=false)
 
 > #### Roles:
 [@mzyxnuel](https:/github.com/mzyxnuel):
