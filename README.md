@@ -1,58 +1,63 @@
 # Orbit
 
-> Orbit: connecting people around the world \
+The way to connect. 
 > Join us in exploring the future of global connections.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![GitHub Last Commit](https://img.shields.io/github/last-commit/eptastellar/Orbit)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;![GitHub Last Commit](https://img.shields.io/github/last-commit/eptastellar/Orbit)&nbsp;&nbsp;
+![GitHub repo size](https://img.shields.io/github/repo-size/eptastellar/orbit)
 
 ## 📝 Table of Contents
 
-> [🧐️ About](#-about) \
-> [📚️ Documentation](https://github.com/eptastellar/orbit/wiki)\
-> [📜️️️️️️️️️ Licence](/LICENSE) \
-> [✍ Acknowledgements](#-authors)
+> - [💿 Introduction](#-introduction)
+> - [📚️ Documentation](https://github.com/eptastellar/orbit/wiki)
+> - [📜️️️️️️️️️ Licence](/LICENSE)
+> - [✍ Authors](#-authors)
 
-## 🧐 About
+## 💿 Introduction
 
-### Brief introduction
-
-Orbit is a groundbreaking app developed by our team, designed to connect people in real time. By leveraging the power of QR codes, we've transformed the way people meet and interact.
+Orbit is a social media application that allows users to maintain and develop their interactions with known friends in real life through the use of a unique QR code, known as QRbit.
 
 ### Features
 
-🔎 **Qr codes scanning**: Our primary feature is the ability for two individuals to become friends by scanning each other's QR codes. This unique approach eliminates the need for traditional friend requests or matching algorithms, providing a seamless and immediate connection.
+🔎 **Qr codes scanning**: Our primary feature is the ability for two individuals to become friends by scanning each other's QR codes. QRbit can only be scanned in real life by a friend, automatically creating a friendship in the app. The system is constantly updated to prevent online sharing, promoting authentic connections.
 
-🌌 **Supernova:** But that's not all. With a supernova, Orbit occasionally matches users together based on friends lists and interests, creating unexpected friendships and fostering serendipitous encounters.
+🔐 **Security**: Orbit provides easy access via email and password, Google or Apple accounts, with strong attention to user data security. All user data is encrypted to ensure their security and privacy, and protected by sessions with json web tokens.
 
-🔗 **Additional features**: Inside Orbit, users can post, chat, and form groups, much like other social media platforms. However, we've taken this concept a step further by making it more interactive and engaging. Users can initiate group chats for more focused conversations.
+🌌 **Supernova:** Orbit introduces the "Supernova" function, which allows contacting a new user per day with similar interests and friends. An algorithm searches for compatibility between the friends of the user.
 
-🎯 **Goal**: By focusing on the power of QR codes, Orbit redefines the possibilities of social interaction and brings people closer than ever before.
+☄️ **Meteor**: An interesting feature of Orbit is "Meteor," which sends daily notifications to encourage user interaction. Writing to a random friend within an hour increases the Meteor streak and rank, otherwise it retreats, promoting daily interaction.
+
+🔗 **Communication**:
+
+- send text messages, images, or voice notes in their private chats, with temporary messages (24 hours).
+
+- share images and voice notes with or without text messages on their profile, visible to friends on the home page.
+
+- create limited friend groups and request approval for entry, promoting communities based on authentic connections. These groups allow interaction through images, voice notes, and text messages from each participant.
+
+🍰 **Birthday**: Users' birthdays are highlighted with a cake emoji next to their name throughout the day, and the application sends notifications to celebrate the event among friends.
+
+🎯 **Goal**: By focusing on the power of QR codes, Orbit redefines the possibilities of social interaction and hopefully will bring people closer than ever before.
 
 ## 🛠️ Technologies used
 
 ![Static Badge](https://img.shields.io/badge/TypeScript-%23007acc?style=for-the-badge&logo=typescript&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Tauri-%23ffc131?style=for-the-badge&logo=tauri&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Nextjs-%23ffffff?style=for-the-badge&logo=next.js&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/React-61DBFB?style=for-the-badge&logo=react&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Express-%23ffffff?style=for-the-badge&logo=express&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Firebase-%23F5820D?style=for-the-badge&logo=firebase&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Neo4j-%230096FF?style=for-the-badge&logo=neo4j&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Tauri-%23007acc?style=for-the-badge&logo=tauri&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Nextjs-%23007acc?style=for-the-badge&logo=next.js&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/React-007acc?style=for-the-badge&logo=react&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Express-%23007acc?style=for-the-badge&logo=express&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Firebase-%23007acc?style=for-the-badge&logo=firebase&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Neo4j-%23007acc?style=for-the-badge&logo=neo4j&labelColor=black)&nbsp;&nbsp;
 
-## ✍ Acknowledgements
+## ✍ Authors
 
 <table>
    <tr>
       <td align="center" style = "min-width: 100px;">
          <a href="https://github.com/mzyxnuel">
             <img src="https://avatars.githubusercontent.com/u/137792640" width="100px;" alt="mzyxnuel"/><br />
-            <p><b>mzyxnuel</b></p>
+            <p><b>mzyxnuel</p>
          </a>
-         <a title="Project Management">📆</a>
-         <a title="Code">💻</a>
-         <a title="Design">🎨</a><br />
-         <a title="Security">🛡</a>
-         <a title="Ideas, Planning, & Feedback">🤔</a>
-         <a title="Reviewed Pull Requests">👀</a>
          </a>
       </td>
       <td align="center" style = "min-width: 100px;">
@@ -101,6 +106,46 @@ Orbit is a groundbreaking app developed by our team, designed to connect people 
       </td>
    </tr>
 </table>
+
+## ✍ Authors
+
+![Authors](https://opencollective.com/eptastellar-orbit/contributors.svg?width=890&button=false)
+
+> #### Roles:
+[@mzyxnuel](https:/github.com/mzyxnuel):
+<a title="Project Management">📆</a>
+<a title="Code">💻</a>
+<a title="Security">🛡</a>
+<a title="Design">🎨</a>
+<a title="Ideas, Planning, & Feedback">🤔
+<a title="Reviewed Pull Requests">👀</a>
+
+[@74C17N3P7UN3](https:/github.com/74C17N3P7UN3):
+<a title="Code">💻</a>
+<a title="Design">🎨</a>
+<a title="Content">🖋</a>
+<a title="Infrastructure (Hosting, Build-Tools, etc.)">🚇</a>
+<a title="Ideas, Planning, & Feedback">🤔</a>
+<a title="Reviewed Pull Requests">👀</a>
+
+[@TheInfernalNick](https:/github.com/TheInfernalNick):
+<a title="Code">💻</a>
+<a title="Ideas, Planning, & Feedback">🤔</a>
+<a title="Reviewed Pull Requests">👀</a>
+<a title="Testing">⚠️</a>
+<a title="Beta Testing">📓</a>
+
+[@MarcoMattei04](https:/github.com/MarcoMattei04):
+<a title="Design">🎨</a>
+<a title="Content">🖋</a>
+<a title="Code">💻</a>
+<a title="Documentation">📖</a>
+<a title="Beta Testing">📓</a>
+
+[@itspomo](https:/github.com/itspomo):
+<a title="Promotion">📣</a>
+<a title="Documentation">📖</a>
+<a title="Audio">🔊</a>
 
 ## 💸 Donations
 
