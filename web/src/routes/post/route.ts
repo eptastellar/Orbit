@@ -30,7 +30,7 @@ app.post('/', async (req: Request, res: Response) => {
 //       const likes_number: number = doc.data()?.likes_number
 //       // const comments_number = doc.data()?.comments_number
 
-//       res.json({
+//       res.statusjson({
 //          success: true,
 //          status: 200,
 //          type: type,
@@ -42,7 +42,7 @@ app.post('/', async (req: Request, res: Response) => {
 //          name: name,
 //          pfp: pfp,
 //       })
-//    } else res.json({ success: false, status: 404, message: 'resource/post-not-found' })
+//    } else res.statusjson({ success: false, status: 404, message: 'resource/post-not-found' })
 // })
 
 //TODO patch e delete

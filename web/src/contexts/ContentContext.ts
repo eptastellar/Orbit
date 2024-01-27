@@ -66,8 +66,6 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
          }
       }))
 
-      console.log(posts);
-
       if (posts.length > 0) {
          const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
          const fetch: PostFetch = { posts, lastDocId }
@@ -87,6 +85,28 @@ export async function uploadPost(uid: string, type: string, content: string): Pr
             type: type,
             content: content,
             likes_number: 0,
+            createdAt: Date.now() //unix format
+         })
+         resolve(docRef.id)
+      } catch (error) { reject(new Error('server/upload-failed')) }
+   })
+}
+
+export async function uploadComment(uid: string, rootId: string, content: string): Promise<string> {
+   return new Promise((resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('comments').doc() //set the docRef to comments
+         let root: string | boolean = ""
+
+         if (rootId)
+            root = rootId
+         else
+            root = true
+
+         docRef.set({ //set the comment information in firestore
+            owner: uid,
+            root: root,
+            content: content,
             createdAt: Date.now() //unix format
          })
          resolve(docRef.id)

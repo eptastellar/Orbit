@@ -1,6 +1,7 @@
 import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
 import signin from '@routes/auth/sign-in/route'
 import signup from '@routes/auth/sign-up/route'
+import comment from '@routes/comment/route'
 import healthz from '@routes/healthz/route'
 import home from '@routes/home/route'
 import interests from '@routes/interests/route'
@@ -23,6 +24,7 @@ app.use('/interests', interests)
 app.use('/home', checkIfSessionTokenIsValid, home)
 app.use('/u', checkIfSessionTokenIsValid, user)
 app.use('/p', checkIfSessionTokenIsValid, post)
+app.use('/c', checkIfSessionTokenIsValid, comment)
 
 app.set('view engine', 'ejs')
 app.use('*', (_: Request, res: Response) => { res.render('404') })
