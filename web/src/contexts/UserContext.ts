@@ -60,7 +60,7 @@ export async function getMeteorCount(uid: string): Promise<number> {
 export async function getFriendList(uid: string): Promise<string[]> {
    let tempArray: string[] = []
    return new Promise(async (resolve, reject) => {
-      if (neo4j) {
+      if (neo4j) { //TODO: remove all the if with neo4j, because now is checked in the config file
          const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
          const resultMap = await neo4j.executeRead(tx => tx.run(queryFriends))
          let uids = resultMap.records.map(row => row.get('p'))
@@ -70,4 +70,11 @@ export async function getFriendList(uid: string): Promise<string[]> {
          resolve(tempArray)
       } reject(new Error('server/driver-not-found'))
    })
+}
+
+export async function areFriends(personalUid: string, friendUid: string): Promise<null> {
+   //TODO: @TheInfernalNick add check if the requester is friend with the user
+   return new Promise((resolve, reject) => {
+      resolve(null)
+   }) //TODO: reject resources/not-friends
 }
