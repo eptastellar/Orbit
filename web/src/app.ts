@@ -1,4 +1,5 @@
-import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
+import { checkIfCronSecretIsValid, checkIfSessionTokenIsValid } from '@contexts/AuthContext'
+import keepAliveNeo4j from '@cron-jobs/keep-alive-neo4j'
 import signin from '@routes/auth/sign-in/route'
 import signup from '@routes/auth/sign-up/route'
 import comment from '@routes/comment/route'
@@ -26,7 +27,9 @@ app.use('/u', checkIfSessionTokenIsValid, user)
 app.use('/p', checkIfSessionTokenIsValid, post)
 app.use('/c', checkIfSessionTokenIsValid, comment)
 
+app.use('/cron/keep-alive-neo4j', checkIfCronSecretIsValid, keepAliveNeo4j)
+
 app.set('view engine', 'ejs')
-app.use('*', (_: Request, res: Response) => { res.render('404') })
+app.use('*', (_: Request, res: Response) => { res.status(404).render('404') })
 
 app.listen(process.env.PORT, () => { console.log(`⚡[server]: server is running on port: http://localhost:${process.env.PORT}`) })
