@@ -15,7 +15,7 @@ import express, { Express, Request, Response } from 'express'
 dotenv.config()
 const app: Express = express()
 
-app.use(cors()) //TODO change to vercel domain
+app.use(cors()) //TODO change to vercel domain and cronjob domain
 app.use(express.json())
 
 app.use('/', healthz)
