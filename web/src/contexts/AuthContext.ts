@@ -46,7 +46,16 @@ export async function checkIfAccessTokenIsValid(authorization: string): Promise<
 }
 
 export const checkIfCronSecretIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
-   next() //TODO
+   const authorization: string = req.headers.authorization!
+   const secret: string = authorization.split('Bearer ')[1]
+
+   try {
+      if (secret == process.env.CRON_SECRET)
+         next()
+      else res.status(400).json({ success: false, message: 'auth/invalid-token' })
+   } catch (_) {
+      res.status(400).json({ success: false, message: 'auth/invalid-token' })
+   }
 }
 
 export async function newSessionJWT(uid: string) {
