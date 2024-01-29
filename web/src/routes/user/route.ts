@@ -9,7 +9,9 @@ app.post('/:username/posts', async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const lastDocId: string = req.body.lastDocId //retrieve the last fetched document
 
-   isValidDocId(lastDocId).then(() => {
+   Promise.all([
+      isValidDocId(lastDocId)
+   ]).then(() => {
       retrieveUIDFromUsername(req.params.username).then(async (uid: string) => { //get the uid from the username
          areFriends(tokenUid, uid).then(() => {
             fetchPosts([uid], lastDocId).then((fetch) => {

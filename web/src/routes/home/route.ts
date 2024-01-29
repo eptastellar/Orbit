@@ -16,7 +16,9 @@ app.post('/posts', async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const lastDocId: string = req.body.lastDocId
 
-   isValidDocId(lastDocId).then(async () => {
+   Promise.all([
+      isValidDocId(lastDocId)
+   ]).then(async () => {
       const friendList: string[] = await getFriendList(uid)
       fetchPosts(friendList, lastDocId).then((fetch) => {
          res.status(200).json({ success: true, posts: fetch.posts, lastDocId: fetch.lastDocId })

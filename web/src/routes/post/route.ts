@@ -9,7 +9,9 @@ app.post('/', async (req: Request, res: Response) => {
    const type: string = req.body.type
    const content: string = req.body.content
 
-   isValidContentType(type).then(() => {
+   Promise.all([
+      isValidContentType(type)
+   ]).then(() => {
       uploadPost(uid, type, content).then((postId) => {
          res.status(201).json({ success: true, post: postId }) //return the post id
       }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })

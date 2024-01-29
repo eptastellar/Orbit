@@ -5,6 +5,7 @@ import { Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 firebase()
 const db: Firestore = firestore()
 //TODO: add text and image control for harmful behavior
+
 export function isValidBday(bday: number): Promise<null> {
    return new Promise((resolve, reject) => {
       try {
@@ -15,13 +16,11 @@ export function isValidBday(bday: number): Promise<null> {
             reject(new Error('validation/too-young'))
 
          resolve(null)
-      } catch (_) {
-         reject(new Error('validation/invalid-content-type'))
-      }
+      } catch { reject(new Error('validation/malformed-input')) }
    })
 }
 
-export async function isValidUsername(username: string): Promise<null> {
+export async function isValidSignUpUsername(username: string): Promise<null> {
    return new Promise((resolve, reject) => {
       try {
          const regex: RegExp = /[^a-zA-Z0-9\_\-\.]/
@@ -42,9 +41,7 @@ export async function isValidUsername(username: string): Promise<null> {
                resolve(null)
             else reject(new Error('validation/username-already-in-use'))
          })
-      } catch (_) {
-         reject(new Error('validation/invalid-content-type'))
-      }
+      } catch { reject(new Error('validation/malformed-input')) }
    })
 }
 
@@ -59,9 +56,7 @@ export async function areValidInterests(interestsList: string[]): Promise<null> 
                reject(new Error('validation/invalid-interests'))
          })
          resolve(null)
-      } catch (_) {
-         reject(new Error('validation/invalid-content-type'))
-      }
+      } catch { reject(new Error('validation/malformed-input')) }
    })
 }
 
@@ -74,9 +69,7 @@ export async function isValidDocId(docId: string): Promise<null> {
             if (docRef.exists)
                resolve(null)
          } else resolve(null)
-      } catch (_) {
-         reject(new Error('validation/invalid-doc-id'))
-      }
+      } catch { reject(new Error('validation/invalid-doc-id')) }
    })
 }
 
@@ -91,7 +84,7 @@ export async function isValidCommentRootId(rootId: string, postId: string): Prom
                resolve(null)
             else reject(new Error('validation/invalid-doc-id'))
          } else reject(new Error('validation/invalid-doc-id'))
-      } catch (_) {
+      } catch {
          reject(new Error('validation/invalid-doc-id'))
       }
    })
@@ -102,9 +95,17 @@ export async function isValidContentType(type: string): Promise<null> {
       try {
          if (type == "text" || type == "image" || type == "audio")
             resolve(null)
-         reject(new Error('validation/invalid-content-type'))
-      } catch (_) {
-         reject(new Error('validation/invalid-content-type'))
-      }
+         reject(new Error('validation/malformed-input'))
+      } catch { reject(new Error('validation/malformed-input')) }
+   })
+}
+
+export async function isValidSavedUsername() {
+   //TODO
+}
+
+export async function isValidImage(image: string): Promise<null> {
+   return new Promise((resolve, reject) => {
+      //TODO
    })
 }

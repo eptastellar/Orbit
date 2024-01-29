@@ -1,7 +1,7 @@
 import { firebase } from '@config/firebase-admin.config'
 import { neo } from '@config/neo4j.config'
 import { randomProfilePicture } from '@contexts/ContentContext'
-import { isValidUsername } from '@helpers/validate'
+import { isValidSignUpUsername } from '@helpers/validate'
 import express, { NextFunction } from 'express'
 import admin, { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from 'firebase-admin/firestore'
@@ -53,9 +53,7 @@ export const checkIfCronSecretIsValid = async (req: express.Request, res: expres
       if (secret == process.env.CRON_SECRET)
          next()
       else res.status(400).json({ success: false, message: 'auth/invalid-token' })
-   } catch (_) {
-      res.status(400).json({ success: false, message: 'auth/invalid-token' })
-   }
+   } catch { res.status(400).json({ success: false, message: 'auth/invalid-token' }) }
 }
 
 export async function newSessionJWT(uid: string) {
@@ -83,7 +81,7 @@ export async function isValidSessionJWT(token: string): Promise<JWTPayload> {
             reject(new Error('auth/expired-token'))
 
          resolve(payload) //return the token payload
-      } catch (error) { reject(new Error('auth/invalid-token')) }
+      } catch { reject(new Error('auth/invalid-token')) }
    })
 }
 
@@ -92,15 +90,13 @@ export async function createNewSession(uid: string): Promise<string> {
    const doc: DocumentData = (await docRef.get()).data()! //get data inside the document
    const token: string = doc?.token
 
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve, reject) => {
       if (token) {
-         isValidSessionJWT(token).then(async (decodedToken: JWTPayload) => { //decode the token
-            const expTime: number = decodedToken.exp! * 1000
-
-            if (Date.now() > expTime) //check if the token is expired
-               resolve(await refreshSession(docRef, uid)) //if is expired create a new session token
-            else
-               resolve(token) //if the token is still valid return it
+         isValidSessionJWT(token).then(async () => {
+            resolve(token) //if the token is still valid return it
+         }).catch(async (error) => {
+            await docRef.set({ jwt: null })
+            reject(error);
          })
       } else resolve(await refreshSession(docRef, uid)) //if the document is empty refresh the session
    })
@@ -128,7 +124,7 @@ export async function checkIfDocumentExists(uid: string): Promise<null> {
 
 export async function createDoc(uid: string, username: string, pfp: string, bday: number): Promise<null> {
    return new Promise((resolve, reject) => {
-      isValidUsername(username).then(async () => {
+      isValidSignUpUsername(username).then(async () => {
          const name: string = username.substring(1)
          const docRef: DocumentReference = db.collection('users').doc(uid)
 
@@ -149,10 +145,10 @@ export async function createDoc(uid: string, username: string, pfp: string, bday
 
 export async function createNode(uid: string, interests: string[]): Promise<null> {
    return new Promise(async (resolve, reject) => {
-      if (neo4j) {
+      try {
          const query = `MERGE (:User {name:'${uid}',interests:'${interests}'})`
          await neo4j.executeWrite(tx => tx.run(query))
          resolve(null)
-      } else reject(new Error('server/driver-not-found'))
+      } catch { reject(new Error('server/driver-not-found')) }
    })
 }
