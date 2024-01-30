@@ -2,7 +2,7 @@ import { firebase } from '@config/firebase-admin.config'
 import { neo } from '@config/neo4j.config'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
-import { Session } from 'neo4j-driver'
+import { QueryResult, Session } from 'neo4j-driver'
 
 firebase()
 const neo4j: Session = neo()
@@ -77,4 +77,24 @@ export async function areFriends(personalUid: string, friendUid: string): Promis
    return new Promise((resolve, reject) => {
       resolve(null)
    }) //TODO: reject resources/not-friends
+}
+
+export async function interestsFromUID(uid: string): Promise<string[]> {
+   return new Promise(async (resolve, reject) => {
+      const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests`
+      const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
+      let results: string[] = result.records.map(row => row.get('u.interests'))
+      resolve(results)
+   })
+}
+
+export async function changeAll(uid: string, interests: string[], username: string, name: string, pfp: string): Promise<null> {
+   return new Promise(async (resolve, reject) => {
+      const usersRef: DocumentReference = db.collection('users').doc(uid)
+      usersRef.set({ username: username, name: name, pfp: pfp })
+
+      const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'`
+      await neo4j.executeWrite(tx => tx.run(query))
+      resolve(null)
+   })
 }

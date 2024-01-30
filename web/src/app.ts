@@ -7,6 +7,7 @@ import healthz from '@routes/healthz/route'
 import home from '@routes/home/route'
 import interests from '@routes/interests/route'
 import post from '@routes/post/route'
+import settings from "@routes/settings/route"
 import user from '@routes/user/route'
 import cors from 'cors'
 import dotenv from 'dotenv'
@@ -26,6 +27,7 @@ app.use('/home', checkIfSessionTokenIsValid, home)
 app.use('/u', checkIfSessionTokenIsValid, user)
 app.use('/p', checkIfSessionTokenIsValid, post)
 app.use('/c', checkIfSessionTokenIsValid, comment)
+app.use('/settings', checkIfSessionTokenIsValid, settings)
 
 app.use('/cron/keep-alive-neo4j', checkIfCronSecretIsValid, keepAliveNeo4j)
 
