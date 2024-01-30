@@ -68,6 +68,7 @@ export async function isValidDocId(docId: string): Promise<null> {
 
             if (docRef.exists)
                resolve(null)
+            else reject(new Error('validation/invalid-doc-id'))
          } else resolve(null)
       } catch { reject(new Error('validation/invalid-doc-id')) }
    })
@@ -76,17 +77,14 @@ export async function isValidDocId(docId: string): Promise<null> {
 export async function isValidCommentRootId(rootId: string, postId: string): Promise<null> {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef = await db.collection('comments').doc(rootId).get()
+         const docRef = await db.collection('comments').doc(rootId).get() //retrieve the root comment
 
          if (docRef.exists) {
-            const postRef = await db.collection('posts').doc(postId).get()
-            if (docRef.data()?.owner == postRef.data()?.owner)
+            if (docRef.data()?.postId == postId)
                resolve(null)
             else reject(new Error('validation/invalid-doc-id'))
          } else reject(new Error('validation/invalid-doc-id'))
-      } catch {
-         reject(new Error('validation/invalid-doc-id'))
-      }
+      } catch { reject(new Error('validation/invalid-doc-id')) }
    })
 }
 

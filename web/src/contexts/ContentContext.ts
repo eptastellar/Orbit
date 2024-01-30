@@ -1,6 +1,6 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { retrieveUserDataFromUID } from '@contexts/UserContext'
-import { PostFetch } from '@local-types/index'
+import { CommentFetch, PostFetch } from '@local-types/index'
 import { DocumentData, DocumentReference, Firestore, Query } from 'firebase-admin/firestore'
 
 firebase()
@@ -78,6 +78,85 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
    })
 }
 
+export async function fetchRootComments(postId: string, lastRootCommentId: string): Promise<CommentFetch> {
+   const limit: number = 5
+
+   return new Promise(async (resolve, reject) => {
+      let docRef: Query = db.collection('comments')
+         .where('postId', '==', postId)
+         .where('root', '==', true)
+         .orderBy('createdAt', 'desc')
+         .limit(limit)
+
+      if (lastRootCommentId) {
+         const lastDoc: DocumentData = await db.collection('comments').doc(lastRootCommentId).get()
+         docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
+      }
+
+      const snapshot: DocumentData = await docRef.get()
+
+      const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+         const { username, name, pfp } = await retrieveUserDataFromUID(doc.data().owner)
+         return {
+            id: doc.id,
+            creation: doc.createTime.seconds,
+            content: doc.data().content,
+            user_data: {
+               username: username,
+               name: name,
+               pfp: pfp,
+            },
+         }
+      }))
+
+      if (comments.length > 0) {
+         const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+         const fetch: CommentFetch = { comments, lastDocId }
+         resolve(fetch)
+      } else
+         reject(new Error('server/no-content'))
+   })
+}
+
+export async function fetchLeafsComments(rootId: string, lastLeafCommentId: string): Promise<CommentFetch> {
+   const limit: number = 5
+
+   return new Promise(async (resolve, reject) => {
+      let docRef: Query = db.collection('comments')
+         .where('root', '==', rootId)
+         .orderBy('createdAt', 'desc')
+         .limit(limit)
+
+      if (lastLeafCommentId) {
+         const lastDoc: DocumentData = await db.collection('comments').doc(lastLeafCommentId).get()
+         docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
+      }
+
+      const snapshot: DocumentData = await docRef.get()
+
+      const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+         const { username, name, pfp } = await retrieveUserDataFromUID(doc.data().owner)
+         return {
+            id: doc.id,
+            creation: doc.createTime.seconds,
+            content: doc.data().content,
+            user_data: {
+               username: username,
+               name: name,
+               pfp: pfp,
+            },
+         }
+      }))
+
+      if (comments.length > 0) {
+         const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+         const fetch: CommentFetch = { comments, lastDocId }
+         resolve(fetch)
+      } else
+         reject(new Error('server/no-content'))
+   })
+}
+
 export async function uploadPost(uid: string, type: string, content: string): Promise<string> {
    return new Promise((resolve, reject) => {
       try {
@@ -95,7 +174,7 @@ export async function uploadPost(uid: string, type: string, content: string): Pr
    })
 }
 
-export async function uploadComment(uid: string, rootId: string, content: string): Promise<string> {
+export async function uploadComment(uid: string, rootId: string, postId: string, content: string): Promise<string> {
    return new Promise((resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('comments').doc() //set the docRef to comments
@@ -110,6 +189,7 @@ export async function uploadComment(uid: string, rootId: string, content: string
             owner: uid,
             root: root,
             content: content,
+            postId: postId,
             createdAt: Date.now() //unix format
          })
          resolve(docRef.id)
