@@ -11,10 +11,9 @@ app.get('/', (req: Request, res: Response) => {
       checkIfDocumentExists(uid).then(() => { //check if the user is fully signed up even in firestore
          createNewSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
             retrieveUserDataFromUID(uid).then((promise) => {
-               const username: string = promise.username
-               res.status(202).json({ success: true, jwt: jwt, username: username }) //return the session jwt and the username of the user for the frontend side
-            })
-         })
+               res.status(202).json({ success: true, jwt: jwt, username: promise.username }) //return the session jwt and the username of the user for the frontend side
+            }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
    }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
 })

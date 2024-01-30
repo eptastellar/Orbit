@@ -20,9 +20,8 @@ export async function retrieveUserDataFromUID(uid: string) { //retrieve user inf
 }
 
 export async function retrieveUIDFromUsername(username: string): Promise<string> { //retrieve uid based from the username
-   const usersRef: Query = db.collection('users').where('username', '==', username)
-
    return new Promise((resolve, reject) => {
+      const usersRef: Query = db.collection('users').where('username', '==', username)
       usersRef.get().then((snapshot: QuerySnapshot) => { //retrieve documents where the username is equal to the username param
          if (!snapshot.empty) {
             snapshot.forEach((doc) => {
@@ -35,21 +34,20 @@ export async function retrieveUIDFromUsername(username: string): Promise<string>
 }
 
 export async function getFriendCount(uid: string): Promise<number> {
-   return new Promise<number>(async (resolve, reject) => {
+   return new Promise(async (resolve, _) => {
       const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
-      if (neo4j) {
-         const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
-         let friends = resultQueryFriends.records.map(row => row.get('t'))
-         resolve(friends.length)
-      }
-      reject(new Error('server/driver-not-found'))
+      const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
+      let friends = resultQueryFriends.records.map(row => row.get('t'))
+      resolve(friends.length)
    })
 }
 
 export async function getPostCount(uid: string): Promise<number> { //get the snapshot size of all the posts where uid is equal to the owner
-   const postsRef: Query = db.collection('posts').where('owner', '==', uid)
-   const snapshot: QuerySnapshot = await postsRef.get()
-   return snapshot.size
+   return new Promise(async (resolve, _) => {
+      const postsRef: Query = db.collection('posts').where('owner', '==', uid)
+      const snapshot: QuerySnapshot = await postsRef.get()
+      resolve(snapshot.size)
+   })
 }
 
 export async function getMeteorCount(uid: string): Promise<number> {
@@ -58,11 +56,11 @@ export async function getMeteorCount(uid: string): Promise<number> {
 }
 
 export async function getFriendList(uid: string): Promise<string[]> {
-   let tempArray: string[] = []
-   return new Promise(async (resolve, reject) => {
-      const queryFriends: string = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
-      const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(queryFriends))
-      let uids = resultMap.records.map(row => row.get('p'))
+   return new Promise(async (resolve, _) => {
+      const tempArray: string[] = []
+      const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
+      const resultMap = await neo4j.executeRead(tx => tx.run(queryFriends))
+      const uids = resultMap.records.map(row => row.get('p'))
       uids.forEach(element => {
          tempArray.push(element.properties['name'])
       })

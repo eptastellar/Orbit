@@ -90,22 +90,24 @@ export async function isValidCommentRootId(rootId: string, postId: string): Prom
    })
 }
 
-export async function isValidContentType(type: string): Promise<null> {
+export async function isValidContentType(type: string, content: string): Promise<null> {
    return new Promise((resolve, reject) => {
       try {
-         if (type == "text" || type == "image" || type == "audio")
-            resolve(null)
+         if (type == "text" || type == "image" || type == "audio") {
+            if (type == "image" || type == "audio") {
+               isValidImage(content).then(() => {
+                  resolve(null)
+               }).catch((error) => { reject(error) })
+            } else resolve(null)
+         } else resolve(null)
          reject(new Error('validation/malformed-input'))
       } catch { reject(new Error('validation/malformed-input')) }
    })
 }
 
-export async function isValidSavedUsername() {
-   //TODO
-}
-
 export async function isValidImage(image: string): Promise<null> {
    return new Promise((resolve, reject) => {
       //TODO
+      resolve(null)
    })
 }

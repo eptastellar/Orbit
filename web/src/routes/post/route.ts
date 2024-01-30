@@ -10,12 +10,13 @@ app.post('/', async (req: Request, res: Response) => {
    const content: string = req.body.content
 
    Promise.all([
-      isValidContentType(type)
-   ]).then(() => {
-      uploadPost(uid, type, content).then((postId) => {
-         res.status(201).json({ success: true, post: postId }) //return the post id
-      }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+      isValidContentType(content, type)
+   ])
+      .then(() => {
+         uploadPost(uid, type, content).then((postId) => {
+            res.status(201).json({ success: true, post: postId }) //return the post id
+         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 })
 
 // app.get('/:id', async (req: Request, res: Response) => { //get the specific post based from is id

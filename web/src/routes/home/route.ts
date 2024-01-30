@@ -18,12 +18,13 @@ app.post('/posts', async (req: Request, res: Response) => {
 
    Promise.all([
       isValidDocId(lastDocId)
-   ]).then(async () => {
-      const friendList: string[] = await getFriendList(uid)
-      fetchPosts(friendList, lastDocId).then((fetch) => {
-         res.status(200).json({ success: true, posts: fetch.posts, lastDocId: fetch.lastDocId })
-      }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+   ])
+      .then(async () => {
+         const friendList: string[] = await getFriendList(uid)
+         fetchPosts(friendList, lastDocId).then((fetch) => {
+            res.status(200).json({ success: true, posts: fetch.posts, lastDocId: fetch.lastDocId })
+         }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 })
 
 export default app

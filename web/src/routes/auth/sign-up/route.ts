@@ -16,18 +16,20 @@ app.post('/', (req: Request, res: Response) => {
       isValidBday(bday),
       areValidInterests(interests),
       isValidImage(pfp)
-   ]).then(() => {
-      checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
-         Promise.all([
-            createDoc(uid, username, pfp, bday), //create a new doc in /users
-            createNode(uid, interests) //create a new node in neo4j
-         ]).then(() => {
-            createNewSession(uid).then((jwt: string) => { //return the session jwt and the username of the user for the frontend side
-               res.status(201).json({ success: true, jwt: jwt, username: username })
-            })
-         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+   ])
+      .then(() => {
+         checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
+            Promise.all([
+               createDoc(uid, username, pfp, bday), //create a new doc in /users
+               createNode(uid, interests) //create a new node in neo4j
+            ])
+               .then(() => {
+                  createNewSession(uid).then((jwt: string) => { //return the session jwt and the username of the user for the frontend side
+                     res.status(201).json({ success: true, jwt: jwt, username: username })
+                  })
+               }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+         }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 })
 
 app.post('/validate', (req: Request, res: Response) => {

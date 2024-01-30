@@ -531,3 +531,4 @@ export const interests: string[] = [
    "Zoom(TV channel)",
    "Zoom lens"
 ]
+//TODO: change list

@@ -49,7 +49,7 @@ export const checkIfCronSecretIsValid = async (req: express.Request, res: expres
    const authorization: string = req.headers.authorization!
    const secret: string = authorization.split('Bearer ')[1]
 
-   try {
+   try { //TODO: fix
       if (secret == process.env.CRON_SECRET)
          next()
       else res.status(400).json({ success: false, message: 'auth/invalid-token' })
@@ -57,15 +57,19 @@ export const checkIfCronSecretIsValid = async (req: express.Request, res: expres
 }
 
 export async function newSessionJWT(uid: string) {
-   const payload = { 'uid': uid }
+   const payload = {
+      'uid': uid,
+      'owner': 'eptastellar',
+      'application': 'orbit',
+   }
 
-   const jwt = new SignJWT(payload)
+   const jwt: SignJWT = new SignJWT(payload)
    jwt.setProtectedHeader({ alg: 'HS256' })
    jwt.setIssuedAt()
    jwt.setExpirationTime('4w') //create a jwt and set the expire time to 4 weeks
 
-   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
-   const signedJwt = await jwt.sign(secret)
+   const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
+   const signedJwt: string = await jwt.sign(secret)
 
    return signedJwt
 }
@@ -73,7 +77,7 @@ export async function newSessionJWT(uid: string) {
 export async function isValidSessionJWT(token: string): Promise<JWTPayload> {
    return new Promise(async (resolve, reject) => {
       try {
-         const jwt: string = token.split('Bearer ')[1]
+         const jwt: string = token.split('Bearer ')[1] //split the bearer scheme
          const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
          const { payload } = await jwtVerify(jwt, secret) //validate the user token and return the user payload
 
@@ -95,7 +99,7 @@ export async function createNewSession(uid: string): Promise<string> {
          isValidSessionJWT(token).then(async () => {
             resolve(token) //if the token is still valid return it
          }).catch(async (error) => {
-            await docRef.set({ jwt: null })
+            await docRef.set({ jwt: '' }) //clear the firestore jwt and make the user sign in again
             reject(error);
          })
       } else resolve(await refreshSession(docRef, uid)) //if the document is empty refresh the session
@@ -111,7 +115,6 @@ export async function refreshSession(docRef: DocumentReference, uid: string): Pr
 
 export async function checkIfDocumentExists(uid: string): Promise<null> {
    return new Promise((resolve, reject) => {
-
       const docRef: DocumentReference = db.collection('users').doc(uid)
 
       docRef.get().then((doc: DocumentData) => {
@@ -125,11 +128,13 @@ export async function checkIfDocumentExists(uid: string): Promise<null> {
 export async function createDoc(uid: string, username: string, pfp: string, bday: number): Promise<null> {
    return new Promise((resolve, reject) => {
       isValidSignUpUsername(username).then(async () => {
-         const name: string = username.substring(1)
          const docRef: DocumentReference = db.collection('users').doc(uid)
+         const name: string = username.substring(1) //remove the "@" from the username
 
          if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
-            pfp = pfp ? pfp : await randomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
+            try { //set the pfp url to the one sent from the client, or if is null, select a random one
+               pfp = pfp ? pfp : await randomProfilePicture()
+            } catch (error) { reject(error) }
 
             await docRef.set({ //set the user data into the doc
                username: username,
@@ -146,7 +151,7 @@ export async function createDoc(uid: string, username: string, pfp: string, bday
 export async function createNode(uid: string, interests: string[]): Promise<null> {
    return new Promise(async (resolve, reject) => {
       try {
-         const query = `MERGE (:User {name:'${uid}',interests:'${interests}'})`
+         const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j
          await neo4j.executeWrite(tx => tx.run(query))
          resolve(null)
       } catch { reject(new Error('server/driver-not-found')) }
