@@ -1,10 +1,10 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { retrieveUserDataFromUID } from '@contexts/UserContext'
 import { PostFetch } from '@local-types/index'
-import { DocumentData, DocumentReference, Query } from 'firebase-admin/firestore'
+import { DocumentData, DocumentReference, Firestore, Query } from 'firebase-admin/firestore'
 
 firebase()
-const db = firestore()
+const db: Firestore = firestore()
 const bucket = firestorage()
 
 export async function randomProfilePicture(): Promise<string> {
@@ -33,7 +33,7 @@ export async function randomProfilePicture(): Promise<string> {
                   })
             }
          })
-      } catch { reject(new Error('resources/no-content')) }
+      } catch { reject(new Error('server/no-content')) }
    })
 }
 
@@ -74,7 +74,7 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
          const fetch: PostFetch = { posts, lastDocId }
          resolve(fetch)
       } else
-         reject(new Error('resources/no-content'))
+         reject(new Error('server/no-content'))
    })
 }
 
@@ -114,5 +114,30 @@ export async function uploadComment(uid: string, rootId: string, content: string
          })
          resolve(docRef.id)
       } catch (error) { reject(new Error('server/upload-failed')) }
+   })
+}
+
+export async function updatePost(postId: string, content: string, type: string): Promise<string> {
+   return new Promise((resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('posts').doc(postId)
+
+         docRef.update({
+            content: content,
+            type: type,
+         })
+         resolve(docRef.id)
+      } catch (error) { reject(new Error('server/update-failed')) }
+   })
+}
+
+export async function deletePost(postId: string): Promise<null> {
+   return new Promise((resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('posts').doc(postId)
+
+         docRef.delete()
+         resolve(null)
+      } catch (error) { reject(new Error('server/delete-failed')) }
    })
 }

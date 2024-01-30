@@ -90,7 +90,7 @@ export async function isValidCommentRootId(rootId: string, postId: string): Prom
    })
 }
 
-export async function isValidContentType(type: string, content: string): Promise<null> {
+export async function isValidContentType(content: string, type: string): Promise<null> {
    return new Promise((resolve, reject) => {
       try {
          if (type == "text" || type == "image" || type == "audio") {
@@ -99,8 +99,7 @@ export async function isValidContentType(type: string, content: string): Promise
                   resolve(null)
                }).catch((error) => { reject(error) })
             } else resolve(null)
-         } else resolve(null)
-         reject(new Error('validation/malformed-input'))
+         } else reject(new Error('validation/malformed-input'))
       } catch { reject(new Error('validation/malformed-input')) }
    })
 }

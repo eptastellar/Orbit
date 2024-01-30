@@ -1,4 +1,5 @@
-import { uploadPost } from '@contexts/ContentContext'
+import { deletePost, updatePost, uploadPost } from '@contexts/ContentContext'
+import { hasPermission } from '@contexts/UserContext'
 import { isValidContentType } from '@helpers/validate'
 import { Request, Response, Router } from 'express'
 
@@ -19,34 +20,35 @@ app.post('/', async (req: Request, res: Response) => {
       }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 })
 
-// app.get('/:id', async (req: Request, res: Response) => { //get the specific post based from is id
-//    const id: string = req.params.id
+app.patch('/:postId', async (req: Request, res: Response) => {
+   const uid: string = res.locals.uid
+   const postId: string = req.params.postId
+   const type: string = req.body.type
+   const content: string = req.body.content
 
-//    const db: Firestore = admin.firestore()
-//    const docRef: DocumentReference = db.collection('posts').doc(id) //set the docRef to posts and id
+   Promise.all([
+      isValidContentType(content, type),
+      hasPermission(uid, postId)
+   ])
+      .then(() => {
+         updatePost(postId, content, type).then((updatedPostId: string) => {
+            res.status(200).json({ success: true, post: updatedPostId }) //return the updated post id
+         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+})
 
-//    const doc: DocumentData = await docRef.get()
-//    if (doc.exists) { //if the document exists
-//       const { username, name, pfp } = await retrieveUserDataFromUID(doc.data()?.owner) //retrive post owner informations
-//       const content: string = doc.data()?.content
-//       const type: string = doc.data()?.type
-//       const likes_number: number = doc.data()?.likes_number
-//       // const comments_number = doc.data()?.comments_number
+app.delete('/:postId', async (req: Request, res: Response) => {
+   const uid: string = res.locals.uid
+   const postId: string = req.params.postId
 
-//       res.statusjson({
-//          success: true,
-//          status: 200,
-//          type: type,
-//          content: content,
-//          likes_number: likes_number,
-//          //TODO comments_number: comments_number,
-//          created: doc.createTime.seconds,
-//          username: username,
-//          name: name,
-//          pfp: pfp,
-//       })
-//    } else res.statusjson({ success: false, status: 404, message: 'resource/post-not-found' })
-// })
+   Promise.all([
+      hasPermission(uid, postId),
+   ])
+      .then(() => {
+         deletePost(postId).then(() => {
+            res.status(200).json({ success: true }) //return a success message
+         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+})
 
-//TODO patch e delete
 export default app

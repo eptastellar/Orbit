@@ -99,3 +99,15 @@ export async function changeAll(uid: string, interests: string[], username: stri
       resolve(null)
    })
 }
+
+export async function hasPermission(uid: string, postId: string): Promise<null> {
+   return new Promise(async (resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('posts').doc(postId)
+
+         if ((await docRef.get()).data()?.owner == uid)
+            resolve(null)
+         else reject('server/unauthorized')
+      } catch (error) { reject('server/unauthorized') }
+   })
+}
