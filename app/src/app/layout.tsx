@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/react"
-import { type Metadata } from "next"
+import { Metadata } from "next"
 
 import { Providers } from "@/contexts"
 
@@ -17,7 +17,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
             {children}
          </Providers>
 
-         <Analytics />
+         <Analytics debug={false} />
       </body>
    </html>
 )
