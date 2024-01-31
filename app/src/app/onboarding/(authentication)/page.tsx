@@ -44,11 +44,15 @@ const Welcome = () => {
                      router.push(`/u/${username}`)
                   } else router.push("/onboarding/profile")
                })
-               .catch((error: any) => console.error(error))
-               .finally(() => setGoogleLoading(false))
+               .catch((error: any) => {
+                  console.error(error)
+                  setGoogleLoading(false)
+               })
          })
-         .catch((error: any) => console.error(error))
-         .finally(() => setGoogleLoading(false))
+         .catch((error: any) => {
+            console.error(error)
+            setGoogleLoading(false)
+         })
    }
 
    return (

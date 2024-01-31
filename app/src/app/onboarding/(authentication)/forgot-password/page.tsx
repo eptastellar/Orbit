@@ -22,6 +22,7 @@ const ForgotPassword = () => {
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
+      // Preliminary checks
       if (email !== confirmEmail)
          return setError("Emails do not match.")
 

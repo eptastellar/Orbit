@@ -108,9 +108,11 @@ const Profile = () => {
                localStorage.setItem("username", username)
                localStorage.setItem("birthdate", birthdate.join("/"))
                router.push("/onboarding/interests")
-            } else setError(resolveServerError(message))
+            } else {
+               setError(resolveServerError(message))
+               setLoading(false)
+            }
          })
-         .finally(() => setLoading(false))
    }
 
    return (

@@ -49,14 +49,18 @@ const Signin = () => {
 
                      localStorage.setItem("session-token", jwt)
                      router.push(`/u/${username}`)
-                  } else if (message === "auth/user-not-signed-up")
+                  } else if (message === "auth/user-not-signed-up") {
                      router.push("/onboarding/profile")
-                  else setError(resolveServerError(message))
+                  } else {
+                     setError(resolveServerError(message))
+                     setLoading(false)
+                  }
                })
-               .finally(() => setLoading(false))
          })
-         .catch((error: any) => setError(resolveFirebaseError(error.message)))
-         .finally(() => setLoading(false))
+         .catch((error: any) => {
+            setError(resolveFirebaseError(error.message))
+            setLoading(false)
+         })
    }
 
    return (

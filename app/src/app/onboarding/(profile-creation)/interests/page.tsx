@@ -110,9 +110,11 @@ const Interests = () => {
                localStorage.removeItem("username")
                localStorage.removeItem("birthdate")
                router.push(`/u/${username}`)
-            } else setError(resolveServerError(message))
+            } else {
+               setError(resolveServerError(message))
+               setLoading(false)
+            }
          })
-         .finally(() => setLoading(false))
    }
 
    // Load all interests on page load

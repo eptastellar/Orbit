@@ -9,6 +9,7 @@ type Props = {
 }
 
 const BackButton = ({ colors = "text-white bg-blue-7", text = "Back" }: Props) => {
+   // Next router for navigation
    const router = useRouter()
 
    return (
