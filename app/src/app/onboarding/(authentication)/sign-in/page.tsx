@@ -47,7 +47,7 @@ const Signin = () => {
                   if (success) {
                      setError("")
 
-                     localStorage.setItem("sessionToken", jwt)
+                     localStorage.setItem("session-token", jwt)
                      router.push(`/u/${username}`)
                   } else if (message === "auth/user-not-signed-up")
                      router.push("/onboarding/profile")

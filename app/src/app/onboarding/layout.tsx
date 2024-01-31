@@ -11,7 +11,7 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
 
    // Loading and session states
    const [loading, setLoading] = useState<boolean>(true)
-   const sessionToken = localStorage.getItem("sessionToken")
+   const sessionToken = localStorage.getItem("session-token")
 
    useEffect(() => {
       if (sessionToken) router.push("/")

@@ -15,13 +15,13 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
    // Loading and session states
    const [loading, setLoading] = useState<boolean>(true)
-   const sessionToken = localStorage.getItem("sessionToken")
+   const sessionToken = localStorage.getItem("session-token")
 
    useEffect(() => {
       if (!currentUser || !currentUser.emailVerified || !sessionToken)
          router.push("/onboarding")
       else setLoading(false)
-   }, [])
+   }, [currentUser, sessionToken])
 
    return loading ? <LoadingOverlay /> : (
       <div className="h-screen w-screen bg-black">

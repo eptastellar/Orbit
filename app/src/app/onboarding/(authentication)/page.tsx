@@ -40,7 +40,7 @@ const Welcome = () => {
                .then((response) => response.json())
                .then(({ success, jwt, username }: ResponseType) => {
                   if (success) {
-                     localStorage.setItem("sessionToken", jwt)
+                     localStorage.setItem("session-token", jwt)
                      router.push(`/u/${username}`)
                   } else router.push("/onboarding/profile")
                })

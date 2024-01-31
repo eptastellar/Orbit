@@ -103,7 +103,7 @@ const Interests = () => {
             if (success) {
                setError("")
 
-               localStorage.setItem("sessionToken", jwt)
+               localStorage.setItem("session-token", jwt)
 
                // Remove temporary user localStorage values
                localStorage.removeItem("profilePicture")
