@@ -25,7 +25,7 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 
    return loading ? <LoadingOverlay /> : (
       <div className="h-screen w-screen bg-black">
-         <div className="relative m-auto h-full max-w-[500px]">
+         <div className="relative m-auto h-full max-w-screen-device">
             {children}
          </div>
       </div>

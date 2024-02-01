@@ -22,6 +22,9 @@ const config: Config = {
          },
          height: {
             "104": "416px"
+         },
+         screens: {
+            "device": "512px"
          }
       },
    },

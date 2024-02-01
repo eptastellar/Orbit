@@ -5,10 +5,11 @@ import { FaExplosion } from "react-icons/fa6"
 import { PiPaperPlaneTiltBold } from "react-icons/pi"
 
 const Header = () => {
+   // Next router for navigation
    const router = useRouter()
 
    return (
-      <div className="absolute top-0 flex flex-row items-center justify-between w-full px-12 py-4 border-b border-gray-7">
+      <div className="flex device:hidden flex-row items-center justify-between w-full px-8 py-4 border-b border-gray-7 bg-black z-10">
          <p className="text-2xl font-semibold text-white">
             Orbit
          </p>
@@ -20,7 +21,7 @@ const Header = () => {
             />
             <PiPaperPlaneTiltBold
                className="text-2xl text-white cursor-pointer"
-               onClick={() => router.push("chats")}
+               onClick={() => router.push("/chats")}
             />
          </div>
       </div>

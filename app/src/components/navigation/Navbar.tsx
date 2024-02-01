@@ -1,31 +1,62 @@
 "use client"
 
-import { logoWhite } from "@/assets"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { BiMeteor } from "react-icons/bi"
-import { PiHouseFill, PiPlusCircleBold, PiQrCodeBold } from "react-icons/pi"
+import { usePathname, useRouter } from "next/navigation"
+import { BiMeteor, BiSolidMeteor } from "react-icons/bi"
+import { PiHorseBold, PiHouseFill, PiPlusCircleBold, PiPlusCircleFill, PiQrCodeBold, PiQrCodeFill } from "react-icons/pi"
+
+import { logoWhite } from "@/assets"
 
 const Navbar = () => {
+   // Route path and router navigation
+   const pathname = usePathname()
    const router = useRouter()
 
    return (
-      <div className="absolute bottom-0 flex flex-row items-center justify-between w-full px-12 py-4 border-t border-gray-7">
-         <PiHouseFill className="text-2xl text-white cursor-pointer" />
-         <PiPlusCircleBold
-            className="text-2xl text-white cursor-pointer"
-            onClick={() => router.push("chats")}
-         />
-         <PiQrCodeBold
-            className="text-2xl text-white cursor-pointer"
-            onClick={() => router.push("chats")}
-         />
-         <BiMeteor
-            className="text-2xl text-white cursor-pointer"
-            onClick={() => router.push("chats")}
-         />
-         <div className="flex center h-6 w-6 border border-white rounded-full overflow-hidden">
-            <Image src={logoWhite["64px"]} alt="Profile picture" height={24} width={24} className="h-full w-full object-cover" />
+      <div className="flex device:hidden flex-row items-center justify-between w-full px-8 py-4 border-t border-gray-7 bg-black z-10">
+         {
+            pathname === "/"
+               ? <PiHouseFill className="text-3xl text-white cursor-pointer" />
+               : <PiHorseBold
+                  className="text-3xl text-white cursor-pointer"
+                  onClick={() => router.push("/")}
+               />
+         }
+         {
+            pathname === "/new-post"
+               ? <PiPlusCircleFill className="text-3xl text-white cursor-pointer" />
+               : <PiPlusCircleBold
+                  className="text-3xl text-white cursor-pointer"
+                  onClick={() => router.push("/new-post")}
+               />
+         }
+         {
+            pathname === "/qr-scan"
+               ? <PiQrCodeFill className="text-3xl text-white cursor-pointer" />
+               : <PiQrCodeBold
+                  className="text-3xl text-white cursor-pointer"
+                  onClick={() => router.push("/qr-scan")}
+               />
+         }
+         {
+            pathname === "/notifications"
+               ? <BiSolidMeteor className="text-3xl text-white cursor-pointer" />
+               : <BiMeteor
+                  className="text-3xl text-white cursor-pointer"
+                  onClick={() => router.push("/notifications")}
+               />
+         }
+
+         {/* TODO: Fix user link and src with actual user pfp */}
+         <div
+            className="flex center h-[30px] w-[30px] rounded-full overflow-hidden"
+            onClick={() => router.push(`/u/${"@Test"}`)}
+         >
+            <Image
+               src={logoWhite["64px"]}
+               alt="Profile picture"
+               className="h-full w-full object-cover"
+            />
          </div>
       </div>
    )

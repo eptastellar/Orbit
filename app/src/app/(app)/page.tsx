@@ -1,10 +1,12 @@
 import { Header, Navbar } from "@/components"
 
 const Homepage = () => (
-   <div className="flex center h-full w-full">
+   <div className="flex flex-col center h-full w-full">
       <Header />
 
-      <p className="text-white">Homepage</p>
+      <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
+         <p className="text-white">Homepage</p>
+      </div>
 
       <Navbar />
    </div>
