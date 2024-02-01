@@ -1,14 +1,14 @@
 "use client"
 
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { PiCameraPlus } from "react-icons/pi"
 
+import { CameraPlus } from "@/assets/icons"
 import { BackButton, Input, SpinnerText } from "@/components"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
-import Image from "next/image"
 
 const Profile = () => {
    // Next router for navigation
@@ -140,7 +140,7 @@ const Profile = () => {
                <div className="flex center h-full w-full bg-gray-7 rounded-full overflow-hidden">
                   {pfpUrl
                      ? <Image src={pfpUrl} alt="Profile picture" height={128} width={128} className="h-full w-full object-cover" />
-                     : <PiCameraPlus className="text-white text-5xl" />
+                     : <CameraPlus height={32} />
                   }
                </div>
                <input

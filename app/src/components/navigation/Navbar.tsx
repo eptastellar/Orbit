@@ -2,10 +2,9 @@
 
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { BiMeteor, BiSolidMeteor } from "react-icons/bi"
-import { PiHorseBold, PiHouseFill, PiPlusCircleBold, PiPlusCircleFill, PiQrCodeBold, PiQrCodeFill } from "react-icons/pi"
 
 import { logoWhite } from "@/assets"
+import { Home, IconButton, Notifications, PlusCircle, QrCode } from "@/assets/icons"
 
 const Navbar = () => {
    // Route path and router navigation
@@ -13,43 +12,27 @@ const Navbar = () => {
    const router = useRouter()
 
    return (
-      <div className="flex device:hidden flex-row items-center justify-between w-full px-8 py-4 border-t border-gray-7 bg-black z-10">
-         {
-            pathname === "/"
-               ? <PiHouseFill className="text-3xl text-white cursor-pointer" />
-               : <PiHorseBold
-                  className="text-3xl text-white cursor-pointer"
-                  onClick={() => router.push("/")}
-               />
-         }
-         {
-            pathname === "/new-post"
-               ? <PiPlusCircleFill className="text-3xl text-white cursor-pointer" />
-               : <PiPlusCircleBold
-                  className="text-3xl text-white cursor-pointer"
-                  onClick={() => router.push("/new-post")}
-               />
-         }
-         {
-            pathname === "/qr-scan"
-               ? <PiQrCodeFill className="text-3xl text-white cursor-pointer" />
-               : <PiQrCodeBold
-                  className="text-3xl text-white cursor-pointer"
-                  onClick={() => router.push("/qr-scan")}
-               />
-         }
-         {
-            pathname === "/notifications"
-               ? <BiSolidMeteor className="text-3xl text-white cursor-pointer" />
-               : <BiMeteor
-                  className="text-3xl text-white cursor-pointer"
-                  onClick={() => router.push("/notifications")}
-               />
-         }
+      <div className="flex flex-row items-center justify-between w-full px-8 py-4 text-white border-t border-gray-7 bg-black z-10">
+         <IconButton
+            icon={<Home height={24} fill={pathname === "/"} />}
+            onClick={() => router.push("/")}
+         />
+         <IconButton
+            icon={<PlusCircle height={24} fill={pathname === "/new-post"} />}
+            onClick={() => router.push("/new-post")}
+         />
+         <IconButton
+            icon={<QrCode height={24} fill={pathname === "/qr-scan"} />}
+            onClick={() => router.push("/qr-scan")}
+         />
+         <IconButton
+            icon={<Notifications height={24} fill={pathname === "/notifications"} />}
+            onClick={() => router.push("/notifications")}
+         />
 
          {/* TODO: Fix user link and src with actual user pfp */}
          <div
-            className="flex center h-[30px] w-[30px] rounded-full overflow-hidden"
+            className="flex center h-6 w-6 rounded-full overflow-hidden cursor-pointer"
             onClick={() => router.push(`/u/${"@Test"}`)}
          >
             <Image

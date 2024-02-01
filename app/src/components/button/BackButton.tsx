@@ -1,7 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { PiArrowLeftBold } from "react-icons/pi"
+
+import { ArrowLeft } from "@/assets/icons"
 
 type Props = {
    colors?: string
@@ -17,7 +18,7 @@ const BackButton = ({ colors = "text-white bg-blue-7", text = "Back" }: Props) =
          className={`flex gap-2 center px-4 py-2 ${colors} rounded-md cursor-pointer`}
          onClick={() => router.back()}
       >
-         <PiArrowLeftBold />
+         <ArrowLeft height={12} />
          <p className="text-base font-semibold">{text}</p>
       </button>
    )
