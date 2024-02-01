@@ -1,8 +1,6 @@
-import { Request, Response, Router } from 'express'
+import { Handler, Request, Response } from 'express'
 
-const app: Router = Router()
-
-app.get('/', (_: Request, res: Response) => {
+export const GET: Handler = async (_: Request, res: Response) => {
    res.status(200).json({
       success: true,
       uptime: process.uptime(),
@@ -10,6 +8,4 @@ app.get('/', (_: Request, res: Response) => {
       arch: process.arch,
       node: process.version
    })
-})
-
-export default app
+}

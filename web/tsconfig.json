@@ -9,31 +9,31 @@
       "noImplicitAny": true,
       "strict": true,
       "skipLibCheck": true,
-      "baseUrl": ".",
+      "baseUrl": "src",
       "paths": {
          "@assets/*": [
-            "src/assets/*"
+            "./assets/*"
          ],
          "@contexts/*": [
-            "src/contexts/*"
+            "./contexts/*"
          ],
          "@routes/*": [
-            "src/routes/*"
+            "./routes/*"
          ],
          "@helpers/*": [
-            "src/helpers/*"
+            "./helpers/*"
          ],
          "@config/*": [
-            "src/config/*"
+            "./config/*"
          ],
          "@algorithms/*": [
-            "src/algorithms/*"
+            "./algorithms/*"
          ],
          "@cron-jobs/*": [
-            "src/cron-jobs/*"
+            "./cron-jobs/*"
          ],
          "@local-types/*": [
-            "src/types/*"
+            "./types/*"
          ]
       }
    },
@@ -43,7 +43,7 @@
       ]
    },
    "include": [
-      "src/*.ts",
+      "**/*.ts",
    ],
    "exclude": [
       "dist"

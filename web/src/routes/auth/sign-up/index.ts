@@ -1,10 +1,8 @@
 import { checkIfAccessTokenIsValid, createDoc, createNewSession, createNode } from '@contexts/AuthContext'
-import { areValidInterests, isValidBday, isValidImage, isValidSignUpUsername } from '@helpers/validate'
-import { Request, Response, Router } from 'express'
+import { areValidInterests, isValidBday, isValidImage, isValidSignUpUsername } from '@contexts/ValidationContext'
+import { Handler, Request, Response } from 'express'
 
-const app: Router = Router()
-
-app.post('/', (req: Request, res: Response) => {
+export const POST: Handler = (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!
    const username: string = req.body.username
    const interests: string[] = req.body.interests
@@ -25,23 +23,9 @@ app.post('/', (req: Request, res: Response) => {
             ])
                .then(() => {
                   createNewSession(uid).then((jwt: string) => { //return the session jwt and the username of the user for the frontend side
-                     res.status(201).json({ success: true, jwt: jwt, username: username })
+                     res.status(201).json({ success: true, jwt: jwt, username: username, pfp: pfp }) //TODO: fix and return the new created pfp
                   })
                }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
          }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-})
-
-app.post('/validate', (req: Request, res: Response) => {
-   const username: string = req.body.username
-   const bday: number = req.body.bday
-
-   Promise.all([
-      isValidSignUpUsername(username),
-      isValidBday(bday)
-   ])
-      .then(() => { res.status(200).json({ success: true }) })
-      .catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-})
-
-export default app
+}

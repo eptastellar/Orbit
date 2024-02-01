@@ -73,10 +73,11 @@ export async function areFriends(personalUid: string, friendUid: string): Promis
       const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
       const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let check = resultMap.records.map(row => row.get('t'))
+
       if (check[0] === null) {
          resolve(null)
       }
-      else reject("resources/not-friends")
+      else reject(new Error("resources/not-friends"))
    })
 }
 

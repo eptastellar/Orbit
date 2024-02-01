@@ -1,7 +1,7 @@
 import { firebase } from '@config/firebase-admin.config'
 import { neo } from '@config/neo4j.config'
 import { randomProfilePicture } from '@contexts/ContentContext'
-import { isValidSignUpUsername } from '@helpers/validate'
+import { isValidSignUpUsername } from '@contexts/ValidationContext'
 import express, { NextFunction } from 'express'
 import admin, { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from 'firebase-admin/firestore'
@@ -49,7 +49,7 @@ export const checkIfCronSecretIsValid = async (req: express.Request, res: expres
    const authorization: string = req.headers.authorization!
    const secret: string = authorization.split('Bearer ')[1]
 
-   try { //TODO: fix
+   try {
       if (secret == process.env.CRON_SECRET)
          next()
       else res.status(400).json({ success: false, message: 'auth/invalid-token' })
