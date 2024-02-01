@@ -5,13 +5,14 @@ import { useState } from "react"
 
 import { apple, google } from "@/assets"
 import { WelcomeButton } from "@/components"
-import { useAuthContext } from "@/contexts"
+import { useAuthContext, useUserContext } from "@/contexts"
 
 type Views = "default" | "signin" | "signup"
 
 const Welcome = () => {
    // Context hooks
    const { googleLogin } = useAuthContext()
+   const { setUserProfile } = useUserContext()
 
    // Next router for navigation
    const router = useRouter()
@@ -34,13 +35,19 @@ const Welcome = () => {
                success: boolean
                message: string
                jwt: string
+               pfp: string
                username: string
             }
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ success, jwt, username }: ResponseType) => {
+               .then(({ success, jwt, pfp, username }: ResponseType) => {
                   if (success) {
-                     localStorage.setItem("session-token", jwt)
+                     setUserProfile({
+                        profilePicture: pfp,
+                        username: username,
+                        sessionToken: jwt
+                     })
+
                      router.push(`/u/${username}`)
                   } else router.push("/onboarding/profile")
                })

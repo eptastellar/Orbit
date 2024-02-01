@@ -3,10 +3,13 @@
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 
-import { logoWhite } from "@/assets"
 import { Home, IconButton, Notifications, PlusCircle, QrCode } from "@/assets/icons"
+import { useUserContext } from "@/contexts"
 
 const Navbar = () => {
+   // Context hooks
+   const { userProfile } = useUserContext()
+
    // Route path and router navigation
    const pathname = usePathname()
    const router = useRouter()
@@ -30,14 +33,14 @@ const Navbar = () => {
             onClick={() => router.push("/notifications")}
          />
 
-         {/* TODO: Fix user link and src with actual user pfp */}
          <div
             className="flex center h-6 w-6 rounded-full overflow-hidden cursor-pointer"
-            onClick={() => router.push(`/u/${"@Test"}`)}
+            onClick={() => router.push(`/u/${userProfile!.username}`)}
          >
             <Image
-               src={logoWhite["64px"]}
+               src={userProfile!.profilePicture}
                alt="Profile picture"
+               height={24} width={24}
                className="h-full w-full object-cover"
             />
          </div>

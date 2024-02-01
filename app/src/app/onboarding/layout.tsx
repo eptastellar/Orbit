@@ -4,14 +4,18 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { LoadingOverlay } from "@/components"
+import { useUserContext } from "@/contexts"
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
+   // Context hooks
+   const { userProfile } = useUserContext()
+
    // Next router for navigation
    const router = useRouter()
 
    // Loading and session states
    const [loading, setLoading] = useState<boolean>(true)
-   const sessionToken = localStorage.getItem("session-token")
+   const sessionToken = userProfile?.sessionToken
 
    useEffect(() => {
       if (sessionToken) router.push("/")

@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
-import { useAuthContext } from "@/contexts"
+import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveServerError } from "@/libraries/serverErrors"
 
 const Interests = () => {
    // Context hooks
    const { getUserId } = useAuthContext()
+   const { setUserProfile } = useUserContext()
 
    // Next router for navigation
    const router = useRouter()
@@ -95,15 +96,20 @@ const Interests = () => {
          success: boolean
          message: string
          jwt: string
+         pfp: string
          username: string
       }
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`, params)
          .then((response) => response.json())
-         .then(({ success, message, jwt, username }: ResponseType) => {
+         .then(({ success, message, jwt, pfp, username }: ResponseType) => {
             if (success) {
                setError("")
 
-               localStorage.setItem("session-token", jwt)
+               setUserProfile({
+                  profilePicture: pfp,
+                  username: username,
+                  sessionToken: jwt
+               })
 
                // Remove temporary user localStorage values
                localStorage.removeItem("profilePicture")
