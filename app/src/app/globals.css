@@ -43,6 +43,10 @@ img {
    @apply items-center justify-center;
 }
 
+.loader {
+   @apply bg-gray-7 animate-pulse duration-200;
+}
+
 .text-stroke {
    -webkit-text-stroke: #FBFBFB;
    -webkit-text-stroke-width: 2px;
