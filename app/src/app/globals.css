@@ -29,6 +29,16 @@ img {
    -webkit-user-drag: none;
 }
 
+#overflow-height {
+   @apply fixed hidden flex-col center gap-8 h-screen w-screen bg-black z-50;
+}
+
+@media (orientation: landscape) and (max-height: 640px) {
+   #overflow-height {
+      display: flex;
+   }
+}
+
 .center {
    @apply items-center justify-center;
 }
