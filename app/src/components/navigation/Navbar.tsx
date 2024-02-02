@@ -40,7 +40,8 @@ const Navbar = () => {
             <Image
                src={userProfile!.profilePicture}
                alt="Profile picture"
-               height={24} width={24}
+               height={24}
+               width={24}
                className="h-full w-full object-cover"
             />
          </div>

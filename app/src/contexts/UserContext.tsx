@@ -1,19 +1,23 @@
 "use client"
 
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
+import { LoadingOverlay } from "@/components"
 import { useLocalStorage } from "@/hooks"
-import { UserProfile } from "@/types"
+import { LocalUser } from "@/types"
 
 type userContextType = {
-   userProfile: UserProfile | null
-   setUserProfile: React.Dispatch<React.SetStateAction<UserProfile | null>>
+   userProfile: LocalUser | null
+   setUserProfile: React.Dispatch<React.SetStateAction<LocalUser | null>>
 }
 
 const UserContext = createContext<userContextType>({} as userContextType)
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-   const [userProfile, setUserProfile] = useLocalStorage<UserProfile | null>("user-profile", null)
+   const [userProfile, setUserProfile] = useLocalStorage<LocalUser | null>("user-profile", null)
+   const [loading, setLoading] = useState<boolean>(true)
+
+   useEffect(() => setLoading(false), [])
 
    return (
       <UserContext.Provider
@@ -22,7 +26,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
             setUserProfile
          }}
       >
-         {children}
+         {loading ? <LoadingOverlay /> : children}
       </UserContext.Provider>
    )
 }
