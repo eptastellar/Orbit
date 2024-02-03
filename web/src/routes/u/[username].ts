@@ -1,14 +1,14 @@
 import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
-import { areFriends, getFriendCount, getMeteorCount, getPostCount, retrieveUIDFromUsername, retrieveUserDataFromUID } from '@contexts/UserContext'
+import { areFriends, getFriendCount, getMeteorCount, getPostCount, getUIDfromUserData, getUserDatafromUID } from '@contexts/UserContext'
 import { Request, Response } from 'express'
 
 export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const username: string = req.params.username
-   
-   retrieveUIDFromUsername(username).then(async (uid: string) => {
+
+   getUIDfromUserData(username).then(async (uid: string) => {
       areFriends(tokenUid, uid).then(async () => {
-         const { username, name, pfp } = await retrieveUserDataFromUID(uid)
+         const { username, name, pfp } = await getUserDatafromUID(uid)
 
          res.status(200).json({
             success: true,

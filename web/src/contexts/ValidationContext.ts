@@ -6,7 +6,7 @@ firebase()
 const db: Firestore = firestore()
 //TODO: add text and image control for harmful behavior
 
-export function isValidBday(bday: number): Promise<null> {
+export const birthdateValidation = async (bday: number): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
          if (!bday || bday > Date.now() / 1000 || bday < -2208988800)
@@ -20,7 +20,7 @@ export function isValidBday(bday: number): Promise<null> {
    })
 }
 
-export async function isValidSignUpUsername(username: string): Promise<null> {
+export const usernameValidation = async (username: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
          const regex: RegExp = /[^a-zA-Z0-9\_\-\.]/
@@ -45,7 +45,7 @@ export async function isValidSignUpUsername(username: string): Promise<null> {
    })
 }
 
-export async function areValidInterests(interestsList: string[]): Promise<null> {
+export const interestsValidation = async (interestsList: string[]): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
          if (interests.length > 5 && interests.length < 1)
@@ -93,7 +93,7 @@ export async function isValidContentType(content: string, type: string): Promise
       try {
          if (type == "text" || type == "image" || type == "audio") {
             if (type == "image" || type == "audio") {
-               isValidImage(content).then(() => {
+               mediaValidation(content).then(() => {
                   resolve(null)
                }).catch((error) => { reject(error) })
             } else resolve(null)
@@ -102,7 +102,7 @@ export async function isValidContentType(content: string, type: string): Promise
    })
 }
 
-export async function isValidImage(image: string): Promise<null> {
+export const mediaValidation = (media: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       //TODO
       resolve(null)

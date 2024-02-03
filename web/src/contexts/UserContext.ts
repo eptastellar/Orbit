@@ -1,5 +1,6 @@
 import { firebase } from '@config/firebase-admin.config'
 import { neo } from '@config/neo4j.config'
+import { UserInfo } from '@local-types/index'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 import { QueryResult, Session } from 'neo4j-driver'
@@ -8,18 +9,24 @@ firebase()
 const neo4j: Session = neo()
 const db: Firestore = firestore()
 
-export async function retrieveUserDataFromUID(uid: string) { //retrieve user informations based from the uid
-   const docRef: DocumentReference = db.collection('users').doc(uid)
-   const doc: DocumentData = await docRef.get()
+export const getUserDatafromUID = async (uid: string): Promise<UserInfo> => { //retrieve user informations based from the uid
+   return new Promise(async (resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('users').doc(uid)
+         const doc: DocumentData = await docRef.get()
 
-   const username: string = doc.data()?.username
-   const name: string = doc.data()?.name
-   const pfp: string = doc.data()?.pfp
+         const username: string = doc.data()?.username
+         const name: string = doc.data()?.name
+         const pfp: string = doc.data()?.pfp
 
-   return { username, name, pfp } //return these fields
+         const user: UserInfo = { username, name, pfp }
+         resolve(user)
+      } catch (error) { reject(new Error('')) }
+   })
+
 }
 
-export async function retrieveUIDFromUsername(username: string): Promise<string> { //retrieve uid based from the username
+export const getUIDfromUserData = async (username: string): Promise<string> => { //retrieve uid based from the username
    return new Promise((resolve, reject) => {
       const usersRef: Query = db.collection('users').where('username', '==', username)
       usersRef.get().then((snapshot: QuerySnapshot) => { //retrieve documents where the username is equal to the username param

@@ -1,5 +1,5 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
-import { retrieveUserDataFromUID } from '@contexts/UserContext'
+import { getUserDatafromUID } from '@contexts/UserContext'
 import { CommentFetch, PostFetch } from '@local-types/index'
 import { DocumentData, DocumentReference, Firestore, Query } from 'firebase-admin/firestore'
 
@@ -7,7 +7,7 @@ firebase()
 const db: Firestore = firestore()
 const bucket = firestorage()
 
-export async function randomProfilePicture(): Promise<string> {
+export const randomProfilePicture = (): Promise<string> => {
    const prefix: string = 'default/images'
 
    return new Promise((resolve, reject) => {
@@ -54,7 +54,7 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
       const snapshot: DocumentData = await docRef.get()
 
       const posts: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-         const { username, name, pfp } = await retrieveUserDataFromUID(doc.data().owner)
+         const { username, name, pfp } = await getUserDatafromUID(doc.data().owner)
          return {
             id: doc.id,
             creation: doc.createTime.seconds,
@@ -96,7 +96,7 @@ export async function fetchRootComments(postId: string, lastRootCommentId: strin
       const snapshot: DocumentData = await docRef.get()
 
       const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-         const { username, name, pfp } = await retrieveUserDataFromUID(doc.data().owner)
+         const { username, name, pfp } = await getUserDatafromUID(doc.data().owner)
          return {
             id: doc.id,
             creation: doc.createTime.seconds,
@@ -135,7 +135,7 @@ export async function fetchLeafsComments(rootId: string, lastLeafCommentId: stri
       const snapshot: DocumentData = await docRef.get()
 
       const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-         const { username, name, pfp } = await retrieveUserDataFromUID(doc.data().owner)
+         const { username, name, pfp } = await getUserDatafromUID(doc.data().owner)
          return {
             id: doc.id,
             creation: doc.createTime.seconds,

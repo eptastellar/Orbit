@@ -1,7 +1,7 @@
 import { firebase } from '@config/firebase-admin.config'
 import { neo } from '@config/neo4j.config'
 import { randomProfilePicture } from '@contexts/ContentContext'
-import { isValidSignUpUsername } from '@contexts/ValidationContext'
+import { UserInfo } from '@local-types/index'
 import express, { NextFunction } from 'express'
 import admin, { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from 'firebase-admin/firestore'
@@ -16,7 +16,7 @@ const db: Firestore = firestore()
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
    const authorization: string = req.headers.authorization!
 
-   isValidSessionJWT(authorization).then((payload: JWTPayload) => { //validate if the token is signed
+   jwtValidation(authorization).then((payload: JWTPayload) => { //validate if the token is signed
       const uid: string = payload.uid as string
 
       const docRef: DocumentReference = db.collection('sessions').doc(uid)
@@ -31,7 +31,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
    }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
 }
 
-export async function checkIfAccessTokenIsValid(authorization: string): Promise<string> {
+export const checkIfAccessTokenIsValid = async (authorization: string): Promise<string> => {
    return new Promise(async (resolve, reject) => {
       try {
          const jwt: string = authorization.split('Bearer ')[1] //remove bearer from the authentication param
@@ -46,11 +46,11 @@ export async function checkIfAccessTokenIsValid(authorization: string): Promise<
 }
 
 export const checkIfCronSecretIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
-   const authorization: string = req.headers.authorization!
-   const secret: string = authorization.split('Bearer ')[1]
-
    try {
-      if (secret == process.env.CRON_SECRET)
+      const authorization: string = req.headers.authorization!
+      const secret: string = authorization.split('Bearer ')[1]
+
+      if (secret === process.env.CRON_SECRET)
          next()
       else res.status(400).json({ success: false, message: 'auth/invalid-token' })
    } catch { res.status(400).json({ success: false, message: 'auth/invalid-token' }) }
@@ -74,7 +74,7 @@ export async function newSessionJWT(uid: string) {
    return signedJwt
 }
 
-export async function isValidSessionJWT(token: string): Promise<JWTPayload> {
+export async function jwtValidation(token: string): Promise<JWTPayload> {
    return new Promise(async (resolve, reject) => {
       try {
          const jwt: string = token.split('Bearer ')[1] //split the bearer scheme
@@ -96,12 +96,14 @@ export async function createNewSession(uid: string): Promise<string> {
 
    return new Promise(async (resolve, reject) => {
       if (token) {
-         isValidSessionJWT(token).then(async () => {
-            resolve(token) //if the token is still valid return it
-         }).catch(async (error) => {
-            await docRef.set({ jwt: '' }) //clear the firestore jwt and make the user sign in again
-            reject(error);
-         })
+         jwtValidation(token)
+            .then(async () => {
+               resolve(token) //if the token is still valid return it
+            })
+            .catch(async (error) => {
+               await docRef.set({ jwt: '' }) //clear the firestore jwt and make the user sign in again
+               reject(error);
+            })
       } else resolve(await refreshSession(docRef, uid)) //if the document is empty refresh the session
    })
 }
@@ -125,30 +127,28 @@ export async function checkIfDocumentExists(uid: string): Promise<null> {
    })
 }
 
-export async function createDoc(uid: string, username: string, pfp: string, bday: number): Promise<null> {
-   return new Promise((resolve, reject) => {
-      isValidSignUpUsername(username).then(async () => {
-         const docRef: DocumentReference = db.collection('users').doc(uid)
-         const name: string = username.substring(1) //remove the "@" from the username
+export async function createUserDocument(uid: string, username: string, pfp: string, bday: number): Promise<UserInfo> {
+   return new Promise(async (resolve, reject) => {
+      const docRef: DocumentReference = db.collection('users').doc(uid)
+      const name: string = username.substring(1) //remove the "@" from the username
 
-         if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
-            try { //set the pfp url to the one sent from the client, or if is null, select a random one
-               pfp = pfp ? pfp : await randomProfilePicture()
-            } catch (error) { reject(error) }
+      if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
+         try {
+            pfp = pfp ? pfp : await randomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
+         } catch (error) { reject(error) }
 
-            await docRef.set({ //set the user data into the doc
-               username: username,
-               name: name,
-               pfp: pfp,
-               bday: bday
-            })
-            resolve(null) //return nothing
-         } else reject(new Error('auth/user-already-exists'))
-      }).catch((error) => { reject(error) })
+         await docRef.set({ //set the user data into the doc
+            username: username,
+            name: name,
+            pfp: pfp,
+            bday: bday
+         })
+         resolve({ username, name, pfp })
+      } else reject(new Error('auth/user-already-exists'))
    })
 }
 
-export async function createNode(uid: string, interests: string[]): Promise<null> {
+export async function createUserNode(uid: string, interests: string[]): Promise<null> {
    return new Promise(async (resolve, reject) => {
       try {
          const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j

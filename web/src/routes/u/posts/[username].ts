@@ -1,6 +1,6 @@
 import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
 import { fetchPosts } from "@contexts/ContentContext"
-import { areFriends, retrieveUIDFromUsername } from "@contexts/UserContext"
+import { areFriends, getUIDfromUserData } from "@contexts/UserContext"
 import { isValidDocId } from "@contexts/ValidationContext"
 import { Request, Response } from "express"
 
@@ -13,7 +13,7 @@ export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Respon
       isValidDocId(lastDocId)
    ])
       .then(() => {
-         retrieveUIDFromUsername(username).then(async (uid: string) => { //get the uid from the username
+         getUIDfromUserData(username).then(async (uid: string) => { //get the uid from the username
             areFriends(tokenUid, uid).then(() => {
                fetchPosts([uid], lastDocId).then((fetch) => {
                   res.status(200).json({ success: true, posts: fetch.posts, lastDocId: fetch.lastDocId })
