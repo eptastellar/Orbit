@@ -39,7 +39,7 @@ const Profile = () => {
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null
 
-      if (file) {
+      if (file && ["image/gif", "image/jpeg", "image/png"].includes(file.type)) {
          setPfpUrl("")
 
          const uploadTask = uploadBytesResumable(ref(storage, `uploads/pfps/${crypto.randomUUID()}`), file)
