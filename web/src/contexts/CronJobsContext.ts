@@ -3,7 +3,7 @@ import { Session } from 'neo4j-driver'
 
 const neo4j: Session = neo()
 
-export async function keepAliveNeo(): Promise<null> {
+export const keepAliveNeo = (): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
          const query = 'MATCH (c:Cron) RETURN c'

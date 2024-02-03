@@ -1,6 +1,6 @@
 import { interests } from '@assets/interests'
 import { firebase, firestore } from '@config/firebase-admin.config'
-import { Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
+import { DocumentData, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 firebase()
 const db: Firestore = firestore()
@@ -60,39 +60,37 @@ export const interestsValidation = async (interestsList: string[]): Promise<null
    })
 }
 
-export async function isValidDocId(docId: string): Promise<null> {
+export const postIdValidation = (postId: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
-         if (docId) {
-            const docRef = await db.collection('posts').doc(docId).get()
+         const docRef: DocumentData = await db.collection('posts').doc(postId).get()
 
-            if (docRef.exists)
-               resolve(null)
-            else reject(new Error('validation/invalid-doc-id'))
-         } else resolve(null)
-      } catch { reject(new Error('validation/invalid-doc-id')) }
+         if (docRef.exists)
+            resolve(null)
+         else reject(new Error('validation/invalid-document-id'))
+      } catch (error) { reject(new Error('validation/invalid-document-id')) }
    })
 }
 
-export async function isValidCommentRootId(rootId: string, postId: string): Promise<null> {
+export const commentRootIdValidation = async (rootId: string, postId: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
          const docRef = await db.collection('comments').doc(rootId).get() //retrieve the root comment
 
          if (docRef.exists) {
-            if (docRef.data()?.postId == postId)
+            if (docRef.data()?.postId === postId)
                resolve(null)
-            else reject(new Error('validation/invalid-doc-id'))
-         } else reject(new Error('validation/invalid-doc-id'))
-      } catch { reject(new Error('validation/invalid-doc-id')) }
+            else reject(new Error('validation/invalid-document-id'))
+         } else reject(new Error('validation/invalid-document-id'))
+      } catch { reject(new Error('validation/invalid-document-id')) }
    })
 }
 
-export async function isValidContentType(content: string, type: string): Promise<null> {
+export const contentTypeValidation = async (content: string, type: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
-         if (type == "text" || type == "image" || type == "audio") {
-            if (type == "image" || type == "audio") {
+         if (type === "text" || type === "image" || type === "audio") {
+            if (type === "image" || type === "audio") {
                mediaValidation(content).then(() => {
                   resolve(null)
                }).catch((error) => { reject(error) })

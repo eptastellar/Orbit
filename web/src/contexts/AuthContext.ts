@@ -56,7 +56,7 @@ export const checkIfCronSecretIsValid = async (req: express.Request, res: expres
    } catch { res.status(400).json({ success: false, message: 'auth/invalid-token' }) }
 }
 
-export async function newSessionJWT(uid: string) {
+export const newSessionJWT = async (uid: string) => {
    const payload = {
       'uid': uid,
       'owner': 'eptastellar',
@@ -64,7 +64,7 @@ export async function newSessionJWT(uid: string) {
    }
 
    const jwt: SignJWT = new SignJWT(payload)
-   jwt.setProtectedHeader({ alg: 'HS256' })
+   jwt.setProtectedHeader({ alg: 'HS256' }) //TODO: enhance the security using asymmetric enc
    jwt.setIssuedAt()
    jwt.setExpirationTime('4w') //create a jwt and set the expire time to 4 weeks
 
@@ -74,7 +74,7 @@ export async function newSessionJWT(uid: string) {
    return signedJwt
 }
 
-export async function jwtValidation(token: string): Promise<JWTPayload> {
+export const jwtValidation = (token: string): Promise<JWTPayload> => {
    return new Promise(async (resolve, reject) => {
       try {
          const jwt: string = token.split('Bearer ')[1] //split the bearer scheme
@@ -89,7 +89,7 @@ export async function jwtValidation(token: string): Promise<JWTPayload> {
    })
 }
 
-export async function createNewSession(uid: string): Promise<string> {
+export const createNewSession = async (uid: string): Promise<string> => {
    const docRef: DocumentReference = db.collection('sessions').doc(uid) //create a new doc in the collection /sessions
    const doc: DocumentData = (await docRef.get()).data()! //get data inside the document
    const token: string = doc?.token
@@ -108,14 +108,14 @@ export async function createNewSession(uid: string): Promise<string> {
    })
 }
 
-export async function refreshSession(docRef: DocumentReference, uid: string): Promise<string> {
+export const refreshSession = async (docRef: DocumentReference, uid: string): Promise<string> => {
    const jwt: string = await newSessionJWT(uid) //generate a new session token
 
    await docRef.set({ jwt }) //refresh the token in the session token:
    return jwt
 }
 
-export async function checkIfDocumentExists(uid: string): Promise<null> {
+export const checkIfDocumentExists = (uid: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       const docRef: DocumentReference = db.collection('users').doc(uid)
 
@@ -127,7 +127,7 @@ export async function checkIfDocumentExists(uid: string): Promise<null> {
    })
 }
 
-export async function createUserDocument(uid: string, username: string, pfp: string, bday: number): Promise<UserInfo> {
+export const createUserDocument = (uid: string, username: string, pfp: string, bday: number): Promise<UserInfo> => {
    return new Promise(async (resolve, reject) => {
       const docRef: DocumentReference = db.collection('users').doc(uid)
       const name: string = username.substring(1) //remove the "@" from the username
@@ -148,7 +148,7 @@ export async function createUserDocument(uid: string, username: string, pfp: str
    })
 }
 
-export async function createUserNode(uid: string, interests: string[]): Promise<null> {
+export const createUserNode = (uid: string, interests: string[]): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
          const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j

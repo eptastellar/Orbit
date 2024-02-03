@@ -40,7 +40,7 @@ export const getUIDfromUserData = async (username: string): Promise<string> => {
    })
 }
 
-export async function getFriendCount(uid: string): Promise<number> {
+export const getFriendsCount = (uid: string): Promise<number> => {
    return new Promise(async (resolve, _) => {
       const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
       const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
@@ -49,7 +49,7 @@ export async function getFriendCount(uid: string): Promise<number> {
    })
 }
 
-export async function getPostCount(uid: string): Promise<number> { //get the snapshot size of all the posts where uid is equal to the owner
+export const getPostCount = (uid: string): Promise<number> => { //get the snapshot size of all the posts where uid is equal to the owner
    return new Promise(async (resolve, _) => {
       const postsRef: Query = db.collection('posts').where('owner', '==', uid)
       const snapshot: QuerySnapshot = await postsRef.get()
@@ -57,12 +57,14 @@ export async function getPostCount(uid: string): Promise<number> { //get the sna
    })
 }
 
-export async function getMeteorCount(uid: string): Promise<number> {
-   //TODO
-   return 0
+export const getMeteorCount = (uid: string): Promise<number> => {
+   return new Promise((resolve, reject) => {
+      //TODO  @TheInfernalNick
+      resolve(0)
+   })
 }
 
-export async function getFriendList(uid: string): Promise<string[]> {
+export const getFriendList = (uid: string): Promise<string[]> => {
    return new Promise(async (resolve, _) => {
       const tempArray: string[] = []
       const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
@@ -75,21 +77,20 @@ export async function getFriendList(uid: string): Promise<string[]> {
    })
 }
 
-export async function areFriends(personalUid: string, friendUid: string): Promise<null> {
+export const areFriends = (personalUid: string, friendUid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
       const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let check = resultMap.records.map(row => row.get('t'))
 
-      if (check[0] === null) {
+      if (check[0] === null)
          resolve(null)
-      }
       else reject(new Error("resources/not-friends"))
    })
 }
 
-export async function interestsFromUID(uid: string): Promise<string[]> {
-   return new Promise(async (resolve, reject) => {
+export const getInterestsFromUID = (uid: string): Promise<string[]> => {
+   return new Promise(async (resolve, _) => {
       const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests`
       const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let results: string[] = result.records.map(row => row.get('u.interests'))
@@ -97,10 +98,10 @@ export async function interestsFromUID(uid: string): Promise<string[]> {
    })
 }
 
-export async function changeAll(uid: string, interests: string[], username: string, name: string, pfp: string): Promise<null> {
-   return new Promise(async (resolve, reject) => {
+export const patchUserInfo = (uid: string, interests: string[], user: UserInfo): Promise<null> => {
+   return new Promise(async (resolve, reject) => { //TODO: @TheInfernalNick add reject
       const usersRef: DocumentReference = db.collection('users').doc(uid)
-      usersRef.set({ username: username, name: name, pfp: pfp })
+      usersRef.set({ username: user.username, name: user.name, pfp: user.pfp })
 
       const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'`
       await neo4j.executeWrite(tx => tx.run(query))
@@ -108,7 +109,7 @@ export async function changeAll(uid: string, interests: string[], username: stri
    })
 }
 
-export async function hasPermission(uid: string, postId: string): Promise<null> {
+export const hasPermission = (uid: string, postId: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('posts').doc(postId)

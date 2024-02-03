@@ -37,7 +37,7 @@ export const randomProfilePicture = (): Promise<string> => {
    })
 }
 
-export async function fetchPosts(uids: string[], lastDocId: string): Promise<PostFetch> {
+export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetch> => {
    const limit: number = 3
 
    return new Promise(async (resolve, reject) => {
@@ -46,8 +46,8 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
          .orderBy('createdAt', 'desc')
          .limit(limit)
 
-      if (lastDocId) {
-         const lastDoc: DocumentData = await db.collection('posts').doc(lastDocId).get()
+      if (lastPostId) {
+         const lastDoc: DocumentData = await db.collection('posts').doc(lastPostId).get()
          docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
       }
 
@@ -78,7 +78,7 @@ export async function fetchPosts(uids: string[], lastDocId: string): Promise<Pos
    })
 }
 
-export async function fetchRootComments(postId: string, lastRootCommentId: string): Promise<CommentFetch> {
+export const fetchRootComments = (postId: string, lastRootCommentId: string): Promise<CommentFetch> => {
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
@@ -118,7 +118,7 @@ export async function fetchRootComments(postId: string, lastRootCommentId: strin
    })
 }
 
-export async function fetchLeafsComments(rootId: string, lastLeafCommentId: string): Promise<CommentFetch> {
+export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): Promise<CommentFetch> => {
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
@@ -157,7 +157,7 @@ export async function fetchLeafsComments(rootId: string, lastLeafCommentId: stri
    })
 }
 
-export async function uploadPost(uid: string, type: string, content: string): Promise<string> {
+export const uploadPost = (uid: string, type: string, content: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('posts').doc() //set the docRef to posts
@@ -174,7 +174,7 @@ export async function uploadPost(uid: string, type: string, content: string): Pr
    })
 }
 
-export async function uploadComment(uid: string, rootId: string, postId: string, content: string): Promise<string> {
+export const uploadComment = (uid: string, rootId: string, postId: string, content: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('comments').doc() //set the docRef to comments
@@ -197,7 +197,7 @@ export async function uploadComment(uid: string, rootId: string, postId: string,
    })
 }
 
-export async function updatePost(postId: string, content: string, type: string): Promise<string> {
+export const updatePost = (postId: string, content: string, type: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('posts').doc(postId)
@@ -211,7 +211,7 @@ export async function updatePost(postId: string, content: string, type: string):
    })
 }
 
-export async function deletePost(postId: string): Promise<null> {
+export const deletePost = (postId: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('posts').doc(postId)

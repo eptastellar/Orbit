@@ -17,20 +17,11 @@
          "@contexts/*": [
             "./contexts/*"
          ],
-         "@routes/*": [
-            "./routes/*"
-         ],
-         "@helpers/*": [
-            "./helpers/*"
-         ],
          "@config/*": [
             "./config/*"
          ],
          "@algorithms/*": [
             "./algorithms/*"
-         ],
-         "@cron-jobs/*": [
-            "./cron-jobs/*"
          ],
          "@local-types/*": [
             "./types/*"
