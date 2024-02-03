@@ -63,9 +63,14 @@ const Interests = () => {
       event.preventDefault()
 
       // Preliminary checks
-      const profilePicture = localStorage.getItem("profilePicture")
-      const username = localStorage.getItem("username")
-      const birthdate = localStorage.getItem("birthdate")
+      const profilePicture: string | null =
+         JSON.parse(localStorage.getItem("profilePicture") ?? "null")
+      const username: string | null =
+         JSON.parse(localStorage.getItem("username") ?? "null")
+
+      const localBirthdate: string[] | null =
+         JSON.parse(localStorage.getItem("birthdate") ?? "null")
+      const birthdate = localBirthdate?.join("/")
 
       if (!username || !birthdate)
          return router.push("/onboarding/profile")

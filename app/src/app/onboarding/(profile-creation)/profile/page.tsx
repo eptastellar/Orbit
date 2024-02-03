@@ -3,10 +3,11 @@
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { CameraPlus } from "@/assets/icons"
 import { BackButton, Input, SpinnerText } from "@/components"
+import { useLocalStorage } from "@/hooks"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
 
@@ -20,30 +21,33 @@ const Profile = () => {
    const [progress, setProgress] = useState<number>(0)
 
    // Interaction states
-   const [pfpUrl, setPfpUrl] = useState<string>(localStorage.getItem("profilePicture") ?? "")
-   const [username, setUsername] = useState<string>(localStorage.getItem("username") ?? "")
-   const [birthdate, setBirthdate] = useState<string[]>(localStorage.getItem("birthdate")?.split("/") ?? [])
+   const [pfpUrl, setPfpUrl] = useLocalStorage<string>("profilePicture", "")
+   const [username, setUsername] = useLocalStorage<string>("username", "")
+   const [birthdate, setBirthdate] = useLocalStorage<string[]>("birthdate", ["", "", ""])
 
-   const [bdayYear, setBdayYear] = useState<string>(birthdate[0] ?? "")
-   const [bdayMonth, setBdayMonth] = useState<string>(birthdate[1] ?? "")
-   const [bdayDay, setBdayDay] = useState<string>(birthdate[2] ?? "")
+   const [bdayYear, setBdayYear] = useState<string>("")
+   const [bdayMonth, setBdayMonth] = useState<string>("")
+   const [bdayDay, setBdayDay] = useState<string>("")
+
+   useEffect(() => {
+      setBdayYear(birthdate[0] ?? "")
+      setBdayMonth(birthdate[1] ?? "")
+      setBdayDay(birthdate[2] ?? "")
+   }, [birthdate])
+
 
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null
 
       if (file) {
          setPfpUrl("")
-         localStorage.removeItem("profilePicture")
 
          const uploadTask = uploadBytesResumable(ref(storage, `uploads/pfps/${crypto.randomUUID()}`), file)
 
          uploadTask.on("state_changed",
             (snapshot) => setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
             (error) => setError(error.message),
-            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-               localStorage.setItem("profilePicture", downloadURL)
-               setPfpUrl(downloadURL)
-            })
+            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => setPfpUrl(downloadURL))
          )
       }
    }
@@ -104,9 +108,6 @@ const Profile = () => {
             if (success) {
                setError("")
 
-               // Set temporary user localStorage values
-               localStorage.setItem("username", username)
-               localStorage.setItem("birthdate", birthdate.join("/"))
                router.push("/onboarding/interests")
             } else {
                setError(resolveServerError(message))
