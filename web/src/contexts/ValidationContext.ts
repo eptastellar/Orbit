@@ -75,12 +75,31 @@ export const postIdValidation = (postId: string): Promise<null> => {
 export const commentRootIdValidation = async (rootId: string, postId: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef = await db.collection('comments').doc(rootId).get() //retrieve the root comment
+         const docRef: DocumentData = await db.collection('comments').doc(rootId).get() //retrieve the root comment
 
          if (docRef.exists) {
             if (docRef.data()?.postId === postId)
                resolve(null)
             else reject(new Error('validation/invalid-document-id'))
+         } else reject(new Error('validation/invalid-document-id'))
+      } catch { reject(new Error('validation/invalid-document-id')) }
+   })
+}
+
+export const commentLeafIdValidation = async (leafId: string, rootId: string, postId: string): Promise<null> => {
+   return new Promise(async (resolve, reject) => {
+      try {
+         const leafRef: DocumentData = await db.collection('comments').doc(leafId).get() //retrieve the leaf comment
+         const rootRef: DocumentData = await db.collection('comments').doc(rootId).get() //retrieve the root comment
+
+         if (rootRef.exists) {
+            if (rootRef.data()?.postId === postId) {
+               if (leafRef.data()?.postId === postId) {
+                  if (leafRef.data()?.root === rootId)
+                     resolve(null)
+                  else reject(new Error('validation/invalid-document-id'))
+               } else reject(new Error('validation/invalid-document-id'))
+            } else reject(new Error('validation/invalid-document-id'))
          } else reject(new Error('validation/invalid-document-id'))
       } catch { reject(new Error('validation/invalid-document-id')) }
    })
