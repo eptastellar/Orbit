@@ -157,18 +157,20 @@ export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): P
    })
 }
 
-export const uploadPost = (uid: string, type: string, content: string): Promise<string> => {
+export const uploadPost = (uid: string, text?: string, type?: string, content?: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('posts').doc() //set the docRef to posts
 
          docRef.set({ //set the post information in firestore
             owner: uid,
-            type: type,
-            content: content,
             likes_number: 0,
             createdAt: Date.now() //unix format
          })
+
+         if (text) docRef.update({ text: text })
+         if (content) docRef.update({ content: content, type: type })
+
          resolve(docRef.id)
       } catch (error) { reject(new Error('server/upload-failed')) }
    })
@@ -197,15 +199,14 @@ export const uploadComment = (uid: string, rootId: string, postId: string, conte
    })
 }
 
-export const updatePost = (postId: string, content: string, type: string): Promise<string> => {
-   return new Promise((resolve, reject) => {
+export const updatePost = (postId: string, text?: string, content?: string, type?: string): Promise<string> => {
+   return new Promise(async (resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('posts').doc(postId)
 
-         docRef.update({
-            content: content,
-            type: type,
-         })
+         if (text) docRef.update({ text: text })
+         if (content) docRef.update({ content: content, type: type })
+
          resolve(docRef.id)
       } catch (error) { reject(new Error('server/update-failed')) }
    })

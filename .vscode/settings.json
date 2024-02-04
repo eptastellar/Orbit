@@ -17,7 +17,7 @@
    "material-icon-theme.folders.associations": {
       "algorithms": "functions",
       "components": "react-components",
-      "cron-jobs": "archive",
+      "cron": "archive",
       "hoc": "interface",
       "loading": "CI",
       "workflows": "batch",

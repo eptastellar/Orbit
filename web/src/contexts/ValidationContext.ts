@@ -4,7 +4,6 @@ import { DocumentData, Firestore, Query, QuerySnapshot } from 'firebase-admin/fi
 
 firebase()
 const db: Firestore = firestore()
-//TODO: add text and image control for harmful behavior
 
 export const birthdateValidation = async (bday: number): Promise<null> => {
    return new Promise((resolve, reject) => {
@@ -105,21 +104,33 @@ export const commentLeafIdValidation = async (leafId: string, rootId: string, po
    })
 }
 
-export const contentTypeValidation = async (content: string, type: string): Promise<null> => {
-   return new Promise((resolve, reject) => {
+export const contentValidation = async (text?: string, content?: string, type?: string): Promise<null> => {
+   return new Promise(async (resolve, reject) => {
       try {
-         if (type === "text" || type === "image" || type === "audio") {
-            if (type === "image" || type === "audio") {
-               mediaValidation(content).then(() => {
-                  resolve(null)
-               }).catch((error) => { reject(error) })
-            } else resolve(null)
-         } else reject(new Error('validation/malformed-input'))
-      } catch { reject(new Error('validation/malformed-input')) }
+         if (content) {
+            if (text) await harmfulContentValidation(text)
+
+            if (type === "image" || type === "audio")
+               await mediaValidation(content)
+            else reject(new Error('validation/malformed-input'))
+         } else {
+            if (text)
+               await harmfulContentValidation(text)
+            else reject(new Error('validation/malformed-input'))
+         }
+         resolve(null)
+      } catch (error) { reject(error) }
    })
 }
 
 export const mediaValidation = (media: string): Promise<null> => {
+   return new Promise((resolve, reject) => {
+      //TODO
+      resolve(null)
+   })
+}
+
+export const harmfulContentValidation = (text: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       //TODO
       resolve(null)
