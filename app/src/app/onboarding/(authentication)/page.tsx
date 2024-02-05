@@ -38,6 +38,7 @@ const Welcome = () => {
                pfp: string
                username: string
             }
+
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
                .then(({ success, jwt, pfp, username }: ResponseType) => {

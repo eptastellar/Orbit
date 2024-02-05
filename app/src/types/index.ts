@@ -9,6 +9,7 @@ export type UserProfile = {
    username: string
    name: string
    profilePicture: string
+   interests: string[]
    counters: {
       postCount: number
       friendCount: number
