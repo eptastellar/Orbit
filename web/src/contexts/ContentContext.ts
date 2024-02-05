@@ -100,6 +100,16 @@ export const getRootsCommentsNumber = (postId: string): Promise<number> => {
    })
 }
 
+export const getLeafsCommentsNumber = (rootId: string): Promise<number> => {
+   return new Promise(async (resolve, _) => {
+      const queryRef: Query = db.collection('comments')
+         .where('root', '==', rootId)
+
+      const snapshot = await queryRef.count().get();
+      resolve(snapshot.data().count)
+   })
+}
+
 export const fetchRootComments = (postId: string, lastRootCommentId: string): Promise<CommentFetch> => {
    const limit: number = 5
 
@@ -123,6 +133,7 @@ export const fetchRootComments = (postId: string, lastRootCommentId: string): Pr
             id: doc.id,
             creation: doc.createTime.seconds,
             content: doc.data().content,
+            leafs_count: await getLeafsCommentsNumber(doc.id),
             user_data: {
                username: username,
                name: name,
