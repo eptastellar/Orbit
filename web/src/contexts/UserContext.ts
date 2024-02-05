@@ -89,6 +89,7 @@ export const areFriends = (personalUid: string, friendUid: string): Promise<null
    })
 }
 
+//retrieves the interests from neo4j for a specific user
 export const getInterestsFromUID = (uid: string): Promise<string[]> => {
    return new Promise(async (resolve, _) => {
       const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests`
@@ -98,8 +99,9 @@ export const getInterestsFromUID = (uid: string): Promise<string[]> => {
    })
 }
 
+//Sets everything that can be changed
 export const patchUserInfo = (uid: string, interests: string[], user: UserInfo): Promise<null> => {
-   return new Promise(async (resolve, reject) => { //TODO: @TheInfernalNick add reject
+   return new Promise(async (resolve, _) => {
       const usersRef: DocumentReference = db.collection('users').doc(uid)
       usersRef.set({ username: user.username, name: user.name, pfp: user.pfp })
 
@@ -118,5 +120,45 @@ export const hasPermission = (uid: string, postId: string): Promise<null> => {
             resolve(null)
          else reject('server/unauthorized')
       } catch (error) { reject('server/unauthorized') }
+   })
+}
+
+//Deletes the userReference and sessionReference in firebase and deletes the note in neo4j
+export const deleteUser = (uid: string): Promise<null> => {
+   return new Promise(async (resolve, reject) => {
+      try {
+         //firebase
+         const userRef: DocumentReference = db.collection('users').doc(uid)
+         const sessionRef: DocumentReference = db.collection('sessions').doc(uid)
+         removeBatch("posts", uid).then(() => removeBatch("comments", uid).then(() => userRef.delete().then(() => sessionRef.delete())))
+
+
+         //neo4j
+         const query: string = `MATCH (u:User) where u.name = '${uid}' DETACH DELETE u`
+         const result: QueryResult = await neo4j.executeWrite(tx => tx.run(query))
+
+         resolve(null)
+      } catch (error) { reject('server/unauthorized') }
+   })
+
+}
+
+//removes all the posts of the user in one batch to dont overload firebase
+async function removeBatch(type: string, uid: string): Promise<null> {
+   return new Promise(async (resolve, reject) => {
+      const postsRef: Query = db.collection(`${type}`).where('owner', '==', uid)
+      const snapshot: QuerySnapshot = await postsRef.get()
+
+      const batch = db.batch()
+      snapshot.docs.forEach((doc) => {
+         batch.delete(doc.ref)
+      })
+      await batch.commit()
+      if (snapshot.size === 0) {
+         resolve(null)
+      }
+      process.nextTick(() => {
+         removeBatch(type, uid)
+      })
    })
 }

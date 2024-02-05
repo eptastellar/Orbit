@@ -1,5 +1,5 @@
 import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
-import { getInterestsFromUID, getUserDatafromUID, patchUserInfo } from '@contexts/UserContext'
+import { deleteUser, getInterestsFromUID, getUserDatafromUID, patchUserInfo } from '@contexts/UserContext'
 import { interestsValidation, usernameValidation } from '@contexts/ValidationContext'
 import { UserInfo } from '@local-types/index'
 import { Request, Response } from 'express'
@@ -22,14 +22,23 @@ export const PATCH = [checkIfSessionTokenIsValid, async (req: Request, res: Resp
    const name: string = req.body.name
    const pfp: string = req.body.pfp
 
-   Promise.all([usernameValidation(username), interestsValidation(interests)]).then(() => { //TODO: @TheInfernalNick remove promise all and use then and catch
-      const user: UserInfo = { username, name, pfp }
-      patchUserInfo(uid, interests, user)
-      res.status(200).json({})
+   usernameValidation(username).then(() => {
+      interestsValidation(interests).then(() => {
+         //TODO: There could be name and pfp setted at null, we need to dont change them and keep the old ones
+         const user: UserInfo = { username, name, pfp }
+         patchUserInfo(uid, interests, user)
+         res.status(200).json({})
+
+      })
    }).catch((error: Error) => { res.status(400).json({ success: false, message: error.message }) })
 }]
 
 export const DELETE = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   //TODO @TheInfernalNick delete all data, posts, comments and session, also delete in neo4j
    //TODO @TheInfernalNick delete messages and ecc...
+
+   const uid: string = res.locals.uid
+
+   deleteUser(uid).then(() =>
+      res.status(200).json({})
+   ).catch((error: Error) => res.status(400).json({ success: false, message: error.message }))
 }]
