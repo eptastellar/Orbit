@@ -4,7 +4,7 @@ import { areFriends, getUIDfromUserData } from "@contexts/UserContext"
 import { postIdValidation } from "@contexts/ValidationContext"
 import { Request, Response } from "express"
 
-export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const lastPostId: string = req.body.lastPostId //retrieve the last fetched document
    const username: string = req.params.username
