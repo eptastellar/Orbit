@@ -58,9 +58,11 @@ export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetc
          return {
             id: doc.id,
             creation: doc.createTime.seconds,
+            text: doc.data().text,
             type: doc.data().type,
             content: doc.data().content,
-            likes_number: doc.data().likes_number,
+            likes_number: await getLikesNumber(doc.id),
+            comments_number: await getRootsCommentsNumber(doc.id),
             user_data: {
                username: username,
                name: name,
@@ -75,6 +77,26 @@ export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetc
          resolve(fetch)
       } else
          reject(new Error('server/no-content'))
+   })
+}
+
+export const getLikesNumber = (postId: string): Promise<number> => {
+   return new Promise(async (resolve, _) => {
+      const queryRef: Query = db.collection('likes')
+         .where('postId', '==', postId)
+
+      const snapshot = await queryRef.count().get();
+      resolve(snapshot.data().count)
+   })
+}
+
+export const getRootsCommentsNumber = (postId: string): Promise<number> => {
+   return new Promise(async (resolve, _) => {
+      const queryRef: Query = db.collection('comments')
+         .where('postId', '==', postId)
+
+      const snapshot = await queryRef.count().get();
+      resolve(snapshot.data().count)
    })
 }
 
@@ -220,5 +242,15 @@ export const deletePost = (postId: string): Promise<null> => {
          docRef.delete()
          resolve(null)
       } catch (error) { reject(new Error('server/delete-failed')) }
+   })
+}
+
+export const getPostOwner = (postId: string): Promise<string> => {
+   return new Promise(async (resolve, _) => {
+      const docRef: DocumentReference = db.collection('posts').doc(postId)
+
+      const doc: DocumentData = await docRef.get()
+
+      resolve(doc.data().owner)
    })
 }
