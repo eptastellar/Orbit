@@ -4,6 +4,7 @@ import { UserInfo } from '@local-types/index'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 import { QueryResult, Session } from 'neo4j-driver'
+import { getLikesNumber } from './ContentContext'
 
 firebase()
 const neo4j: Session = neo()
@@ -120,5 +121,36 @@ export const hasPermission = (uid: string, postId: string): Promise<null> => {
             resolve(null)
          else reject('server/unauthorized')
       } catch (error) { reject('server/unauthorized') }
+   })
+}
+
+export const updateLike = (postId: string, uid: string): Promise<number> => {
+   return new Promise(async (resolve, _) => {
+      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+
+      if (!(await docRef.get()).exists)
+         addLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) })
+      else
+         removeLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) });
+   })
+}
+
+export const addLike = (postId: string, uid: string): Promise<null> => {
+   return new Promise(async (resolve, _) => {
+      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+
+      await docRef.set({
+         liker: uid,
+         postId: postId
+      })
+      resolve(null)
+   })
+}
+
+export const removeLike = (postId: string, uid: string): Promise<null> => {
+   return new Promise(async (resolve, _) => {
+      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+      docRef.delete()
+      resolve(null)
    })
 }
