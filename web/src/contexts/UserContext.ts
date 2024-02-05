@@ -79,13 +79,15 @@ export const getFriendList = (uid: string): Promise<string[]> => {
 
 export const areFriends = (personalUid: string, friendUid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
-      const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
-      const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(query))
-      let check = resultMap.records.map(row => row.get('t'))
+      if (personalUid != friendUid) {
+         const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
+         const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(query))
+         let check = resultMap.records.map(row => row.get('t'))
 
-      if (check[0] === null)
-         resolve(null)
-      else reject(new Error("resources/not-friends"))
+         if (check[0] !== null)
+            resolve(null)
+         else reject(new Error("resources/not-friends"))
+      } else resolve(null)
    })
 }
 
