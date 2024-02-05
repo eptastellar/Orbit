@@ -4,7 +4,7 @@ import { commentLeafIdValidation, commentRootIdValidation, postIdValidation } fr
 import { CommentFetch } from "@local-types/index"
 import { Request, Response } from "express"
 
-export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const rootId: string = req.params.id
    const lastLeafCommentId: string = req.body.lastLeafCommentId
    const postId: string = req.body.postId

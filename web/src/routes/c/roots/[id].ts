@@ -4,7 +4,7 @@ import { commentRootIdValidation, postIdValidation } from '@contexts/ValidationC
 import { CommentFetch } from '@local-types/index'
 import { Request, Response } from 'express'
 
-export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const postId: string = req.params.id
    const lastRootCommentId: string = req.body.lastRootCommentId
 
