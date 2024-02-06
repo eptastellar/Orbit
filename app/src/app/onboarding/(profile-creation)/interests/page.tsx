@@ -1,5 +1,6 @@
 "use client"
 
+import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -7,6 +8,8 @@ import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveServerError } from "@/libraries/serverErrors"
 import { ServerError } from "@/types"
+
+import { fetchInterests } from "./requests"
 
 const Interests = () => {
    // Context hooks
@@ -17,22 +20,20 @@ const Interests = () => {
    const router = useRouter()
 
    // Fetching and async states
-   const [fetching, setFetching] = useState<boolean>(true)
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
 
    // Interaction states
    const [interests, setInterests] = useState<string[]>([])
-   const [interestsList, setInterestsList] = useState<string[]>([])
    const [interestsShown, setInterestsShown] = useState<string[]>([])
    const [searchQuery, setSearchQuery] = useState<string>("")
 
    const filterInterestsShown = (event: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(event.target.value)
 
-      if (!event.target.value) return randomizeInterestsShown(interestsList)
+      if (!event.target.value) return randomizeInterestsShown(interestsList!)
 
-      const filtered = interestsList
+      const filtered = interestsList!
          .filter((interest) => interest.toLowerCase().includes(event.target.value.toLowerCase()))
          .slice(0, 20)
       setInterestsShown(filtered)
@@ -48,14 +49,14 @@ const Interests = () => {
    const handleSelectedInterestClick = (interest: string) => {
       const newInterests = interests.filter((item) => item !== interest)
       setInterests(newInterests.sort())
-      randomizeInterestsShown(interestsList)
+      randomizeInterestsShown(interestsList!)
    }
 
    const handleInterestListClick = (interest: string) => {
       if (interests.length < 5) {
          setSearchQuery("")
          setInterests((prev) => [...prev, interest].sort())
-         randomizeInterestsShown(interestsList)
+         randomizeInterestsShown(interestsList!)
          document.getElementById("search-box")?.focus()
       }
    }
@@ -131,19 +132,17 @@ const Interests = () => {
    }
 
    // Load all interests on page load
-   useEffect(() => {
-      const params: RequestInit = { method: "GET" }
+   const { isLoading: fetchingInterests, data: interestsList, error: interestsError } = useQuery({
+      queryKey: ["interests"],
+      queryFn: () => fetchInterests().then((interests) => {
+         randomizeInterestsShown(interests)
+         return interests
+      })
+   })
 
-      type ResponseType = { interests: string[] }
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/interests`, params)
-         .then((response) => response.json())
-         .then(({ interests }: ResponseType) => {
-            setInterestsList(interests)
-            randomizeInterestsShown(interests)
-         })
-         .catch((error: any) => setError(error.error))
-         .finally(() => setFetching(false))
-   }, [])
+   useEffect(() => {
+      if (interestsError) console.error(interestsError)
+   }, [interestsError])
 
    return (
       <div className="flex flex-col items-center justify-between h-full w-full px-8">
@@ -192,7 +191,7 @@ const Interests = () => {
 
             <div className="flex-grow px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md overflow-y-scroll">
                <div className="flex flex-wrap gap-2">
-                  {fetching ? (
+                  {fetchingInterests ? (
                      <p className="text-gray-3">Fetching interests...</p>
                   ) : interestsShown.map((interest, index) => (
                      <InterestButton

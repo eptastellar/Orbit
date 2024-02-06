@@ -9,6 +9,7 @@
       "turbo": "next dev --turbo"
    },
    "dependencies": {
+      "@tanstack/react-query": "^5.18.1",
       "@vercel/analytics": "^1.1.2",
       "firebase": "^10.7.2",
       "next": "~14.1.0",
