@@ -1,14 +1,14 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { getUserDatafromUID } from '@contexts/UserContext'
 import { CommentFetch, PostFetch } from '@local-types/index'
-import { DocumentData, DocumentReference, Firestore, Query } from 'firebase-admin/firestore'
+import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 firebase()
 const db: Firestore = firestore()
 const bucket = firestorage()
 
 export const randomProfilePicture = (): Promise<string> => {
-   const prefix: string = 'default/images'
+   const prefix: string = 'default/pfps'
 
    return new Promise((resolve, reject) => {
       try {
@@ -263,5 +263,24 @@ export const getPostOwner = (postId: string): Promise<string> => {
       const doc: DocumentData = await docRef.get()
 
       resolve(doc.data().owner)
+   })
+}
+
+export const deleteComment = (commentId: string): Promise<null> => {
+   return new Promise(async (resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('comments').doc(commentId);
+
+         const leafsRef: Query = db.collection('comments').where('root', '==', commentId)
+         const snapshot: QuerySnapshot = await leafsRef.get()
+
+         const batch = db.batch();
+         snapshot.docs.forEach((doc) => { batch.delete(doc.ref) })
+
+         batch.delete(docRef)
+         await batch.commit()
+
+         resolve(null)
+      } catch { reject(new Error('server/delete-failed')) }
    })
 }
