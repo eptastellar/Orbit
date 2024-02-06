@@ -125,14 +125,14 @@ export const contentValidation = async (text?: string, content?: string, type?: 
 
 export const mediaValidation = (media: string): Promise<null> => {
    return new Promise((resolve, reject) => {
-      //TODO
+      //TODO enhance
       resolve(null)
    })
 }
 
 export const harmfulContentValidation = (text: string): Promise<null> => {
    return new Promise((resolve, reject) => {
-      //TODO
+      //TODO enhance
       resolve(null)
    })
 }

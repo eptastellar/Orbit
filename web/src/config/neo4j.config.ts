@@ -15,7 +15,7 @@ const driver: Driver = neo4j.driver(
 let index: boolean = true
 let session: any = null
 
-export function neo(): Session {
+export const neo = (): Session => {
    if (index) {
       index = false
       session = driver.session()

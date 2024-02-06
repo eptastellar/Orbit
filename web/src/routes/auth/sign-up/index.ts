@@ -17,7 +17,7 @@ export const POST = (req: Request, res: Response) => {
                mediaValidation(pfp).then(() => {
                   createUserDocument(uid, username, pfp, bday).then((user: UserInfo) => { //create a new doc in /users
                      createUserNode(uid, interests).then(() => { //create a new node in neo4j
-                        createNewSession(uid).then((jwt: string) => { //return the session jwt and the username of the user for the frontend side
+                        createNewSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
                            res.status(201).json({ success: true, jwt: jwt, username: user.username, name: user.name, pfp: user.pfp })
                         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
                      }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })

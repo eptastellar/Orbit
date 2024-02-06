@@ -24,21 +24,18 @@ export const PATCH = [checkIfSessionTokenIsValid, async (req: Request, res: Resp
 
    usernameValidation(username).then(() => {
       interestsValidation(interests).then(() => {
-         //TODO: There could be name and pfp setted at null, we need to dont change them and keep the old ones
          const user: UserInfo = { username, name, pfp }
          patchUserInfo(uid, interests, user)
-         res.status(200).json({})
-
+         res.status(200).json({ success: true })
       })
    }).catch((error: Error) => { res.status(400).json({ success: false, message: error.message }) })
 }]
 
 export const DELETE = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+   const uid: string = res.locals.uid
    //TODO @TheInfernalNick delete messages and ecc...
 
-   const uid: string = res.locals.uid
-
    deleteUser(uid).then(() =>
-      res.status(200).json({})
+      res.status(200).json({ success: true })
    ).catch((error: Error) => res.status(400).json({ success: false, message: error.message }))
 }]

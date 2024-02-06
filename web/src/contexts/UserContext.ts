@@ -24,7 +24,6 @@ export const getUserDatafromUID = async (uid: string): Promise<UserInfo> => { //
          resolve(user)
       } catch (error) { reject(new Error('')) }
    })
-
 }
 
 export const getUIDfromUserData = async (username: string): Promise<string> => { //retrieve uid based from the username
@@ -87,15 +86,14 @@ export const areFriends = (personalUid: string, friendUid: string): Promise<null
 
          if (check[0] !== null)
             resolve(null)
-         else reject(new Error("resources/not-friends"))
+         else reject(new Error("server/not-friends"))
       } else resolve(null)
    })
 }
 
-//retrieves the interests from neo4j for a specific user
 export const getInterestsFromUID = (uid: string): Promise<string[]> => {
    return new Promise(async (resolve, _) => {
-      const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests`
+      const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests` //retrieves the interests from neo4j for a specific user
       const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let results: string[] = result.records.map(row => row.get('u.interests'))
       let out = results[0].split(",")
@@ -103,13 +101,12 @@ export const getInterestsFromUID = (uid: string): Promise<string[]> => {
    })
 }
 
-//Sets everything that can be changed
 export const patchUserInfo = (uid: string, interests: string[], user: UserInfo): Promise<null> => {
    return new Promise(async (resolve, _) => {
       const usersRef: DocumentReference = db.collection('users').doc(uid)
       usersRef.set({ username: user.username, name: user.name, pfp: user.pfp })
 
-      const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'`
+      const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'` //sets everything that can be changed
       await neo4j.executeWrite(tx => tx.run(query))
       resolve(null)
    })
@@ -127,15 +124,13 @@ export const hasPermission = (uid: string, postId: string): Promise<null> => {
    })
 }
 
-//deletes the userReference and sessionReference in firebase and deletes the note in neo4j
 export const deleteUser = (uid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
-      try {
+      try { //deletes the user reference and sessionReference in firebase and deletes the note in neo4j
          //firebase
          const userRef: DocumentReference = db.collection('users').doc(uid)
          const sessionRef: DocumentReference = db.collection('sessions').doc(uid)
          removeBatch("posts", uid).then(() => removeBatch("comments", uid).then(() => userRef.delete().then(() => sessionRef.delete())))
-
 
          //neo4j
          const query: string = `MATCH (u:User) where u.name = '${uid}' DETACH DELETE u`
@@ -147,23 +142,20 @@ export const deleteUser = (uid: string): Promise<null> => {
 
 }
 
-//removes all the posts of the user in one batch to dont overload firebase
-async function removeBatch(type: string, uid: string): Promise<null> {
-   return new Promise(async (resolve, reject) => {
+export const removeBatch = (type: string, uid: string): Promise<null> => {
+   return new Promise(async (resolve, _) => {
       const postsRef: Query = db.collection(`${type}`).where('owner', '==', uid)
       const snapshot: QuerySnapshot = await postsRef.get()
 
       const batch = db.batch()
-      snapshot.docs.forEach((doc) => {
-         batch.delete(doc.ref)
-      })
+      snapshot.docs.forEach((doc) => { batch.delete(doc.ref) }) //removes all the posts of the user in one batch to dont overload firebase
+
       await batch.commit()
-      if (snapshot.size === 0) {
+
+      if (snapshot.size === 0)
          resolve(null)
-      }
-      process.nextTick(() => {
-         removeBatch(type, uid)
-      })
+
+      process.nextTick(() => { removeBatch(type, uid) })
    })
 }
 
