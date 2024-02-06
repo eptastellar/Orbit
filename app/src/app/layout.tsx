@@ -1,4 +1,5 @@
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Metadata } from "next"
 import Image from "next/image"
 
@@ -31,6 +32,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
          </Providers>
 
          <Analytics debug={false} />
+         <SpeedInsights debug={false} />
       </body>
    </html>
 )
