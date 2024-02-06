@@ -111,15 +111,15 @@ export const patchUserInfo = (uid: string, interests: string[], user: UserInfo):
    })
 }
 
-export const hasPermission = (uid: string, postId: string): Promise<null> => {
+export const hasPermission = (uid: string, id: string, path: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('posts').doc(postId)
+         const docRef: DocumentReference = db.collection(path).doc(id)
 
          if ((await docRef.get()).data()?.owner == uid)
             resolve(null)
-         else reject('server/unauthorized')
-      } catch (error) { reject('server/unauthorized') }
+         else reject(new Error('server/unauthorized'))
+      } catch (error) { reject(new Error('server/unauthorized')) }
    })
 }
 
@@ -129,14 +129,20 @@ export const deleteUser = (uid: string): Promise<null> => {
          //firebase
          const userRef: DocumentReference = db.collection('users').doc(uid)
          const sessionRef: DocumentReference = db.collection('sessions').doc(uid)
-         removeBatch("posts", uid).then(() => removeBatch("comments", uid).then(() => userRef.delete().then(() => sessionRef.delete())))
+         removeBatch("posts", uid).then(() => {
+            removeBatch("comments", uid).then(() => {
+               userRef.delete().then(() => {
+                  sessionRef.delete()
+               })
+            })
+         })
 
          //neo4j
          const query: string = `MATCH (u:User) where u.name = '${uid}' DETACH DELETE u`
          const result: QueryResult = await neo4j.executeWrite(tx => tx.run(query))
 
          resolve(null)
-      } catch (error) { reject('server/unauthorized') }
+      } catch (error) { reject(new Error('server/unauthorized')) }
    })
 
 }
