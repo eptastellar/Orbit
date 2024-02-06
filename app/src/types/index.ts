@@ -4,6 +4,36 @@ export type LocalUser = {
    sessionToken: string
 }
 
+export type Post = {
+   owner: string
+   type: "audio" | "image" | "text"
+   content: string
+   text?: string
+   likesCount: number
+   createdAt: number
+}
+
+export type ServerError =
+   // Authentication errors
+   "auth/expired-token" |
+   "auth/invalid-token" |
+   "auth/email-unverified" |
+   "auth/user-not-signed-up" |
+   "auth/user-already-exists" |
+   // Validation errors
+   "validation/username-too-long" |
+   "validation/username-too-short" |
+   "validation/invalid-username" |
+   "validation/username-already-in-use" |
+   "validation/invalid-birthdate" |
+   "validation/too-young" |
+   "validation/invalid-number-of-interests" |
+   "validation/invalid-interests" |
+   "validation/invalid-document-id" |
+   "validation/malformed-input" |
+   // Server errors
+   "server/no-content"
+
 export type UserProfile = {
    personal: boolean
    username: string

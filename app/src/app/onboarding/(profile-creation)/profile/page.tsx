@@ -10,6 +10,7 @@ import { BackButton, Input, SpinnerText } from "@/components"
 import { useLocalStorage } from "@/hooks"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
+import { ServerError } from "@/types"
 
 const Profile = () => {
    // Next router for navigation
@@ -101,7 +102,7 @@ const Profile = () => {
          body: requestBody
       }
 
-      type ResponseType = { success: boolean, message: string }
+      type ResponseType = { success: boolean, message: ServerError }
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up/validate`, params)
          .then((response) => response.json())
          .then(({ success, message }: ResponseType) => {

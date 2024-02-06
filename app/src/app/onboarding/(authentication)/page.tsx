@@ -6,6 +6,7 @@ import { useState } from "react"
 import { apple, google } from "@/assets"
 import { WelcomeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
+import { ServerError } from "@/types"
 
 type Views = "default" | "signin" | "signup"
 
@@ -33,7 +34,7 @@ const Welcome = () => {
 
             type ResponseType = {
                success: boolean
-               message: string
+               message: ServerError
                jwt: string
                pfp: string
                username: string

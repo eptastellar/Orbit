@@ -7,6 +7,7 @@ import { BackButton, Input, SpinnerText } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 import { resolveServerError } from "@/libraries/serverErrors"
+import { ServerError } from "@/types"
 
 const Signin = () => {
    // Context hooks
@@ -38,7 +39,7 @@ const Signin = () => {
 
             type ResponseType = {
                success: boolean
-               message: string
+               message: ServerError
                jwt: string
                pfp: string
                username: string

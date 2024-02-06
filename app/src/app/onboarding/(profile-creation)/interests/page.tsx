@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveServerError } from "@/libraries/serverErrors"
+import { ServerError } from "@/types"
 
 const Interests = () => {
    // Context hooks
@@ -99,7 +100,7 @@ const Interests = () => {
 
       type ResponseType = {
          success: boolean
-         message: string
+         message: ServerError
          jwt: string
          pfp: string
          username: string
