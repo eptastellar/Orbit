@@ -9,35 +9,32 @@ The way to connect.
 ## 📝 Table of Contents
 
 > - [💿 Introduction](#-introduction)
-> - [📚️ Documentation](https://github.com/eptastellar/orbit/wiki)
-> - [📜️️️️️️️️️ Licence](/LICENSE)
+> - [📚️ DOCS](https://github.com/eptastellar/orbit/wiki)
+> - [📜️️️️️️️️️ LICENSE](/LICENSE)
 > - [✍ Authors](#-authors)
 
 ## 💿 Introduction
 
 Orbit is a social media application that allows users to maintain and develop their interactions with known friends in real life through the use of a unique QR code, known as QRbit.
 
+🎯 **Goal**: By focusing on the power of QR codes, Orbit redefines the possibilities of social interaction and hopefully will bring people closer than ever before.
+
 ### Features
 
 🔎 **Qr codes scanning**: Our primary feature is the ability for two individuals to become friends by scanning each other's QR codes. QRbit can only be scanned in real life by a friend, automatically creating a friendship in the app. The system is constantly updated to prevent online sharing, promoting authentic connections.
-
-🔐 **Security**: Orbit provides easy access via email and password, Google or Apple accounts, with strong attention to user data security. All user data is encrypted to ensure their security and privacy, and protected by sessions with json web tokens.
 
 🌌 **Supernova:** Orbit introduces the "Supernova" function, which allows contacting a new user per day with similar interests and friends. An algorithm searches for compatibility between the friends of the user.
 
 ☄️ **Meteor**: An interesting feature of Orbit is "Meteor," which sends daily notifications to encourage user interaction. Writing to a random friend within an hour increases the Meteor streak and rank, otherwise it retreats, promoting daily interaction.
 
+🍰 **Birthdays**: Users' birthdays are highlighted with a cake emoji next to their name throughout the day, and the application sends notifications to celebrate the event among friends.
+
 🔗 **Communication**:
-
 - send text messages, images, or voice notes in their private chats, with temporary messages (24 hours).
-
 - share images and voice notes with or without text messages on their profile, visible to friends on the home page.
-
 - create limited friend groups and request approval for entry, promoting communities based on authentic connections. These groups allow interaction through images, voice notes, and text messages from each participant.
 
-🍰 **Birthday**: Users' birthdays are highlighted with a cake emoji next to their name throughout the day, and the application sends notifications to celebrate the event among friends.
-
-🎯 **Goal**: By focusing on the power of QR codes, Orbit redefines the possibilities of social interaction and hopefully will bring people closer than ever before.
+🔐 **Security**: Orbit provides easy access via email and password, Google or Apple accounts, with strong attention to user data security. All user data is encrypted to ensure their security and privacy, and protected by sessions with json web tokens.
 
 ## 🛠️ Technologies used
 
@@ -53,7 +50,7 @@ Orbit is a social media application that allows users to maintain and develop th
 <a href="https://github.com/eptastellar/orbit/graphs/contributors">![Authors](https://opencollective.com/eptastellar-orbit/contributors.svg?width=400&button=false)</a>
 
 > #### Roles:
-[@mzyxnuel](https://github.com/mzyxnuel):
+Project Manager & Cyber Security Analyst: [@mzyxnuel](https://github.com/mzyxnuel):
 <a title="Project Management" href="https://github.com/mzyxnuel">📆</a>
 <a title="Code" href="https://github.com/mzyxnuel">💻</a>
 <a title="Security" href="https://github.com/mzyxnuel">🛡</a>
@@ -62,7 +59,7 @@ Orbit is a social media application that allows users to maintain and develop th
 <a title="Ideas, Planning, & Feedback" href="https://github.com/mzyxnuel">🤔
 <a title="Reviewed Pull Requests" href="https://github.com/mzyxnuel">👀</a>
 
-[@74C17N3P7UN3](https://github.com/74C17N3P7UN3):
+Frontend Developer: [@74C17N3P7UN3](https://github.com/74C17N3P7UN3):
 <a title="Code" href="https://github.com/74C17N3P7UN3">💻</a>
 <a title="Design" href="https://github.com/74C17N3P7UN3">🎨</a>
 <a title="Content" href="https://github.com/74C17N3P7UN3">🖋</a>
@@ -70,7 +67,7 @@ Orbit is a social media application that allows users to maintain and develop th
 <a title="Ideas, Planning, & Feedback" href="https://github.com/74C17N3P7UN3">🤔</a>
 <a title="Reviewed Pull Requests" href="https://github.com/74C17N3P7UN3">👀</a>
 
-[@TheInfernalNick](https://github.com/TheInfernalNick):
+Backend Developer & DevOps: [@TheInfernalNick](https://github.com/TheInfernalNick):
 <a title="Code" href="https://github.com/TheInfernalNick">💻</a>
 <a title="Infrastructure (Hosting, Build-Tools, etc.)" href="https://github.com/TheInfernalNick">🚇</a>
 <a title="Testing" href="https://github.com/TheInfernalNick">⚠️</a>
@@ -78,7 +75,7 @@ Orbit is a social media application that allows users to maintain and develop th
 <a title="Ideas, Planning, & Feedback" href="https://github.com/TheInfernalNick">🤔</a>
 <a title="Reviewed Pull Requests" href="https://github.com/TheInfernalNick">👀</a>
 
-[@MarcoMattei04](https://github.com/MarcoMattei04):
+UI/UX Designer & Video Editor: [@MarcoMattei04](https://github.com/MarcoMattei04):
 <a title="Design" href="https://github.com/MarcoMattei04">🎨</a>
 <a title="Code" href="https://github.com/MarcoMattei04">💻</a>
 <a title="Content" href="https://github.com/MarcoMattei04">🖋</a>
@@ -86,7 +83,7 @@ Orbit is a social media application that allows users to maintain and develop th
 <a title="Beta Testing" href="https://github.com/MarcoMattei04">📓</a>
 <a title="Promotion" href="https://github.com/MarcoMattei04">📣</a>
 
-[@itspomo](https://github.com/itspomo):
+Marketing & Fundraising Manager: [@itspomo](https://github.com/itspomo):
 <a title="Promotion" href="https://github.com/itspomo">📣</a>
 <a title="Documentation" href="https://github.com/itspomo">📖</a>
 <a title="Audio" href="https://github.com/itspomo">🔊</a>
