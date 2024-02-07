@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 
 import { profile } from "@/assets"
 import { Gear, IconButton, ThreeDotsVertical } from "@/assets/icons"
-import { HeaderWithButton, Navbar } from "@/components"
+import { HeaderWithButton, InterestButton, Navbar } from "@/components"
 import { useUserContext } from "@/contexts"
 
 import { fetchPosts, fetchProfile } from "./requests"
@@ -68,8 +68,8 @@ const User = ({ params }: Props) => {
 
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
             {
-               // If the visited page is owned by the user
                fetchedUser?.personal ?? userProfile!.username === username
+                  // The visited page is the user itself
                   ? <Image
                      src={fetchedUser?.profilePicture ?? userProfile!.profilePicture}
                      alt="Profile picture"
@@ -77,15 +77,16 @@ const User = ({ params }: Props) => {
                      width={128}
                      className="min-h-32 min-w-32 object-cover rounded-full"
                   />
-                  // Otherwise, if it hasn't been fetched, show a loading icon
                   : fetchedUser
+                     // The visited page is not the user
                      ? <Image
-                        src={fetchedUser?.profilePicture ?? userProfile!.profilePicture}
+                        src={fetchedUser?.profilePicture}
                         alt="Profile picture"
                         height={128}
                         width={128}
                         className="min-h-32 min-w-32 object-cover rounded-full"
                      />
+                     // The image is still being fetched
                      : <div className="h-32 w-32 loader rounded-full" />
             }
 
@@ -99,33 +100,43 @@ const User = ({ params }: Props) => {
                <p className="text-base font-semibold text-gray-3">{username}</p>
             </div>
 
-            <div className="flex flex-row center w-full py-6 border-b border-gray-7">
-               <div className="flex flex-col center w-1/3">
-                  {fetchedUser?.counters.postCount !== undefined ?
-                     <p className="text-xl font-semibold text-white">
-                        {fetchedUser.counters.postCount}
-                     </p>
-                     : <div className="h-5 w-2/3 my-1 loader rounded-md" />
-                  }
-                  <p className="text-base font-semibold text-gray-3">POSTS</p>
+            <div className="flex flex-col center w-full mt-6 bg-gray-7/50 border border-gray-7 rounded-md">
+               <div className="flex flex-row center w-full py-4 border-b border-gray-7">
+                  <div className="flex flex-col center w-1/3">
+                     {fetchedUser?.counters.postCount !== undefined ?
+                        <p className="text-xl font-semibold text-white">
+                           {fetchedUser.counters.postCount}
+                        </p>
+                        : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+                     }
+                     <p className="text-base font-semibold text-gray-3">POSTS</p>
+                  </div>
+                  <div className="flex flex-col center w-1/3 border-x border-gray-7">
+                     {fetchedUser?.counters.friendCount !== undefined ?
+                        <p className="text-xl font-semibold text-white">
+                           {fetchedUser.counters.friendCount}
+                        </p>
+                        : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+                     }
+                     <p className="text-base font-semibold text-gray-3">FRIENDS</p>
+                  </div>
+                  <div className="flex flex-col center w-1/3">
+                     {fetchedUser?.counters.meteorCount !== undefined ?
+                        <p className="text-xl font-semibold text-white">
+                           {fetchedUser.counters.meteorCount}
+                        </p>
+                        : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+                     }
+                     <p className="text-base font-semibold text-gray-3">METEORS</p>
+                  </div>
                </div>
-               <div className="flex flex-col center w-1/3 border-x border-gray-7">
-                  {fetchedUser?.counters.friendCount !== undefined ?
-                     <p className="text-xl font-semibold text-white">
-                        {fetchedUser.counters.friendCount}
-                     </p>
-                     : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+               <div className="flex flex-row gap-2 items-center justify-start w-full p-4 border-b border-gray-7 overflow-x-scroll">
+                  {fetchedUser?.interests ?
+                     fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
+                     : ["w-1/4", "w-1/2", "w-1/3"].map((width) =>
+                        <div key={`interest-${width}`} className={`h-6 ${width} loader rounded-full`} />
+                     )
                   }
-                  <p className="text-base font-semibold text-gray-3">FRIENDS</p>
-               </div>
-               <div className="flex flex-col center w-1/3">
-                  {fetchedUser?.counters.meteorCount !== undefined ?
-                     <p className="text-xl font-semibold text-white">
-                        {fetchedUser.counters.meteorCount}
-                     </p>
-                     : <div className="h-5 w-2/3 my-1 loader rounded-md" />
-                  }
-                  <p className="text-base font-semibold text-gray-3">METEORS</p>
                </div>
             </div>
 
