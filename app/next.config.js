@@ -10,7 +10,7 @@ module.exports = {
          {
             protocol: "https",
             hostname: "storage.googleapis.com",
-            pathname: "/eptastellar-orbit.appspot.com/default/images/**",
+            pathname: "/eptastellar-orbit.appspot.com/default/**",
          },
       ],
    },
