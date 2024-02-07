@@ -130,13 +130,9 @@ export const deleteUser = (uid: string): Promise<null> => {
          //firebase
          const userRef: DocumentReference = db.collection('users').doc(uid)
          const sessionRef: DocumentReference = db.collection('sessions').doc(uid)
-         removeBatch("posts", uid).then(() => {
-            removeBatch("comments", uid).then(() => {
-               userRef.delete().then(() => {
-                  sessionRef.delete()
-               })
-            })
-         })
+
+         userRef.delete()
+         sessionRef.delete()
 
          //neo4j
          const query: string = `MATCH (u:User) where u.name = '${uid}' DETACH DELETE u`

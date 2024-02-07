@@ -197,7 +197,6 @@ export const uploadPost = (uid: string, text?: string, type?: string, content?: 
 
          docRef.set({ //set the post information in firestore
             owner: uid,
-            likes_number: 0,
             createdAt: Date.now() //unix format
          })
 
