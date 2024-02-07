@@ -139,9 +139,9 @@ const Profile = () => {
                      `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`
                }}
             >
-               <div className="flex center h-full w-full bg-gray-7 rounded-full overflow-hidden">
+               <div className="flex center max-h-32 max-w-32 bg-gray-7 rounded-full overflow-hidden">
                   {pfpUrl
-                     ? <Image src={pfpUrl} alt="Profile picture" height={128} width={128} className="h-full w-full object-cover" />
+                     ? <Image src={pfpUrl} alt="Profile picture" height={128} width={128} className="min-h-32 min-w-32 object-cover" />
                      : <CameraPlus color="fill-white" height={32} />
                   }
                </div>

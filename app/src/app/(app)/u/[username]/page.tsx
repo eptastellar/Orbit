@@ -75,7 +75,7 @@ const User = ({ params }: Props) => {
                      alt="Profile picture"
                      height={128}
                      width={128}
-                     className="h-32 w-32 object-cover rounded-full"
+                     className="min-h-32 min-w-32 object-cover rounded-full"
                   />
                   // Otherwise, if it hasn't been fetched, show a loading icon
                   : fetchedUser
@@ -84,7 +84,7 @@ const User = ({ params }: Props) => {
                         alt="Profile picture"
                         height={128}
                         width={128}
-                        className="h-32 w-32 object-cover rounded-full"
+                        className="min-h-32 min-w-32 object-cover rounded-full"
                      />
                      : <div className="h-32 w-32 loader rounded-full" />
             }
