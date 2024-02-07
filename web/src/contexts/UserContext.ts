@@ -95,7 +95,8 @@ export const getInterestsFromUID = (uid: string): Promise<string[]> => {
       const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests`
       const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let results: string[] = result.records.map(row => row.get('u.interests'))
-      resolve(results)
+      let out = results[0].split(",")
+      resolve(out)
    })
 }
 
