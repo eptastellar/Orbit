@@ -87,7 +87,7 @@ const User = ({ params }: Props) => {
                         className="min-h-32 min-w-32 object-cover rounded-full"
                      />
                      // The image is still being fetched
-                     : <div className="h-32 w-32 loader rounded-full" />
+                     : <div className="min-h-32 min-w-32 loader rounded-full" />
             }
 
 
@@ -140,20 +140,39 @@ const User = ({ params }: Props) => {
                </div>
             </div>
 
-            {/* TODO: Actually detect if the user has posts and map over them */}
-            <div className="flex flex-col flex-grow center w-full py-6">
-               <Image
-                  src={profile}
-                  alt="User has no posts to display"
-                  className="w-2/3"
-               />
-               <p className="mt-4 text-center text-base font-semibold text-white">
-                  {fetchedUser?.personal
-                     ? "You haven't posted anything yet."
-                     : "This user hasn't posted anything yet."
-                  }
-               </p>
-            </div>
+            {fetchedUser && fetchedPosts ?
+               fetchedPosts.posts
+                  // The user has posted something
+                  ? <div className="flex flex-col gap-4 items-center justify-start w-full py-6">
+                     <p className="text-xs font-normal text-white">
+                        // TODO: Iterate over the user's posts
+                     </p>
+                  </div>
+                  // The user has not posted anything
+                  : <div className="flex flex-col flex-grow center w-full py-6">
+                     <Image
+                        src={profile}
+                        alt="User has no posts to display"
+                        className="w-2/3"
+                     />
+                     <p className="mt-4 text-center text-base font-semibold text-white">
+                        {fetchedUser?.personal
+                           ? "You haven't posted anything yet."
+                           : "This user hasn't posted anything yet."
+                        }
+                     </p>
+                  </div>
+               // The posts are still being fetched
+               : <div className="flex flex-col gap-4 items-center justify-start w-full py-6">
+                  {["h-28", "h-40", "h-20"].map((height, index) =>
+                     <div
+                        key={`post-${height}`}
+                        className={`${height} w-full loader rounded-md`}
+                        style={{ animationDelay: `${index * 0.15}s` }}
+                     />
+                  )}
+               </div>
+            }
          </div>
 
          <Navbar />
