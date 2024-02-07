@@ -50,44 +50,47 @@ Orbit is a social media application that allows users to maintain and develop th
 ![Static Badge](https://img.shields.io/badge/Neo4j-%23007acc?style=for-the-badge&logo=neo4j&labelColor=black)&nbsp;&nbsp;
 
 ## ✍ Authors
-
-![Authors](https://opencollective.com/eptastellar-orbit/contributors.svg?width=400&button=false)
+<a href="https://github.com/eptastellar/orbit/graphs/contributors">![Authors](https://opencollective.com/eptastellar-orbit/contributors.svg?width=400&button=false)</a>
 
 > #### Roles:
-[@mzyxnuel](https:/github.com/mzyxnuel):
-<a title="Project Management">📆</a>
-<a title="Code">💻</a>
-<a title="Security">🛡</a>
-<a title="Design">🎨</a>
-<a title="Ideas, Planning, & Feedback">🤔
-<a title="Reviewed Pull Requests">👀</a>
+[@mzyxnuel](https://github.com/mzyxnuel):
+<a title="Project Management" href="https://github.com/mzyxnuel">📆</a>
+<a title="Code" href="https://github.com/mzyxnuel">💻</a>
+<a title="Security" href="https://github.com/mzyxnuel">🛡</a>
+<a title="Infrastructure (Hosting, Build-Tools, etc.)" href="https://github.com/mzyxnuel">🚇</a>
+<a title="Testing" href="https://github.com/mzyxnuel">⚠️</a>
+<a title="Ideas, Planning, & Feedback" href="https://github.com/mzyxnuel">🤔
+<a title="Reviewed Pull Requests" href="https://github.com/mzyxnuel">👀</a>
 
-[@74C17N3P7UN3](https:/github.com/74C17N3P7UN3):
-<a title="Code">💻</a>
-<a title="Design">🎨</a>
-<a title="Content">🖋</a>
-<a title="Infrastructure (Hosting, Build-Tools, etc.)">🚇</a>
-<a title="Ideas, Planning, & Feedback">🤔</a>
-<a title="Reviewed Pull Requests">👀</a>
+[@74C17N3P7UN3](https://github.com/74C17N3P7UN3):
+<a title="Code" href="https://github.com/74C17N3P7UN3">💻</a>
+<a title="Design" href="https://github.com/74C17N3P7UN3">🎨</a>
+<a title="Content" href="https://github.com/74C17N3P7UN3">🖋</a>
+<a title="Infrastructure (Hosting, Build-Tools, etc.)" href="https://github.com/74C17N3P7UN3">🚇</a>
+<a title="Ideas, Planning, & Feedback" href="https://github.com/74C17N3P7UN3">🤔</a>
+<a title="Reviewed Pull Requests" href="https://github.com/74C17N3P7UN3">👀</a>
 
-[@TheInfernalNick](https:/github.com/TheInfernalNick):
-<a title="Code">💻</a>
-<a title="Ideas, Planning, & Feedback">🤔</a>
-<a title="Reviewed Pull Requests">👀</a>
-<a title="Testing">⚠️</a>
-<a title="Beta Testing">📓</a>
+[@TheInfernalNick](https://github.com/TheInfernalNick):
+<a title="Code" href="https://github.com/TheInfernalNick">💻</a>
+<a title="Infrastructure (Hosting, Build-Tools, etc.)" href="https://github.com/TheInfernalNick">🚇</a>
+<a title="Testing" href="https://github.com/TheInfernalNick">⚠️</a>
+<a title="Beta Testing" href="https://github.com/TheInfernalNick">📓</a>
+<a title="Ideas, Planning, & Feedback" href="https://github.com/TheInfernalNick">🤔</a>
+<a title="Reviewed Pull Requests" href="https://github.com/TheInfernalNick">👀</a>
 
-[@MarcoMattei04](https:/github.com/MarcoMattei04):
-<a title="Design">🎨</a>
-<a title="Content">🖋</a>
-<a title="Code">💻</a>
-<a title="Documentation">📖</a>
-<a title="Beta Testing">📓</a>
+[@MarcoMattei04](https://github.com/MarcoMattei04):
+<a title="Design" href="https://github.com/MarcoMattei04">🎨</a>
+<a title="Code" href="https://github.com/MarcoMattei04">💻</a>
+<a title="Content" href="https://github.com/MarcoMattei04">🖋</a>
+<a title="Documentation" href="https://github.com/MarcoMattei04">📖</a>
+<a title="Beta Testing" href="https://github.com/MarcoMattei04">📓</a>
+<a title="Promotion" href="https://github.com/MarcoMattei04">📣</a>
 
-[@itspomo](https:/github.com/itspomo):
-<a title="Promotion">📣</a>
-<a title="Documentation">📖</a>
-<a title="Audio">🔊</a>
+[@itspomo](https://github.com/itspomo):
+<a title="Promotion" href="https://github.com/itspomo">📣</a>
+<a title="Documentation" href="https://github.com/itspomo">📖</a>
+<a title="Audio" href="https://github.com/itspomo">🔊</a>
+<a title="Beta Testing" href="https://github.com/itspomo">📓</a>
 
 ## 💸 Donations
 
