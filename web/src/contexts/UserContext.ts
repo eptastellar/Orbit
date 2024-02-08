@@ -1,5 +1,5 @@
 import { firebase } from '@config/firebase-admin.config'
-import { neo } from '@config/neo4j.config'
+import { neoClose, neoStart } from '@config/neo4j.config'
 import { UserInfo } from '@local-types/index'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
@@ -7,7 +7,6 @@ import { QueryResult, Session } from 'neo4j-driver'
 import { getLikesNumber } from './ContentContext'
 
 firebase()
-const neo4j: Session = neo()
 const db: Firestore = firestore()
 
 export const getUserDatafromUID = async (uid: string): Promise<UserInfo> => { //retrieve user informations based from the uid
@@ -42,9 +41,11 @@ export const getUIDfromUserData = async (username: string): Promise<string> => {
 
 export const getFriendsCount = (uid: string): Promise<number> => {
    return new Promise(async (resolve, _) => {
+      const neo4j: Session = neoStart()
       const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
       const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
       let friends = resultQueryFriends.records.map(row => row.get('t'))
+      neoClose()
       resolve(friends.length)
    })
 }
@@ -66,6 +67,7 @@ export const getMeteorCount = (uid: string): Promise<number> => {
 
 export const getFriendList = (uid: string): Promise<string[]> => {
    return new Promise(async (resolve, _) => {
+      const neo4j: Session = neoStart()
       const tempArray: string[] = []
       const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
       const resultMap = await neo4j.executeRead(tx => tx.run(queryFriends))
@@ -73,6 +75,7 @@ export const getFriendList = (uid: string): Promise<string[]> => {
       uids.forEach(element => {
          tempArray.push(element.properties['name'])
       })
+      neoClose()
       resolve(tempArray)
    })
 }
@@ -80,9 +83,11 @@ export const getFriendList = (uid: string): Promise<string[]> => {
 export const areFriends = (personalUid: string, friendUid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       if (personalUid != friendUid) {
+         const neo4j: Session = neoStart()
          const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
          const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(query))
          let check = resultMap.records.map(row => row.get('t'))
+         neoClose()
 
          if (check[0] !== null)
             resolve(null)
@@ -93,21 +98,25 @@ export const areFriends = (personalUid: string, friendUid: string): Promise<null
 
 export const getInterestsFromUID = (uid: string): Promise<string[]> => {
    return new Promise(async (resolve, _) => {
+      const neo4j: Session = neoStart()
       const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests` //retrieves the interests from neo4j for a specific user
       const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let results: string[] = result.records.map(row => row.get('u.interests'))
       let out = results[0].split(",")
+      neoClose()
       resolve(out)
    })
 }
 
 export const patchUserInfo = (uid: string, interests: string[], user: UserInfo): Promise<null> => {
    return new Promise(async (resolve, _) => {
+      const neo4j: Session = neoStart()
       const usersRef: DocumentReference = db.collection('users').doc(uid)
       usersRef.set({ username: user.username, name: user.name, pfp: user.pfp })
 
       const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'` //sets everything that can be changed
       await neo4j.executeWrite(tx => tx.run(query))
+      neoClose()
       resolve(null)
    })
 }
@@ -135,8 +144,10 @@ export const deleteUser = (uid: string): Promise<null> => {
          sessionRef.delete()
 
          //neo4j
+         const neo4j: Session = neoStart()
          const query: string = `MATCH (u:User) where u.name = '${uid}' DETACH DELETE u`
          const result: QueryResult = await neo4j.executeWrite(tx => tx.run(query))
+         neoClose()
 
          resolve(null)
       } catch (error) { reject(new Error('server/unauthorized')) }

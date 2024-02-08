@@ -1,5 +1,5 @@
 import { firebase } from '@config/firebase-admin.config'
-import { neo } from '@config/neo4j.config'
+import { neoClose, neoStart } from '@config/neo4j.config'
 import { randomProfilePicture } from '@contexts/ContentContext'
 import { UserInfo } from '@local-types/index'
 import express, { NextFunction } from 'express'
@@ -10,7 +10,6 @@ import { JWTPayload, SignJWT, jwtVerify } from 'jose'
 import { Session } from 'neo4j-driver'
 
 firebase()
-const neo4j: Session = neo()
 const db: Firestore = firestore()
 
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
@@ -151,8 +150,10 @@ export const createUserDocument = (uid: string, username: string, pfp: string, b
 export const createUserNode = (uid: string, interests: string[]): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
+         const neo4j: Session = neoStart()
          const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j
          await neo4j.executeWrite(tx => tx.run(query))
+         neoClose()
          resolve(null)
       } catch { reject(new Error('server/driver-not-found')) }
    })

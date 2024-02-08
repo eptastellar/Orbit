@@ -12,13 +12,5 @@ const driver: Driver = neo4j.driver(
    neo4j.auth.basic(NEO4J_USERNAME, NEO4J_PASSWORD)
 )
 
-let index: boolean = true
-let session: any = null
-
-export const neo = (): Session => {
-   if (index) {
-      index = false
-      session = driver.session()
-      return session
-   } else return session
-}
+export const neoStart = (): Session => { return driver.session() }
+export const neoClose = (): void => { driver.close() }

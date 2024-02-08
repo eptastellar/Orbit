@@ -1,9 +1,8 @@
-import { neo } from '@config/neo4j.config'
+import { neoStart } from '@config/neo4j.config'
 import { Session } from 'neo4j-driver'
 
-const neo4j: Session = neo()
-
 export const supernova = async (user: string): Promise<string> => {
+   const neo4j: Session = neoStart() //TODO: @TheInfernalNick add neoClose for each transaction
    let startingPoint: string | undefined = user
    let friendList: Map<string, number> = new Map()
    let arrayFriends: Array<string> = []
