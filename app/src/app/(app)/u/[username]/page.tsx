@@ -70,24 +70,24 @@ const User = ({ params }: Props) => {
             {
                fetchedUser?.isPersonal ?? userProfile!.username === username
                   // The visited page is the user itself
-                  ? <Image
-                     src={fetchedUser?.profilePicture ?? userProfile!.profilePicture}
-                     alt="Profile picture"
-                     height={128}
-                     width={128}
-                     className="min-h-32 min-w-32 object-cover rounded-full"
-                  />
+                  ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
+                     <Image
+                        src={fetchedUser?.profilePicture ?? userProfile!.profilePicture}
+                        alt="Profile picture"
+                        fill className="object-cover"
+                     />
+                  </div>
                   : fetchedUser
                      // The visited page is not the user
-                     ? <Image
-                        src={fetchedUser?.profilePicture}
-                        alt="Profile picture"
-                        height={128}
-                        width={128}
-                        className="min-h-32 min-w-32 object-cover rounded-full"
-                     />
+                     ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
+                        <Image
+                           src={fetchedUser?.profilePicture}
+                           alt="Profile picture"
+                           fill className="object-cover"
+                        />
+                     </div>
                      // The image is still being fetched
-                     : <div className="min-h-32 min-w-32 loader rounded-full" />
+                     : <div className="min-h-32 max-h-32 min-w-32 max-w-32 loader rounded-full" />
             }
 
 
@@ -130,7 +130,7 @@ const User = ({ params }: Props) => {
                      <p className="text-base font-semibold text-gray-3">METEORS</p>
                   </div>
                </div>
-               <div className="flex flex-row gap-2 items-center justify-start w-full p-4 border-b border-gray-7 overflow-x-scroll">
+               <div className="flex flex-row gap-2 items-center justify-start w-full p-4 overflow-x-scroll">
                   {fetchedUser?.interests ?
                      fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
                      : ["w-1/4", "w-1/2", "w-1/3"].map((width) =>

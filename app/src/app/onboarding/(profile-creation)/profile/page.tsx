@@ -141,7 +141,13 @@ const Profile = () => {
             >
                <div className="flex center max-h-32 max-w-32 bg-gray-7 rounded-full overflow-hidden">
                   {pfpUrl
-                     ? <Image src={pfpUrl} alt="Profile picture" height={128} width={128} className="min-h-32 min-w-32 object-cover" />
+                     ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
+                        <Image
+                           src={pfpUrl}
+                           alt="Profile picture"
+                           fill className="object-cover"
+                        />
+                     </div>
                      : <CameraPlus color="fill-white" height={32} />
                   }
                </div>
