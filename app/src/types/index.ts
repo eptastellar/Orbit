@@ -10,6 +10,7 @@ export type Post = {
    type: "audio" | "image" | "text"
    text?: string
    content?: string
+   isLiked: boolean
    counters: {
       likeCount: number
       commentCount: number

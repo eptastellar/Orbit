@@ -11,6 +11,8 @@ import Header from "./navigation/Header"
 import HeaderWithButton from "./navigation/HeaderWithButton"
 import Navbar from "./navigation/Navbar"
 
+import Post from "./post/Post"
+
 export {
    BackButton,
    Header,
@@ -19,6 +21,7 @@ export {
    InterestButton,
    LoadingOverlay,
    Navbar,
+   Post,
    SpinnerText,
    WelcomeButton
 }
