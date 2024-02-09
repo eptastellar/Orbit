@@ -54,7 +54,7 @@ const User = ({ params }: Props) => {
    return (
       <div className="flex flex-col center h-full w-full">
          <HeaderWithButton
-            icon={fetchedUser?.personal ?? userProfile!.username === username
+            icon={fetchedUser?.isPersonal ?? userProfile!.username === username
                ? <IconButton
                   icon={<Gear height={24} />}
                   onClick={() => router.push("/settings")}
@@ -68,7 +68,7 @@ const User = ({ params }: Props) => {
 
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
             {
-               fetchedUser?.personal ?? userProfile!.username === username
+               fetchedUser?.isPersonal ?? userProfile!.username === username
                   // The visited page is the user itself
                   ? <Image
                      src={fetchedUser?.profilePicture ?? userProfile!.profilePicture}
@@ -92,8 +92,8 @@ const User = ({ params }: Props) => {
 
 
             <div className="flex flex-col center mt-8">
-               {fetchedUser?.name
-                  ? <p className="text-2xl font-semibold text-white">{fetchedUser.name}</p>
+               {fetchedUser?.displayName
+                  ? <p className="text-2xl font-semibold text-white">{fetchedUser.displayName}</p>
                   : <div className="h-6 w-48 my-1 loader rounded-md" />
                }
 
@@ -156,7 +156,7 @@ const User = ({ params }: Props) => {
                         className="w-2/3"
                      />
                      <p className="mt-4 text-center text-base font-semibold text-white">
-                        {fetchedUser?.personal
+                        {fetchedUser?.isPersonal
                            ? "You haven't posted anything yet."
                            : "This user hasn't posted anything yet."
                         }

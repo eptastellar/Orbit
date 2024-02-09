@@ -1,16 +1,24 @@
 export type LocalUser = {
-   profilePicture: string
    username: string
+   profilePicture: string
    sessionToken: string
 }
 
 export type Post = {
-   owner: string
-   type: "audio" | "image" | "text"
-   content: string
-   text?: string
-   likesCount: number
+   id: string
    createdAt: number
+   type: "audio" | "image" | "text"
+   text?: string
+   content?: string
+   counters: {
+      likeCount: number
+      commentCount: number
+   }
+   userData: {
+      displayName: string
+      username: string
+      profilePicture: string
+   }
 }
 
 export type ServerError =
@@ -35,9 +43,9 @@ export type ServerError =
    "server/no-content"
 
 export type UserProfile = {
-   personal: boolean
+   isPersonal: boolean
+   displayName: string
    username: string
-   name: string
    profilePicture: string
    interests: string[]
    counters: {

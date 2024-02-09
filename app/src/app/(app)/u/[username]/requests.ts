@@ -28,9 +28,9 @@ export const fetchProfile = async (
    const { success, message, personal, username, name, pfp, interests, counters }: ResponseType = await response.json()
 
    if (success) return {
-      personal: personal,
+      isPersonal: personal,
+      displayName: name,
       username: username,
-      name: name,
       profilePicture: pfp,
       interests: interests,
       counters: {
@@ -65,12 +65,18 @@ export const fetchPosts = async (
       success: boolean
       message: ServerError
       posts: {
-         owner: string
-         type: "audio" | "image" | "text"
-         content: string
+         id: string
+         creation: number
          text?: string
+         type?: "audio" | "image"
+         content?: string
          likes_number: number
-         createdAt: number
+         comments_number: number
+         user_data: {
+            username: string
+            name: string
+            pfp: string
+         }
       }[]
       lastDocId: string
    }
@@ -80,12 +86,20 @@ export const fetchPosts = async (
 
    if (success) return {
       posts: posts.map((post) => ({
-         owner: post.owner,
-         type: post.type,
-         content: post.content,
+         id: post.id,
+         createdAt: post.creation,
+         type: post.type ?? "text",
          text: post.text,
-         likesCount: post.likes_number,
-         createdAt: post.createdAt
+         content: post.content,
+         counters: {
+            likeCount: post.likes_number,
+            commentCount: post.comments_number
+         },
+         userData: {
+            displayName: post.user_data.name,
+            username: post.user_data.username,
+            profilePicture: post.user_data.pfp
+         }
       })),
       lastDocId: lastDocId
    }
