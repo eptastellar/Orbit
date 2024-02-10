@@ -4,6 +4,7 @@ import WelcomeButton from "./button/WelcomeButton"
 
 import Input from "./input/Input"
 
+import InfiniteLoader from "./loading/InfiniteLoader"
 import LoadingOverlay from "./loading/LoadingOverlay"
 import SpinnerText from "./loading/SpinnerText"
 
@@ -17,6 +18,7 @@ export {
    BackButton,
    Header,
    HeaderWithButton,
+   InfiniteLoader,
    Input,
    InterestButton,
    LoadingOverlay,

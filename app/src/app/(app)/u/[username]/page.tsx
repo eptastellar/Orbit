@@ -1,14 +1,15 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 import { profile } from "@/assets"
 import { Gear, IconButton, ThreeDotsVertical } from "@/assets/icons"
-import { HeaderWithButton, InterestButton, Navbar } from "@/components"
+import { HeaderWithButton, InfiniteLoader, InterestButton, Navbar, Post } from "@/components"
 import { useUserContext } from "@/contexts"
+import { Post as PostType } from "@/types"
 
 import { fetchPosts, fetchProfile } from "./requests"
 
@@ -28,23 +29,27 @@ const User = ({ params }: Props) => {
    // Dynamic route parameters
    const username = decodeURIComponent(params.username)
 
-   // Fetching and async states
-   const [lastDocId, setLastDocId] = useState<string>()
-
    const { data: fetchedUser, error: profileError } = useQuery({
       queryKey: ["user", username],
       queryFn: () => fetchProfile(username, userProfile?.sessionToken)
    })
 
-   const { data: fetchedPosts, error: postsError } = useQuery({
+   const {
+      data: fetchedPostPages,
+      error: postsError,
+      fetchNextPage: fetchNextPosts,
+      hasNextPage: hasNextPosts
+   } = useInfiniteQuery({
       queryKey: ["user", "posts", username],
-      queryFn: () => fetchPosts(username, lastDocId, userProfile?.sessionToken)
+      queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
+         fetchPosts(username, pageParam, userProfile?.sessionToken),
+
+      initialPageParam: undefined,
+      getNextPageParam: (prev) => prev.lastPostId
    })
 
-   useEffect(() => {
-      if (fetchedPosts?.lastDocId)
-         setLastDocId(fetchedPosts?.lastDocId)
-   }, [fetchedPosts])
+   const fetchedPosts: PostType[] | undefined = fetchedPostPages?.pages
+      .flatMap((page) => page.posts.flatMap((post) => post))
 
    useEffect(() => {
       if (profileError) console.error(profileError)
@@ -141,12 +146,11 @@ const User = ({ params }: Props) => {
             </div>
 
             {fetchedUser && fetchedPosts ?
-               fetchedPosts.posts
+               fetchedPosts
                   // The user has posted something
-                     <p className="text-xs font-normal text-white">
-                        // TODO: Iterate over the user's posts
-                     </p>
                   ? <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
+                     {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}
+                     {hasNextPosts && <InfiniteLoader onScreen={fetchNextPosts} />}
                   </div>
                   // The user has not posted anything
                   : <div className="flex flex-col flex-grow center w-full mt-6">
