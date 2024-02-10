@@ -43,8 +43,12 @@ img {
    @apply items-center justify-center;
 }
 
-.loader {
-   @apply bg-gray-7 animate-pulse duration-200;
+.loader-bounce {
+   @apply bg-gray-7 animate-bounce;
+}
+
+.loader-pulse {
+   @apply bg-gray-7 animate-pulse;
 }
 
 .text-stroke {

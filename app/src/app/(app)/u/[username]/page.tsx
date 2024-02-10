@@ -87,14 +87,14 @@ const User = ({ params }: Props) => {
                         />
                      </div>
                      // The image is still being fetched
-                     : <div className="min-h-32 max-h-32 min-w-32 max-w-32 loader rounded-full" />
+                     : <div className="min-h-32 max-h-32 min-w-32 max-w-32 loader-pulse rounded-full" />
             }
 
 
             <div className="flex flex-col center mt-8">
                {fetchedUser?.displayName
                   ? <p className="text-2xl font-semibold text-white">{fetchedUser.displayName}</p>
-                  : <div className="h-6 w-48 my-1 loader rounded-md" />
+                  : <div className="h-6 w-48 my-1 loader-pulse rounded-md" />
                }
 
                <p className="text-base font-semibold text-gray-3">{username}</p>
@@ -107,7 +107,7 @@ const User = ({ params }: Props) => {
                         <p className="text-xl font-semibold text-white">
                            {fetchedUser.counters.postCount}
                         </p>
-                        : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+                        : <div className="h-5 w-2/3 my-1 loader-pulse rounded-md" />
                      }
                      <p className="text-base font-semibold text-gray-3">POSTS</p>
                   </div>
@@ -116,7 +116,7 @@ const User = ({ params }: Props) => {
                         <p className="text-xl font-semibold text-white">
                            {fetchedUser.counters.friendCount}
                         </p>
-                        : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+                        : <div className="h-5 w-2/3 my-1 loader-pulse rounded-md" />
                      }
                      <p className="text-base font-semibold text-gray-3">FRIENDS</p>
                   </div>
@@ -125,7 +125,7 @@ const User = ({ params }: Props) => {
                         <p className="text-xl font-semibold text-white">
                            {fetchedUser.counters.meteorCount}
                         </p>
-                        : <div className="h-5 w-2/3 my-1 loader rounded-md" />
+                        : <div className="h-5 w-2/3 my-1 loader-pulse rounded-md" />
                      }
                      <p className="text-base font-semibold text-gray-3">METEORS</p>
                   </div>
@@ -134,7 +134,7 @@ const User = ({ params }: Props) => {
                   {fetchedUser?.interests ?
                      fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
                      : ["w-1/4", "w-1/2", "w-1/3"].map((width) =>
-                        <div key={`interest-${width}`} className={`h-6 ${width} loader rounded-full`} />
+                        <div key={`interest-${width}`} className={`h-6 ${width} loader-pulse rounded-full`} />
                      )
                   }
                </div>
@@ -143,13 +143,13 @@ const User = ({ params }: Props) => {
             {fetchedUser && fetchedPosts ?
                fetchedPosts.posts
                   // The user has posted something
-                  ? <div className="flex flex-col gap-4 items-center justify-start w-full py-6">
                      <p className="text-xs font-normal text-white">
                         // TODO: Iterate over the user's posts
                      </p>
+                  ? <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
                   </div>
                   // The user has not posted anything
-                  : <div className="flex flex-col flex-grow center w-full py-6">
+                  : <div className="flex flex-col flex-grow center w-full mt-6">
                      <Image
                         src={profile}
                         alt="User has no posts to display"
@@ -163,11 +163,11 @@ const User = ({ params }: Props) => {
                      </p>
                   </div>
                // The posts are still being fetched
-               : <div className="flex flex-col gap-4 items-center justify-start w-full py-6">
+               : <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
                   {["h-28", "h-40", "h-20"].map((height, index) =>
                      <div
                         key={`post-${height}`}
-                        className={`${height} w-full loader rounded-md`}
+                        className={`${height} w-full loader-pulse rounded-md`}
                         style={{ animationDelay: `${index * 0.15}s` }}
                      />
                   )}
