@@ -1,5 +1,5 @@
 import { firebase } from '@config/firebase-admin.config'
-import { neoClose, neoStart } from '@config/neo4j.config'
+import { neoStart } from '@config/neo4j.config'
 import { UserInfo } from '@local-types/index'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
@@ -45,7 +45,7 @@ export const getFriendsCount = (uid: string): Promise<number> => {
       const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
       const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
       let friends = resultQueryFriends.records.map(row => row.get('t'))
-      neoClose()
+
       resolve(friends.length)
    })
 }
@@ -75,7 +75,6 @@ export const getFriendList = (uid: string): Promise<string[]> => {
       uids.forEach(element => {
          tempArray.push(element.properties['name'])
       })
-      neoClose()
       resolve(tempArray)
    })
 }
@@ -87,7 +86,6 @@ export const areFriends = (personalUid: string, friendUid: string): Promise<null
          const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
          const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(query))
          let check = resultMap.records.map(row => row.get('t'))
-         neoClose()
 
          if (check[0] !== null)
             resolve(null)
@@ -103,7 +101,6 @@ export const getInterestsFromUID = (uid: string): Promise<string[]> => {
       const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
       let results: string[] = result.records.map(row => row.get('u.interests'))
       let out = results[0].split(",")
-      neoClose()
       resolve(out)
    })
 }
@@ -116,7 +113,6 @@ export const patchUserInfo = (uid: string, interests: string[], user: UserInfo):
 
       const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'` //sets everything that can be changed
       await neo4j.executeWrite(tx => tx.run(query))
-      neoClose()
       resolve(null)
    })
 }
@@ -147,7 +143,6 @@ export const deleteUser = (uid: string): Promise<null> => {
          const neo4j: Session = neoStart()
          const query: string = `MATCH (u:User) where u.name = '${uid}' DETACH DELETE u`
          const result: QueryResult = await neo4j.executeWrite(tx => tx.run(query))
-         neoClose()
 
          resolve(null)
       } catch (error) { reject(new Error('server/unauthorized')) }

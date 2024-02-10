@@ -1,4 +1,4 @@
-import { neoClose, neoStart } from "@config/neo4j.config"
+import { neoStart } from "@config/neo4j.config"
 import { Session } from "neo4j-driver"
 
 export const keepAliveNeo = (): Promise<null> => {
@@ -8,7 +8,6 @@ export const keepAliveNeo = (): Promise<null> => {
          const query = 'MATCH (c:Cron) RETURN c'
          const result = await neo4j.executeRead(tx => tx.run(query))
          const node = result.records.map(row => row.get('c'))
-         neoClose()
 
          if (node[0])
             resolve(null)
