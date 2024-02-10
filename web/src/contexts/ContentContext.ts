@@ -1,6 +1,6 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { getUserDatafromUID } from '@contexts/UserContext'
-import { CommentFetch, PostFetch } from '@local-types/index'
+import { CommentFetch, PostFetch, UserInfo } from '@local-types/index'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 firebase()
@@ -37,7 +37,7 @@ export const randomProfilePicture = (): Promise<string> => {
    })
 }
 
-export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetch> => {
+export const fetchPosts = (uids: string[], lastPostId: string, personalUID: string): Promise<PostFetch> => {
    const limit: number = 3
 
    return new Promise(async (resolve, reject) => {
@@ -54,7 +54,9 @@ export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetc
       const snapshot: DocumentData = await docRef.get()
 
       const posts: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-         const { username, name, pfp } = await getUserDatafromUID(doc.data().owner)
+         const user: UserInfo = await getUserDatafromUID(doc.data().owner)
+         const isLiked: boolean = await isLikedBy(doc.id, personalUID)
+
          return {
             id: doc.id,
             creation: doc.createTime.seconds,
@@ -63,10 +65,11 @@ export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetc
             content: doc.data().content,
             likes_number: await getLikesNumber(doc.id),
             comments_number: await getRootsCommentsNumber(doc.id),
+            is_liked: isLiked,
             user_data: {
-               username: username,
-               name: name,
-               pfp: pfp,
+               username: user.username,
+               name: user.name,
+               pfp: user.pfp,
             },
          }
       }))
@@ -78,6 +81,17 @@ export const fetchPosts = (uids: string[], lastPostId: string): Promise<PostFetc
       } else
          reject(new Error('server/no-content'))
    })
+}
+
+export const isLikedBy = (postId: string, uid: string): Promise<boolean> => {
+   return new Promise(async (resolve, _) => {
+      const snapshot: QuerySnapshot = await db.collection('likes')
+         .where('liker', '==', uid)
+         .where('postId', '==', postId)
+         .get();
+
+      resolve(!snapshot.empty);
+   });
 }
 
 export const getLikesNumber = (postId: string): Promise<number> => {
@@ -128,16 +142,16 @@ export const fetchRootComments = (postId: string, lastRootCommentId: string): Pr
       const snapshot: DocumentData = await docRef.get()
 
       const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-         const { username, name, pfp } = await getUserDatafromUID(doc.data().owner)
+         const user: UserInfo = await getUserDatafromUID(doc.data().owner)
          return {
             id: doc.id,
             creation: doc.createTime.seconds,
             content: doc.data().content,
             leafs_count: await getLeafsCommentsNumber(doc.id),
             user_data: {
-               username: username,
-               name: name,
-               pfp: pfp,
+               username: user.username,
+               name: user.name,
+               pfp: user.pfp,
             },
          }
       }))
@@ -168,15 +182,15 @@ export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): P
       const snapshot: DocumentData = await docRef.get()
 
       const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-         const { username, name, pfp } = await getUserDatafromUID(doc.data().owner)
+         const user: UserInfo = await getUserDatafromUID(doc.data().owner)
          return {
             id: doc.id,
             creation: doc.createTime.seconds,
             content: doc.data().content,
             user_data: {
-               username: username,
-               name: name,
-               pfp: pfp,
+               username: user.username,
+               name: user.name,
+               pfp: user.pfp,
             },
          }
       }))

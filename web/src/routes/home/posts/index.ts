@@ -13,7 +13,7 @@ export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Respo
 
 
       getFriendList(uid).then((friendList: string[]) => {
-         fetchPosts(friendList, lastPostId).then((fetch) => {
+         fetchPosts(friendList, lastPostId, uid).then((fetch) => {
             res.status(200).json({ success: true, posts: fetch.posts, lastDocId: fetch.lastDocId })
          }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })

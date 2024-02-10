@@ -9,9 +9,9 @@ export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Respon
 
    try {
       const interests: string[] = await getInterestsFromUID(uid)
-      const { username, name, pfp } = await getUserDatafromUID(uid)
+      const user: UserInfo = await getUserDatafromUID(uid)
 
-      res.status(200).json({ interests: interests, username: username, name: name, pfp: pfp })
+      res.status(200).json({ interests: interests, username: user.username, name: user.name, pfp: user.pfp })
    } catch (error: any) { res.status(400).json({ message: error.message }) }
 }]
 

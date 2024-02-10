@@ -142,7 +142,9 @@ export const createUserDocument = (uid: string, username: string, pfp: string, b
             pfp: pfp,
             bday: bday
          })
-         resolve({ username, name, pfp })
+
+         const user: UserInfo = { username, name, pfp }
+         resolve(user)
       } else reject(new Error('auth/user-already-exists'))
    })
 }
