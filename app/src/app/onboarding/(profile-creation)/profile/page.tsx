@@ -3,7 +3,7 @@
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { CameraPlus } from "@/assets/icons"
 import { BackButton, Input, SpinnerText } from "@/components"
@@ -29,6 +29,9 @@ const Profile = () => {
    const [bdayYear, setBdayYear] = useState<string>("")
    const [bdayMonth, setBdayMonth] = useState<string>("")
    const [bdayDay, setBdayDay] = useState<string>("")
+
+   const monthRef = useRef<HTMLInputElement>(null)
+   const dayRef = useRef<HTMLInputElement>(null)
 
    useEffect(() => {
       setBdayYear(birthdate[0] ?? "")
@@ -66,11 +69,11 @@ const Profile = () => {
       if (event.target.id === "birthdate-year") {
          setBdayYear(event.target.value)
          setBirthdate((prev) => [event.target.value, prev[1], prev[2]])
-         if (event.target.value.length === 4) document.getElementById("birthdate-month")?.focus()
+         if (event.target.value.length === 4) monthRef.current?.focus()
       } else if (event.target.id === "birthdate-month") {
          setBdayMonth(event.target.value)
          setBirthdate((prev) => [prev[0], event.target.value, prev[2]])
-         if (event.target.value.length === 2) document.getElementById("birthdate-day")?.focus()
+         if (event.target.value.length === 2) dayRef.current?.focus()
       } else if (event.target.id === "birthdate-day") {
          setBdayDay(event.target.value)
          setBirthdate((prev) => [prev[0], prev[1], event.target.value])
@@ -139,7 +142,7 @@ const Profile = () => {
                      `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`
                }}
             >
-               <div className="flex center max-h-32 max-w-32 bg-gray-7 rounded-full overflow-hidden">
+               <div className="flex center h-32 w-32 bg-gray-7 rounded-full overflow-hidden">
                   {pfpUrl
                      ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
                         <Image
@@ -155,7 +158,7 @@ const Profile = () => {
                   type="file"
                   accept="image/gif, image/jpeg, image/png"
                   onChange={handleUpload}
-                  className="hidden"
+                  hidden
                />
             </label>
 
@@ -180,6 +183,7 @@ const Profile = () => {
                      />
                      <div className="flex gap-2 w-1/2">
                         <input
+                           ref={monthRef}
                            id="birthdate-month"
                            type="text"
                            placeholder="MM"
@@ -188,6 +192,7 @@ const Profile = () => {
                            className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
                         />
                         <input
+                           ref={dayRef}
                            id="birthdate-day"
                            type="text"
                            placeholder="DD"
