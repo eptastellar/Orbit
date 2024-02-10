@@ -4,16 +4,17 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 
 import { Comment, Like } from "@/assets/icons"
-import { Post } from "@/types"
+import { Post as PostType } from "@/types"
 
 import AudioEmbed from "./AudioEmbed"
 import ImageEmbed from "./ImageEmbed"
 
 type Props = {
-   post: Post
+   post: PostType
 }
 
 const Post = ({ post }: Props) => {
+   // Next router for navigation
    const router = useRouter()
 
    return (

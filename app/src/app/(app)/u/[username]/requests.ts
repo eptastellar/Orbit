@@ -45,11 +45,11 @@ export const fetchProfile = async (
 
 export const fetchPosts = async (
    reqUsername: string,
-   reqLastDocId: string | undefined,
+   reqLastPostId: string | undefined,
    sessionToken: string | undefined
-): Promise<{ posts: Post[], lastDocId: string | undefined }> => {
+): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
    const requestBody = JSON.stringify({
-      lastDocId: reqLastDocId
+      lastPostId: reqLastPostId
    })
 
    const requestParams: RequestInit = {
@@ -103,13 +103,13 @@ export const fetchPosts = async (
             profilePicture: post.user_data.pfp
          }
       })),
-      lastDocId: lastDocId
+      lastPostId: lastDocId
    }
 
    if (message === "server/no-content")
       return {
          posts: [],
-         lastDocId: undefined
+         lastPostId: undefined
       }
 
 
