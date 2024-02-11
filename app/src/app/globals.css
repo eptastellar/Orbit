@@ -29,27 +29,33 @@ img {
    -webkit-user-drag: none;
 }
 
+input[type="range"] {
+   background-image: linear-gradient(#1D5C96, #1D5C96);
+   transition-property: background;
+   transition-duration: 250ms;
+   @apply appearance-none flex-grow h-1 bg-white bg-no-repeat rounded-full;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+   @apply appearance-none h-3 w-3 bg-transparent border-none rounded-full
+}
+input[type="range"]::-moz-range-thumb {
+   @apply appearance-none h-3 w-3 bg-transparent border-none rounded-full
+}
+
 #overflow-height {
-   @apply fixed hidden flex-col center gap-8 h-screen w-screen bg-black z-50;
+   @apply fixed hidden flex-col center gap-8 h-screen w-screen bg-black z-50
 }
 
 @media (orientation: landscape) and (max-height: 640px) {
-   #overflow-height {
-      display: flex;
-   }
+   #overflow-height { display: flex }
 }
 
-.center {
-   @apply items-center justify-center;
-}
+.center {  @apply items-center justify-center }
 
-.loader-bounce {
-   @apply bg-gray-7 animate-bounce;
-}
+.loader-bounce { @apply bg-gray-7 animate-bounce }
 
-.loader-pulse {
-   @apply bg-gray-7 animate-pulse;
-}
+.loader-pulse { @apply bg-gray-7 animate-pulse }
 
 .text-stroke {
    -webkit-text-stroke: #FBFBFB;

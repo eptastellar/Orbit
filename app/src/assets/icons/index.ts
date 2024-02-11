@@ -8,6 +8,8 @@ import Home from "./Home"
 import Like from "./Like"
 import Notifications from "./Notifications"
 import PaperPlane from "./PaperPlane"
+import PauseCircle from "./PauseCircle"
+import PlayCircle from "./PlayCircle"
 import PlusCircle from "./PlusCircle"
 import QrCode from "./QrCode"
 import Spinner from "./Spinner"
@@ -24,6 +26,8 @@ export {
    Like,
    Notifications,
    PaperPlane,
+   PauseCircle,
+   PlayCircle,
    PlusCircle,
    QrCode,
    Spinner,
