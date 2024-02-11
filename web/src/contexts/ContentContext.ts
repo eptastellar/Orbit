@@ -38,7 +38,7 @@ export const randomProfilePicture = (): Promise<string> => {
 }
 
 export const fetchPosts = (uids: string[], lastPostId: string, personalUID: string): Promise<ContentFetch> => {
-   const limit: number = 3
+   const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
       let docRef: Query = db.collection('posts')
