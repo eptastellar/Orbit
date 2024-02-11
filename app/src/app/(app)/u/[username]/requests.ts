@@ -79,11 +79,11 @@ export const fetchPosts = async (
             pfp: string
          }
       }[]
-      lastDocId: string
+      lastPostId: string
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/posts/${reqUsername}`, requestParams)
-   const { success, message, posts, lastDocId }: ResponseType = await response.json()
+   const { success, message, posts, lastPostId }: ResponseType = await response.json()
 
    if (success) return {
       posts: posts.map((post) => ({
@@ -103,7 +103,7 @@ export const fetchPosts = async (
             profilePicture: post.user_data.pfp
          }
       })),
-      lastPostId: lastDocId
+      lastPostId: lastPostId
    }
 
    if (message === "server/no-content")

@@ -146,11 +146,14 @@ const User = ({ params }: Props) => {
             </div>
 
             {fetchedUser && fetchedPosts ?
-               fetchedPosts
+               fetchedPosts.length > 0
                   // The user has posted something
                   ? <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}
-                     {hasNextPosts && <InfiniteLoader onScreen={fetchNextPosts} />}
+                     {hasNextPosts
+                        ? <InfiniteLoader onScreen={fetchNextPosts} />
+                        : <p className="mt-2 text-base font-semibold text-white">You're all caught up!</p>
+                     }
                   </div>
                   // The user has not posted anything
                   : <div className="flex flex-col flex-grow center w-full mt-6">
