@@ -1,3 +1,4 @@
+import { err } from "@config/error"
 import { neoStart } from "@config/neo4j.config"
 import { Session } from "neo4j-driver"
 
@@ -11,7 +12,7 @@ export const keepAliveNeo = (): Promise<null> => {
 
          if (node[0])
             resolve(null)
-         else reject(new Error('server/driver-not-found'))
-      } catch (error) { reject(new Error('server/driver-not-found')) }
+         else reject(err('server/driver-not-found'))
+      } catch { reject(err('server/driver-not-found')) }
    })
 }

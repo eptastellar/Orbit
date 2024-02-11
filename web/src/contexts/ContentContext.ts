@@ -1,3 +1,4 @@
+import { err } from '@config/error'
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { getUserDatafromUID } from '@contexts/UserContext'
 import { ContentFetch, UserInfo } from '@local-types/index'
@@ -33,7 +34,7 @@ export const randomProfilePicture = (): Promise<string> => {
                   })
             }
          })
-      } catch { reject(new Error('server/no-content')) }
+      } catch { reject(err('server/no-content')) }
    })
 }
 
@@ -80,7 +81,7 @@ export const fetchPosts = (uids: string[], lastPostId: string, personalUID: stri
          const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
-         reject(new Error('server/no-content'))
+         reject(err('server/no-content'))
    })
 }
 
@@ -163,7 +164,7 @@ export const fetchRootComments = (postId: string, lastRootCommentId: string): Pr
          const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
-         reject(new Error('server/no-content'))
+         reject(err('server/no-content'))
    })
 }
 
@@ -203,7 +204,7 @@ export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): P
          const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
-         reject(new Error('server/no-content'))
+         reject(err('server/no-content'))
    })
 }
 
@@ -221,7 +222,7 @@ export const uploadPost = (uid: string, text?: string, type?: string, content?: 
          if (content) docRef.update({ content: content, type: type })
 
          resolve(docRef.id)
-      } catch (error) { reject(new Error('server/upload-failed')) }
+      } catch { reject(err('server/upload-failed')) }
    })
 }
 
@@ -244,7 +245,7 @@ export const uploadComment = (uid: string, rootId: string, postId: string, conte
             createdAt: Date.now() //unix format
          })
          resolve(docRef.id)
-      } catch (error) { reject(new Error('server/upload-failed')) }
+      } catch { reject(err('server/upload-failed')) }
    })
 }
 
@@ -257,7 +258,7 @@ export const updatePost = (postId: string, text?: string, content?: string, type
          if (content) docRef.update({ content: content, type: type })
 
          resolve(docRef.id)
-      } catch (error) { reject(new Error('server/update-failed')) }
+      } catch { reject(err('server/update-failed')) }
    })
 }
 
@@ -268,7 +269,7 @@ export const deletePost = (postId: string): Promise<null> => {
 
          docRef.delete()
          resolve(null)
-      } catch (error) { reject(new Error('server/delete-failed')) }
+      } catch { reject(err('server/delete-failed')) }
    })
 }
 
@@ -297,6 +298,39 @@ export const deleteComment = (commentId: string): Promise<null> => {
          await batch.commit()
 
          resolve(null)
-      } catch { reject(new Error('server/delete-failed')) }
+      } catch { reject(err('server/delete-failed')) }
+   })
+}
+
+export const updateLike = (postId: string, uid: string): Promise<number> => {
+   return new Promise(async (resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+
+         if (!(await docRef.get()).exists)
+            addLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) })
+         else
+            removeLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) });
+      } catch { reject(err('server/update-failed')) }
+   })
+}
+
+export const addLike = (postId: string, uid: string): Promise<null> => {
+   return new Promise(async (resolve) => {
+      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+
+      await docRef.set({
+         liker: uid,
+         postId: postId
+      })
+      resolve(null)
+   })
+}
+
+export const removeLike = (postId: string, uid: string): Promise<null> => {
+   return new Promise(async (resolve) => {
+      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+      docRef.delete()
+      resolve(null)
    })
 }

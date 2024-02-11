@@ -1,6 +1,6 @@
 import { checkIfSessionTokenIsValid } from "@contexts/AuthContext";
-import { getPostOwner } from "@contexts/ContentContext";
-import { areFriends, updateLike } from "@contexts/UserContext";
+import { getPostOwner, updateLike } from "@contexts/ContentContext";
+import { areFriends } from "@contexts/UserContext";
 import { postIdValidation } from "@contexts/ValidationContext";
 import { Request, Response } from "express";
 

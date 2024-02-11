@@ -1,4 +1,5 @@
 import { interests } from '@assets/interests'
+import { err } from '@config/error'
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { DocumentData, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
@@ -10,13 +11,13 @@ export const birthdateValidation = async (bday: number): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
          if (!bday || bday > Date.now() / 1000 || bday < -2208988800)
-            reject(new Error('validation/invalid-birthdate'))
+            reject(err('validation/invalid-birthdate'))
 
          if (((Date.now() / 1000 - 441806400) - bday) <= 0)
-            reject(new Error('validation/too-young'))
+            reject(err('validation/too-young'))
 
          resolve(null)
-      } catch { reject(new Error('validation/malformed-input')) }
+      } catch { reject(err('validation/malformed-input')) }
    })
 }
 
@@ -26,22 +27,22 @@ export const usernameValidation = async (username: string): Promise<null> => {
          const regex: RegExp = /[^a-zA-Z0-9\_\-\.]/
 
          if (!username || !username.startsWith('@') || username.substring(1).match(regex)) //check if the username i approved by the regex
-            reject(new Error('validation/invalid-username'))
+            reject(err('validation/invalid-username'))
 
          if (username.length > 24 + 1)
-            reject(new Error('validation/username-too-long'))
+            reject(err('validation/username-too-long'))
 
          if (username.length < 6 + 1)
-            reject(new Error('validation/username-too-short'))
+            reject(err('validation/username-too-short'))
 
          const usersRef: Query = db.collection('users').where('username', '==', username) //search where the username is equal to the input username
 
          usersRef.get().then(async (snapshot: QuerySnapshot) => {
             if (snapshot.empty) //check if username is already used
                resolve(null)
-            else reject(new Error('validation/username-already-in-use'))
+            else reject(err('validation/username-already-in-use'))
          })
-      } catch { reject(new Error('validation/malformed-input')) }
+      } catch { reject(err('validation/malformed-input')) }
    })
 }
 
@@ -49,14 +50,14 @@ export const interestsValidation = async (interestsList: string[]): Promise<null
    return new Promise((resolve, reject) => {
       try {
          if (interestsList.length > 5 || interestsList.length < 1)
-            reject(new Error('validation/invalid-number-of-interests'))
+            reject(err('validation/invalid-number-of-interests'))
 
          interestsList.forEach(element => {
             if (!interests.includes(element))
-               reject(new Error('validation/invalid-interests'))
+               reject(err('validation/invalid-interests'))
          })
          resolve(null)
-      } catch { reject(new Error('validation/malformed-input')) }
+      } catch { reject(err('validation/malformed-input')) }
    })
 }
 
@@ -67,8 +68,8 @@ export const postIdValidation = (postId: string): Promise<null> => {
 
          if (docRef.exists)
             resolve(null)
-         else reject(new Error('validation/invalid-document-id'))
-      } catch (error) { reject(new Error('validation/invalid-document-id')) }
+         else reject(err('validation/invalid-document-id'))
+      } catch { reject(err('validation/invalid-document-id')) }
    })
 }
 
@@ -80,9 +81,9 @@ export const commentRootIdValidation = async (rootId: string, postId: string): P
          if (docRef.exists) {
             if (docRef.data()?.postId === postId)
                resolve(null)
-            else reject(new Error('validation/invalid-document-id'))
-         } else reject(new Error('validation/invalid-document-id'))
-      } catch { reject(new Error('validation/invalid-document-id')) }
+            else reject(err('validation/invalid-document-id'))
+         } else reject(err('validation/invalid-document-id'))
+      } catch { reject(err('validation/invalid-document-id')) }
    })
 }
 
@@ -97,11 +98,11 @@ export const commentLeafIdValidation = async (leafId: string, rootId: string, po
                if (leafRef.data()?.postId === postId) {
                   if (leafRef.data()?.root === rootId)
                      resolve(null)
-                  else reject(new Error('validation/invalid-document-id'))
-               } else reject(new Error('validation/invalid-document-id'))
-            } else reject(new Error('validation/invalid-document-id'))
-         } else reject(new Error('validation/invalid-document-id'))
-      } catch { reject(new Error('validation/invalid-document-id')) }
+                  else reject(err('validation/invalid-document-id'))
+               } else reject(err('validation/invalid-document-id'))
+            } else reject(err('validation/invalid-document-id'))
+         } else reject(err('validation/invalid-document-id'))
+      } catch { reject(err('validation/invalid-document-id')) }
    })
 }
 
@@ -113,16 +114,17 @@ export const contentValidation = async (text?: string, content?: string, type?: 
 
             if (type === "image" || type === "audio")
                await mediaValidation(content)
-            else reject(new Error('validation/malformed-input'))
+            else reject(err('validation/malformed-input'))
          } else {
             if (text)
                await harmfulContentValidation(text)
-            else reject(new Error('validation/malformed-input'))
+            else reject(err('validation/malformed-input'))
          }
          resolve(null)
       } catch (error) { reject(error) }
    })
 }
+
 
 export const mediaValidation = (media: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
@@ -135,7 +137,7 @@ export const mediaValidation = (media: string): Promise<null> => {
       fileRef.exists().then((exists) => {
          if (exists[0])
             resolve(null)
-         else reject(new Error('validation/invalid-image-path'))
+         else reject(err('validation/invalid-image-path'))
       })
    })
 }

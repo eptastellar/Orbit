@@ -1,3 +1,4 @@
+import { err } from '@config/error'
 import { firebase } from '@config/firebase-admin.config'
 import { neoStart } from '@config/neo4j.config'
 import { randomProfilePicture } from '@contexts/ContentContext'
@@ -25,7 +26,7 @@ export const checkIfSessionTokenIsValid = async (req: express.Request, res: expr
          if (jwt == snapshot.data()?.jwt) { //check if the token is the same saved in firestore
             res.locals.uid = uid //save the uid of the user to manipulate only his data
             next()
-         } else throw new Error('auth/invalid-token')
+         } else throw err('auth/invalid-token')
       }).catch((error: Error) => { res.status(400).json({ success: false, message: error.message }) })
    }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
 }
@@ -39,8 +40,8 @@ export const checkIfAccessTokenIsValid = async (authorization: string): Promise<
          if (decodedjwt.email_verified) { //check if the email is verified
             const uid: string = decodedjwt.uid
             resolve(uid) //return the uid of the user
-         } else reject(new Error('auth/email-unverified'))
-      } catch (error) { reject(new Error('auth/invalid-token')) }
+         } else reject(err('auth/email-unverified'))
+      } catch { reject(err('auth/invalid-token')) }
    })
 }
 
@@ -81,10 +82,10 @@ export const jwtValidation = (token: string): Promise<JWTPayload> => {
          const { payload } = await jwtVerify(jwt, secret) //validate the user token and return the user payload
 
          if (payload.exp! < Date.now() / 1000) //check if the token is expired
-            reject(new Error('auth/expired-token'))
+            reject(err('auth/expired-token'))
 
          resolve(payload) //return the token payload
-      } catch { reject(new Error('auth/invalid-token')) }
+      } catch { reject(err('auth/invalid-token')) }
    })
 }
 
@@ -121,8 +122,8 @@ export const checkIfDocumentExists = (uid: string): Promise<null> => {
       docRef.get().then((doc: DocumentData) => {
          if (doc.exists)
             resolve(null)
-         else reject(new Error('auth/user-not-signed-up')) //if the document doesn't exists in firestore
-      }).catch(() => { reject(new Error('auth/user-not-signed-up')) }) //if the document doesn't exists in firestore
+         else reject(err('auth/user-not-signed-up')) //if the document doesn't exists in firestore
+      }).catch(() => { reject(err('auth/user-not-signed-up')) }) //if the document doesn't exists in firestore
    })
 }
 
@@ -134,28 +135,26 @@ export const createUserDocument = (uid: string, username: string, pfp: string, b
       if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
          try {
             pfp = pfp ? pfp : await randomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
+
+            await docRef.set({ //set the user data into the doc
+               username: username,
+               name: name,
+               pfp: pfp,
+               bday: bday
+            })
+
+            const user: UserInfo = { username, name, pfp }
+            resolve(user)
          } catch (error) { reject(error) }
-
-         await docRef.set({ //set the user data into the doc
-            username: username,
-            name: name,
-            pfp: pfp,
-            bday: bday
-         })
-
-         const user: UserInfo = { username, name, pfp }
-         resolve(user)
-      } else reject(new Error('auth/user-already-exists'))
+      } else reject(err('auth/user-already-exists'))
    })
 }
 
 export const createUserNode = (uid: string, interests: string[]): Promise<null> => {
-   return new Promise(async (resolve, reject) => {
-      try {
-         const neo4j: Session = neoStart()
-         const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j
-         await neo4j.executeWrite(tx => tx.run(query))
-         resolve(null)
-      } catch { reject(new Error('server/driver-not-found')) }
+   return new Promise(async (resolve) => {
+      const neo4j: Session = neoStart()
+      const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j
+      await neo4j.executeWrite(tx => tx.run(query))
+      resolve(null)
    })
 }

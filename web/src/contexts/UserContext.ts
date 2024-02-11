@@ -1,3 +1,4 @@
+import { err } from '@config/error'
 import { firebase } from '@config/firebase-admin.config'
 import { neoStart } from '@config/neo4j.config'
 import { UserInfo } from '@local-types/index'
@@ -21,7 +22,7 @@ export const getUserDatafromUID = async (uid: string): Promise<UserInfo> => { //
 
          const user: UserInfo = { username, name, pfp }
          resolve(user)
-      } catch (error) { reject(new Error('')) }
+      } catch { reject(err('server/user-not-found')) }
    })
 }
 
@@ -34,7 +35,7 @@ export const getUIDfromUserData = async (username: string): Promise<string> => {
                const uid = doc.id
                resolve(uid) //return the uid of the username
             })
-         } else reject(new Error('server/user-not-found'))
+         } else reject(err('server/user-not-found'))
       })
    })
 }
@@ -89,7 +90,7 @@ export const areFriends = (personalUid: string, friendUid: string): Promise<null
 
          if (check[0] !== null)
             resolve(null)
-         else reject(new Error("server/not-friends"))
+         else reject(err("server/not-friends"))
       } else resolve(null)
    })
 }
@@ -124,8 +125,8 @@ export const hasPermission = (uid: string, id: string, path: string): Promise<nu
 
          if ((await docRef.get()).data()?.owner == uid)
             resolve(null)
-         else reject(new Error('server/unauthorized'))
-      } catch (error) { reject(new Error('server/unauthorized')) }
+         else reject(err('server/unauthorized'))
+      } catch { reject(err('server/unauthorized')) }
    })
 }
 
@@ -145,7 +146,7 @@ export const deleteUser = (uid: string): Promise<null> => {
          const result: QueryResult = await neo4j.executeWrite(tx => tx.run(query))
 
          resolve(null)
-      } catch (error) { reject(new Error('server/unauthorized')) }
+      } catch { reject(err('server/unauthorized')) }
    })
 
 }
@@ -167,33 +168,3 @@ export const removeBatch = (type: string, uid: string): Promise<null> => {
    })
 }
 
-export const updateLike = (postId: string, uid: string): Promise<number> => {
-   return new Promise(async (resolve) => {
-      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
-
-      if (!(await docRef.get()).exists)
-         addLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) })
-      else
-         removeLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) });
-   })
-}
-
-export const addLike = (postId: string, uid: string): Promise<null> => {
-   return new Promise(async (resolve) => {
-      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
-
-      await docRef.set({
-         liker: uid,
-         postId: postId
-      })
-      resolve(null)
-   })
-}
-
-export const removeLike = (postId: string, uid: string): Promise<null> => {
-   return new Promise(async (resolve) => {
-      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
-      docRef.delete()
-      resolve(null)
-   })
-}
