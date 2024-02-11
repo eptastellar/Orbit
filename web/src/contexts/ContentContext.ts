@@ -1,6 +1,6 @@
 import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { getUserDatafromUID } from '@contexts/UserContext'
-import { CommentFetch, PostFetch, UserInfo } from '@local-types/index'
+import { ContentFetch, UserInfo } from '@local-types/index'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 firebase()
@@ -37,7 +37,7 @@ export const randomProfilePicture = (): Promise<string> => {
    })
 }
 
-export const fetchPosts = (uids: string[], lastPostId: string, personalUID: string): Promise<PostFetch> => {
+export const fetchPosts = (uids: string[], lastPostId: string, personalUID: string): Promise<ContentFetch> => {
    const limit: number = 3
 
    return new Promise(async (resolve, reject) => {
@@ -76,7 +76,8 @@ export const fetchPosts = (uids: string[], lastPostId: string, personalUID: stri
 
       if (posts.length > 0) {
          const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-         const fetch: PostFetch = { posts, lastDocId }
+         const content: DocumentData[] = posts
+         const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
          reject(new Error('server/no-content'))
@@ -124,7 +125,7 @@ export const getLeafsCommentsNumber = (rootId: string): Promise<number> => {
    })
 }
 
-export const fetchRootComments = (postId: string, lastRootCommentId: string): Promise<CommentFetch> => {
+export const fetchRootComments = (postId: string, lastRootCommentId: string): Promise<ContentFetch> => {
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
@@ -158,14 +159,15 @@ export const fetchRootComments = (postId: string, lastRootCommentId: string): Pr
 
       if (comments.length > 0) {
          const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-         const fetch: CommentFetch = { comments, lastDocId }
+         const content: DocumentData[] = comments
+         const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
          reject(new Error('server/no-content'))
    })
 }
 
-export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): Promise<CommentFetch> => {
+export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): Promise<ContentFetch> => {
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
@@ -197,7 +199,8 @@ export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): P
 
       if (comments.length > 0) {
          const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-         const fetch: CommentFetch = { comments, lastDocId }
+         const content: DocumentData[] = comments
+         const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
          reject(new Error('server/no-content'))

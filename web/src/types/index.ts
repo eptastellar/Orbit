@@ -6,12 +6,7 @@ export type UserInfo = {
    pfp: string
 }
 
-export type PostFetch = {
-   posts: DocumentData[],
-   lastDocId: string
-}
-
-export type CommentFetch = {
-   comments: DocumentData[],
+export type ContentFetch = {
+   content: DocumentData[],
    lastDocId: string
 }

@@ -1,7 +1,7 @@
 import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
 import { fetchLeafsComments } from "@contexts/ContentContext"
 import { commentLeafIdValidation, commentRootIdValidation, postIdValidation } from "@contexts/ValidationContext"
-import { CommentFetch } from "@local-types/index"
+import { ContentFetch } from "@local-types/index"
 import { Request, Response } from "express"
 
 export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
@@ -14,8 +14,8 @@ export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Respo
 
       postIdValidation(postId).then(async () => {
          commentRootIdValidation(rootId, postId).then(() => {
-            fetchLeafsComments(rootId, lastLeafCommentId).then((fetch: CommentFetch) => {
-               res.status(200).json({ success: true, comments: fetch.comments, lastDocId: fetch.lastDocId })
+            fetchLeafsComments(rootId, lastLeafCommentId).then((fetch: ContentFetch) => {
+               res.status(200).json({ success: true, comments: fetch.content, lastLeafCommentId: fetch.lastDocId })
             }).catch((error) => { res.status(404).json({ success: false, message: error.message }) })
          }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
