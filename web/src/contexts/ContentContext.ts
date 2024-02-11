@@ -85,7 +85,7 @@ export const fetchPosts = (uids: string[], lastPostId: string, personalUID: stri
 }
 
 export const isLikedBy = (postId: string, uid: string): Promise<boolean> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const snapshot: QuerySnapshot = await db.collection('likes')
          .where('liker', '==', uid)
          .where('postId', '==', postId)
@@ -96,7 +96,7 @@ export const isLikedBy = (postId: string, uid: string): Promise<boolean> => {
 }
 
 export const getLikesNumber = (postId: string): Promise<number> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const queryRef: Query = db.collection('likes')
          .where('postId', '==', postId)
 
@@ -106,7 +106,7 @@ export const getLikesNumber = (postId: string): Promise<number> => {
 }
 
 export const getRootsCommentsNumber = (postId: string): Promise<number> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const queryRef: Query = db.collection('comments')
          .where('postId', '==', postId)
 
@@ -116,7 +116,7 @@ export const getRootsCommentsNumber = (postId: string): Promise<number> => {
 }
 
 export const getLeafsCommentsNumber = (rootId: string): Promise<number> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const queryRef: Query = db.collection('comments')
          .where('root', '==', rootId)
 
@@ -273,7 +273,7 @@ export const deletePost = (postId: string): Promise<null> => {
 }
 
 export const getPostOwner = (postId: string): Promise<string> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const docRef: DocumentReference = db.collection('posts').doc(postId)
 
       const doc: DocumentData = await docRef.get()

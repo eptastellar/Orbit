@@ -40,7 +40,7 @@ export const getUIDfromUserData = async (username: string): Promise<string> => {
 }
 
 export const getFriendsCount = (uid: string): Promise<number> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const neo4j: Session = neoStart()
       const query: string = `MATCH (u:User)-[:Friend]-(t:User) where u.name = '${uid}' RETURN t`
       const resultQueryFriends = await neo4j.executeWrite(tx => tx.run(query))
@@ -51,7 +51,7 @@ export const getFriendsCount = (uid: string): Promise<number> => {
 }
 
 export const getPostCount = (uid: string): Promise<number> => { //get the snapshot size of all the posts where uid is equal to the owner
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const postsRef: Query = db.collection('posts').where('owner', '==', uid)
       const snapshot: QuerySnapshot = await postsRef.get()
       resolve(snapshot.size)
@@ -66,7 +66,7 @@ export const getMeteorCount = (uid: string): Promise<number> => {
 }
 
 export const getFriendList = (uid: string): Promise<string[]> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const neo4j: Session = neoStart()
       const tempArray: string[] = []
       const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
@@ -95,7 +95,7 @@ export const areFriends = (personalUid: string, friendUid: string): Promise<null
 }
 
 export const getInterestsFromUID = (uid: string): Promise<string[]> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const neo4j: Session = neoStart()
       const query: string = `MATCH (u:User) where u.name = '${uid}' RETURN u.interests` //retrieves the interests from neo4j for a specific user
       const result: QueryResult = await neo4j.executeRead(tx => tx.run(query))
@@ -106,7 +106,7 @@ export const getInterestsFromUID = (uid: string): Promise<string[]> => {
 }
 
 export const patchUserInfo = (uid: string, interests: string[], user: UserInfo): Promise<null> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const neo4j: Session = neoStart()
       const usersRef: DocumentReference = db.collection('users').doc(uid)
       usersRef.set({ username: user.username, name: user.name, pfp: user.pfp })
@@ -151,7 +151,7 @@ export const deleteUser = (uid: string): Promise<null> => {
 }
 
 export const removeBatch = (type: string, uid: string): Promise<null> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const postsRef: Query = db.collection(`${type}`).where('owner', '==', uid)
       const snapshot: QuerySnapshot = await postsRef.get()
 
@@ -168,7 +168,7 @@ export const removeBatch = (type: string, uid: string): Promise<null> => {
 }
 
 export const updateLike = (postId: string, uid: string): Promise<number> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
 
       if (!(await docRef.get()).exists)
@@ -179,7 +179,7 @@ export const updateLike = (postId: string, uid: string): Promise<number> => {
 }
 
 export const addLike = (postId: string, uid: string): Promise<null> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
 
       await docRef.set({
@@ -191,7 +191,7 @@ export const addLike = (postId: string, uid: string): Promise<null> => {
 }
 
 export const removeLike = (postId: string, uid: string): Promise<null> => {
-   return new Promise(async (resolve, _) => {
+   return new Promise(async (resolve) => {
       const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
       docRef.delete()
       resolve(null)
