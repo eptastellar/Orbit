@@ -4,6 +4,7 @@
    "editor.links": true,
    "editor.detectIndentation": false,
    "editor.tabSize": 3,
+
    // Formatting properties
    "editor.formatOnPaste": true,
    "editor.formatOnSave": true,
@@ -13,14 +14,15 @@
    "editor.codeActionsOnSave": {
       "source.organizeImports": "always",
    },
+
    // Material Icons
    "material-icon-theme.folders.associations": {
       "algorithms": "functions",
       "components": "react-components",
       "cron": "archive",
+      "healthz": "linux",
       "hoc": "interface",
       "loading": "CI",
       "workflows": "batch",
-      "healthz": "linux",
    },
 }
