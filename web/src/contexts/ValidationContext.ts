@@ -1,9 +1,10 @@
 import { interests } from '@assets/interests'
-import { firebase, firestore } from '@config/firebase-admin.config'
+import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
 import { DocumentData, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 
 firebase()
 const db: Firestore = firestore()
+const bucket = firestorage()
 
 export const birthdateValidation = async (bday: number): Promise<null> => {
    return new Promise((resolve, reject) => {
@@ -124,9 +125,18 @@ export const contentValidation = async (text?: string, content?: string, type?: 
 }
 
 export const mediaValidation = (media: string): Promise<null> => {
-   return new Promise((resolve, reject) => {
-      //TODO enhance
-      resolve(null)
+   return new Promise(async (resolve, reject) => {
+      const cleanURL: string = media.split('appspot.com/o/')[1]
+      const removeToken: string = cleanURL.split('?')[0]
+
+      const formattedPath: string = removeToken.replace(/%2F/g, '/')
+      const fileRef = bucket.file(decodeURIComponent(formattedPath));
+
+      fileRef.exists().then((exists) => {
+         if (exists[0])
+            resolve(null)
+         else reject(new Error('validation/invalid-image-path'))
+      })
    })
 }
 
