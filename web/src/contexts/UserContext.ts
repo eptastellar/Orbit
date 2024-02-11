@@ -67,16 +67,19 @@ export const getMeteorCount = (uid: string): Promise<number> => {
 }
 
 export const getFriendList = (uid: string): Promise<string[]> => {
-   return new Promise(async (resolve) => {
+   return new Promise(async (resolve, reject) => {
       const neo4j: Session = neoStart()
       const tempArray: string[] = []
-      const queryFriends = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
+      const queryFriends: string = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
       const resultMap = await neo4j.executeRead(tx => tx.run(queryFriends))
       const uids = resultMap.records.map(row => row.get('p'))
       uids.forEach(element => {
          tempArray.push(element.properties['name'])
       })
-      resolve(tempArray)
+
+      if(tempArray.length > 0)
+         resolve(tempArray)
+      else reject(err('server/no-friends'))
    })
 }
 
@@ -167,4 +170,3 @@ export const removeBatch = (type: string, uid: string): Promise<null> => {
       process.nextTick(() => { removeBatch(type, uid) })
    })
 }
-
