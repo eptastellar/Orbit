@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 
-import { profile } from "@/assets"
+import { profileEmpty } from "@/assets"
 import { Gear, IconButton, ThreeDotsVertical } from "@/assets/icons"
 import { HeaderWithButton, InfiniteLoader, InterestButton, Navbar, Post } from "@/components"
 import { useUserContext } from "@/contexts"
@@ -158,7 +158,7 @@ const User = ({ params }: Props) => {
                   // The user has not posted anything
                   : <div className="flex flex-col flex-grow center w-full mt-6">
                      <Image
-                        src={profile}
+                        src={profileEmpty}
                         alt="User has no posts to display"
                         className="w-2/3"
                      />

@@ -16,10 +16,11 @@ import directChat from "./illustrations/direct-chat.svg"
 import emailVerification from "./illustrations/email-verification.svg"
 import emptyChat from "./illustrations/empty-chat.svg"
 import groupChat from "./illustrations/group-chat.svg"
+import homeEmpty from "./illustrations/home-empty.svg"
 import notifications from "./illustrations/notifications.svg"
 import passwordReset from "./illustrations/password-reset.svg"
 import privacyPolicy from "./illustrations/privacy-policy.svg"
-import profile from "./illustrations/profile.svg"
+import profileEmpty from "./illustrations/profile-empty.svg"
 import rotatePhone from "./illustrations/rotate-phone.svg"
 import supernovaAccepted from "./illustrations/supernova-accepted.svg"
 import supernovaRejected from "./illustrations/supernova-rejected.svg"
@@ -46,12 +47,13 @@ export {
    emptyChat,
    google,
    groupChat,
+   homeEmpty,
    logoBlack,
    logoWhite,
    notifications,
    passwordReset,
    privacyPolicy,
-   profile,
+   profileEmpty,
    rotatePhone,
    supernovaAccepted,
    supernovaRejected
