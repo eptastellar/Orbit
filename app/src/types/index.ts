@@ -41,7 +41,8 @@ export type ServerError =
    "validation/invalid-document-id" |
    "validation/malformed-input" |
    // Server errors
-   "server/no-content"
+   "server/no-content" |
+   "server/no-friends"
 
 export type UserProfile = {
    isPersonal: boolean

@@ -38,6 +38,8 @@ export const resolveServerError = (error: ServerError): string => {
    // Server errors
    else if (error === "server/no-content")
       resolvedError = "No content for the requested resource."
+   else if (error === "server/no-friends")
+      resolvedError = "The requested user has no friends to fetch."
    else resolvedError = error
 
    return resolvedError
