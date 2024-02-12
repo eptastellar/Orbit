@@ -43,7 +43,7 @@ const Homepage = () => {
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
             {fetchedPosts ?
                fetchedPosts.length > 0
-                  // The user has posted something
+                  // There are some posts available in the homepage
                   ? <div className="flex flex-col gap-4 items-center justify-start w-full">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}
                      {hasNextPosts
@@ -51,7 +51,7 @@ const Homepage = () => {
                         : <p className="mt-2 text-base font-semibold text-white">You're all caught up!</p>
                      }
                   </div>
-                  // The user has not posted anything
+                  // There are no posts in the homepage
                   : <div className="flex flex-col flex-grow center w-full">
                      <Image
                         src={homeEmpty}

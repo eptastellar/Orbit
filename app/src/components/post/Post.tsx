@@ -43,7 +43,7 @@ const Post = ({ post }: Props) => {
          {post.type === "image" && <ImageEmbed src={post.content!} />}
 
          <p className="mt-2 text-xs font-normal text-gray-3">
-            {new Date(post.createdAt).toLocaleString("en-US").replace(", ", " · ")}
+            {new Date(post.createdAt * 1000).toLocaleString("en-US").replace(", ", " · ")}
          </p>
 
          <div className="flex flex-row items-center justify-start gap-4 mt-2">
