@@ -14,7 +14,7 @@
       "express-file-routing": "^3.0.3",
       "firebase-admin": "^12.0.0",
       "jose": "^5.2.0",
-      "neo4j-driver": "^5.16.0",
+      "neo4j-driver": "^5.17.0",
       "tsc-alias": "^1.8.8",
       "tsconfig-paths": "^4.2.0"
    },
