@@ -3,6 +3,7 @@ declare global {
       interface ProcessEnv {
          PORT: number
          JWT_SECRET_KEY: string
+         CRON_SECRET: string
 
          FIREBASE_PRIVATE_KEY: string
          FIREBASE_CLIENT_EMAIL: string

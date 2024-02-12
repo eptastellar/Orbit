@@ -2,7 +2,7 @@ import admin from 'firebase-admin'
 import { ServiceAccount, cert, getApps, initializeApp } from 'firebase-admin/app'
 import { Firestore } from 'firebase-admin/firestore'
 
-export function firebase(): void {
+export const firebase = (): void => {
    const privateKey: string = process.env.FIREBASE_PRIVATE_KEY!
 
    if (privateKey) {
@@ -22,5 +22,5 @@ export function firebase(): void {
    }
 }
 
-export function firestore(): Firestore { return admin.firestore() }
-export function firestorage() { return admin.storage().bucket() }
+export const firestore = (): Firestore => { return admin.firestore() }
+export const firestorage = () => { return admin.storage().bucket() }
