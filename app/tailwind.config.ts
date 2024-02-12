@@ -3,6 +3,7 @@ import { Config } from "tailwindcss"
 const config: Config = {
    content: [
       "./src/app/**/*.{ts,tsx}",
+      "./src/assets/icons/*.{ts,tsx}",
       "./src/components/**/*.{ts,tsx}",
    ],
    theme: {
@@ -21,7 +22,10 @@ const config: Config = {
             "white": "#FBFBFB",
          },
          height: {
-            "104": "416px"
+            "104": "26rem"
+         },
+         screens: {
+            "device": "512px"
          }
       },
    },

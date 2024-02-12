@@ -5,13 +5,15 @@ import { useState } from "react"
 
 import { apple, google } from "@/assets"
 import { WelcomeButton } from "@/components"
-import { useAuthContext } from "@/contexts"
+import { useAuthContext, useUserContext } from "@/contexts"
+import { ServerError } from "@/types"
 
 type Views = "default" | "signin" | "signup"
 
 const Welcome = () => {
    // Context hooks
    const { googleLogin } = useAuthContext()
+   const { setUserProfile } = useUserContext()
 
    // Next router for navigation
    const router = useRouter()
@@ -32,23 +34,34 @@ const Welcome = () => {
 
             type ResponseType = {
                success: boolean
-               message: string
+               message: ServerError
                jwt: string
+               pfp: string
                username: string
             }
+
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ success, jwt, username }: ResponseType) => {
+               .then(({ success, jwt, pfp, username }: ResponseType) => {
                   if (success) {
-                     localStorage.setItem("sessionToken", jwt)
+                     setUserProfile({
+                        profilePicture: pfp,
+                        username: username,
+                        sessionToken: jwt
+                     })
+
                      router.push(`/u/${username}`)
                   } else router.push("/onboarding/profile")
                })
-               .catch((error: any) => console.error(error))
-               .finally(() => setGoogleLoading(false))
+               .catch((error: any) => {
+                  console.error(error)
+                  setGoogleLoading(false)
+               })
          })
-         .catch((error: any) => console.error(error))
-         .finally(() => setGoogleLoading(false))
+         .catch((error: any) => {
+            console.error(error)
+            setGoogleLoading(false)
+         })
    }
 
    return (

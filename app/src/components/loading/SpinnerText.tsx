@@ -1,4 +1,4 @@
-import { CgSpinner } from "react-icons/cg"
+import { Spinner } from "@/assets/icons"
 
 type Props = {
    message: string
@@ -6,7 +6,7 @@ type Props = {
 
 const SpinnerText = ({ message }: Props) => (
    <p className="flex flex-row center gap-2 text-white">
-      <CgSpinner className="animate-spin" />
+      <Spinner height={12} />
       <span>{` ${message}`}</span>
    </p>
 )

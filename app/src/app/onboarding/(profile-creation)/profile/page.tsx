@@ -1,14 +1,16 @@
 "use client"
 
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { PiCameraPlus } from "react-icons/pi"
+import { useEffect, useRef, useState } from "react"
 
+import { CameraPlus } from "@/assets/icons"
 import { BackButton, Input, SpinnerText } from "@/components"
+import { useLocalStorage } from "@/hooks"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
-import Image from "next/image"
+import { ServerError } from "@/types"
 
 const Profile = () => {
    // Next router for navigation
@@ -20,30 +22,36 @@ const Profile = () => {
    const [progress, setProgress] = useState<number>(0)
 
    // Interaction states
-   const [pfpUrl, setPfpUrl] = useState<string>(localStorage.getItem("profilePicture") ?? "")
-   const [username, setUsername] = useState<string>(localStorage.getItem("username") ?? "")
-   const [birthdate, setBirthdate] = useState<string[]>(localStorage.getItem("birthdate")?.split("/") ?? [])
+   const [pfpUrl, setPfpUrl] = useLocalStorage<string>("profilePicture", "")
+   const [username, setUsername] = useLocalStorage<string>("username", "")
+   const [birthdate, setBirthdate] = useLocalStorage<string[]>("birthdate", ["", "", ""])
 
-   const [bdayYear, setBdayYear] = useState<string>(birthdate[0] ?? "")
-   const [bdayMonth, setBdayMonth] = useState<string>(birthdate[1] ?? "")
-   const [bdayDay, setBdayDay] = useState<string>(birthdate[2] ?? "")
+   const [bdayYear, setBdayYear] = useState<string>("")
+   const [bdayMonth, setBdayMonth] = useState<string>("")
+   const [bdayDay, setBdayDay] = useState<string>("")
+
+   const monthRef = useRef<HTMLInputElement>(null)
+   const dayRef = useRef<HTMLInputElement>(null)
+
+   useEffect(() => {
+      setBdayYear(birthdate[0] ?? "")
+      setBdayMonth(birthdate[1] ?? "")
+      setBdayDay(birthdate[2] ?? "")
+   }, [birthdate])
+
 
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files ? event.target.files[0] : null
 
-      if (file) {
+      if (file && ["image/gif", "image/jpeg", "image/png"].includes(file.type)) {
          setPfpUrl("")
-         localStorage.removeItem("profilePicture")
 
          const uploadTask = uploadBytesResumable(ref(storage, `uploads/pfps/${crypto.randomUUID()}`), file)
 
          uploadTask.on("state_changed",
             (snapshot) => setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
             (error) => setError(error.message),
-            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-               localStorage.setItem("profilePicture", downloadURL)
-               setPfpUrl(downloadURL)
-            })
+            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => setPfpUrl(downloadURL))
          )
       }
    }
@@ -61,11 +69,11 @@ const Profile = () => {
       if (event.target.id === "birthdate-year") {
          setBdayYear(event.target.value)
          setBirthdate((prev) => [event.target.value, prev[1], prev[2]])
-         if (event.target.value.length === 4) document.getElementById("birthdate-month")?.focus()
+         if (event.target.value.length === 4) monthRef.current?.focus()
       } else if (event.target.id === "birthdate-month") {
          setBdayMonth(event.target.value)
          setBirthdate((prev) => [prev[0], event.target.value, prev[2]])
-         if (event.target.value.length === 2) document.getElementById("birthdate-day")?.focus()
+         if (event.target.value.length === 2) dayRef.current?.focus()
       } else if (event.target.id === "birthdate-day") {
          setBdayDay(event.target.value)
          setBirthdate((prev) => [prev[0], prev[1], event.target.value])
@@ -97,20 +105,19 @@ const Profile = () => {
          body: requestBody
       }
 
-      type ResponseType = { success: boolean, message: string }
+      type ResponseType = { success: boolean, message: ServerError }
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up/validate`, params)
          .then((response) => response.json())
          .then(({ success, message }: ResponseType) => {
             if (success) {
                setError("")
 
-               // Set temporary user localStorage values
-               localStorage.setItem("username", username)
-               localStorage.setItem("birthdate", birthdate.join("/"))
                router.push("/onboarding/interests")
-            } else setError(resolveServerError(message))
+            } else {
+               setError(resolveServerError(message))
+               setLoading(false)
+            }
          })
-         .finally(() => setLoading(false))
    }
 
    return (
@@ -129,23 +136,29 @@ const Profile = () => {
             onSubmit={handleSubmit}
          >
             <label
-               className={`flex center h-32 w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
+               className={`flex center min-h-32 min-w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
                style={{
                   background: pfpUrl ? "#1D5C96" :
                      `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`
                }}
             >
-               <div className="flex center h-full w-full bg-gray-7 rounded-full overflow-hidden">
+               <div className="flex center h-32 w-32 bg-gray-7 rounded-full overflow-hidden">
                   {pfpUrl
-                     ? <Image src={pfpUrl} alt="Profile picture" height={128} width={128} className="h-full w-full object-cover" />
-                     : <PiCameraPlus className="text-white text-5xl" />
+                     ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
+                        <Image
+                           src={pfpUrl}
+                           alt="Profile picture"
+                           fill className="object-cover"
+                        />
+                     </div>
+                     : <CameraPlus color="fill-white" height={32} />
                   }
                </div>
                <input
                   type="file"
                   accept="image/gif, image/jpeg, image/png"
                   onChange={handleUpload}
-                  className="hidden"
+                  hidden
                />
             </label>
 
@@ -170,6 +183,7 @@ const Profile = () => {
                      />
                      <div className="flex gap-2 w-1/2">
                         <input
+                           ref={monthRef}
                            id="birthdate-month"
                            type="text"
                            placeholder="MM"
@@ -178,6 +192,7 @@ const Profile = () => {
                            className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
                         />
                         <input
+                           ref={dayRef}
                            id="birthdate-day"
                            type="text"
                            placeholder="DD"

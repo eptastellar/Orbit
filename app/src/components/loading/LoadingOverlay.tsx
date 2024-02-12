@@ -1,7 +1,7 @@
 import SpinnerText from "./SpinnerText"
 
 const LoadingOverlay = () => (
-   <div className="flex center h-screen w-screen bg-black z-50">
+   <div className="fixed top-0 left-0 flex center h-screen w-screen bg-black z-50">
       <SpinnerText message="Loading..." />
    </div>
 )

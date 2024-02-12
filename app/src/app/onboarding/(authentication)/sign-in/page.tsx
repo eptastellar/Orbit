@@ -4,13 +4,15 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 import { BackButton, Input, SpinnerText } from "@/components"
-import { useAuthContext } from "@/contexts"
+import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 import { resolveServerError } from "@/libraries/serverErrors"
+import { ServerError } from "@/types"
 
 const Signin = () => {
    // Context hooks
    const { emailSignin } = useAuthContext()
+   const { setUserProfile } = useUserContext()
 
    // Next router for navigation
    const router = useRouter()
@@ -37,26 +39,37 @@ const Signin = () => {
 
             type ResponseType = {
                success: boolean
-               message: string
+               message: ServerError
                jwt: string
+               pfp: string
                username: string
             }
+
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ success, message, jwt, username }: ResponseType) => {
+               .then(({ success, message, jwt, pfp, username }: ResponseType) => {
                   if (success) {
                      setError("")
 
-                     localStorage.setItem("sessionToken", jwt)
+                     setUserProfile({
+                        profilePicture: pfp,
+                        username: username,
+                        sessionToken: jwt
+                     })
+
                      router.push(`/u/${username}`)
-                  } else if (message === "auth/user-not-signed-up")
+                  } else if (message === "auth/user-not-signed-up") {
                      router.push("/onboarding/profile")
-                  else setError(resolveServerError(message))
+                  } else {
+                     setError(resolveServerError(message))
+                     setLoading(false)
+                  }
                })
-               .finally(() => setLoading(false))
          })
-         .catch((error: any) => setError(resolveFirebaseError(error.message)))
-         .finally(() => setLoading(false))
+         .catch((error: any) => {
+            setError(resolveFirebaseError(error.message))
+            setLoading(false)
+         })
    }
 
    return (

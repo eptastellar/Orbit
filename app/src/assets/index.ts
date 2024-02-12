@@ -1,25 +1,29 @@
-import apple from "./icons/apple.png"
-import chatList from "./icons/chat-list.svg"
-import google from "./icons/google.png"
-import groupList from "./icons/group-list.svg"
+import logoBlack1024 from "./brand/black/1024.png"
+import logoBlack128 from "./brand/black/128.png"
+import logoBlack256 from "./brand/black/256.png"
+import logoBlack512 from "./brand/black/512.png"
+import logoBlack64 from "./brand/black/64.png"
+import logoWhite1024 from "./brand/white/1024.png"
+import logoWhite128 from "./brand/white/128.png"
+import logoWhite256 from "./brand/white/256.png"
+import logoWhite512 from "./brand/white/512.png"
+import logoWhite64 from "./brand/white/64.png"
 
+import apple from "./logos/apple.png"
+import google from "./logos/google.png"
+
+import directChat from "./illustrations/direct-chat.svg"
 import emailVerification from "./illustrations/email-verification.svg"
 import emptyChat from "./illustrations/empty-chat.svg"
+import groupChat from "./illustrations/group-chat.svg"
+import homeEmpty from "./illustrations/home-empty.svg"
+import notifications from "./illustrations/notifications.svg"
 import passwordReset from "./illustrations/password-reset.svg"
 import privacyPolicy from "./illustrations/privacy-policy.svg"
+import profileEmpty from "./illustrations/profile-empty.svg"
+import rotatePhone from "./illustrations/rotate-phone.svg"
 import supernovaAccepted from "./illustrations/supernova-accepted.svg"
 import supernovaRejected from "./illustrations/supernova-rejected.svg"
-
-import logoBlack1024 from "./logos/black/1024.png"
-import logoBlack128 from "./logos/black/128.png"
-import logoBlack256 from "./logos/black/256.png"
-import logoBlack512 from "./logos/black/512.png"
-import logoBlack64 from "./logos/black/64.png"
-import logoWhite1024 from "./logos/white/1024.png"
-import logoWhite128 from "./logos/white/128.png"
-import logoWhite256 from "./logos/white/256.png"
-import logoWhite512 from "./logos/white/512.png"
-import logoWhite64 from "./logos/white/64.png"
 
 const logoBlack = {
    "64px": logoBlack64,
@@ -38,15 +42,19 @@ const logoWhite = {
 
 export {
    apple,
-   chatList,
+   directChat,
    emailVerification,
    emptyChat,
    google,
-   groupList,
+   groupChat,
+   homeEmpty,
    logoBlack,
    logoWhite,
+   notifications,
    passwordReset,
    privacyPolicy,
+   profileEmpty,
+   rotatePhone,
    supernovaAccepted,
    supernovaRejected
 }

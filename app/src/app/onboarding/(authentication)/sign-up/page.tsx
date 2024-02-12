@@ -26,6 +26,7 @@ const Signup = () => {
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
+      // Preliminary checks
       if (password !== confirmPassword)
          return setError("Passwords do not match.")
 
@@ -33,8 +34,10 @@ const Signup = () => {
 
       emailSignup(email, password)
          .then(() => router.push("/onboarding/verification"))
-         .catch((error: any) => setError(resolveFirebaseError(error.message)))
-         .finally(() => setLoading(false))
+         .catch((error: any) => {
+            setError(resolveFirebaseError(error.message))
+            setLoading(false)
+         })
    }
 
    return (
