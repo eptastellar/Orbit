@@ -1,19 +1,27 @@
-version:  2
+version: 2
 updates:
   - package-ecosystem: "npm"
+    target-branch: "app"
     directory: "/app"
-    schedule:
-      interval: "weekly"
     assignees:
       - "74C17N3P7UN3"
-      - "mzyxnuel"
+    schedule:
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Rome"
+    labels:
+      - "dependencies"
     open-pull-requests-limit: 1
 
   - package-ecosystem: "npm"
     directory: "/web"
-    schedule:
-      interval: "weekly"
     assignees:
       - "mzyxnuel"
       - "TheInfernalNick"
+    schedule:
+      interval: "weekly"
+      time: "08:00"
+      timezone: "Europe/Rome"
+    labels:
+      - "dependencies"
     open-pull-requests-limit: 1
