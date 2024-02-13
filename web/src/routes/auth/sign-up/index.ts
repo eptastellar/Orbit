@@ -13,8 +13,9 @@ export const POST = (req: Request, res: Response) => {
    checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
       usernameValidation(username).then(() => {
          birthdateValidation(bday).then(() => {
-            interestsValidation(interests).then(() => {
-               mediaValidation(pfp).then(() => {
+            interestsValidation(interests).then(async () => {
+               try {
+                  if (pfp) await mediaValidation(pfp)
                   createUserDocument(uid, username, pfp, bday).then((user: UserInfo) => { //create a new doc in /users
                      createUserNode(uid, interests).then(() => { //create a new node in neo4j
                         createNewSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
@@ -22,7 +23,7 @@ export const POST = (req: Request, res: Response) => {
                         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
                      }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
                   }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-               }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+               } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
             }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
          }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
