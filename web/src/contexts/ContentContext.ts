@@ -302,15 +302,15 @@ export const deleteComment = (commentId: string): Promise<null> => {
    })
 }
 
-export const updateLike = (postId: string, uid: string): Promise<number> => {
+export const updateLike = (postId: string, uid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
          const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
 
          if (!(await docRef.get()).exists)
-            addLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) })
+            addLike(postId, uid).then(() => { resolve(null) })
          else
-            removeLike(postId, uid).then(async () => { resolve(await getLikesNumber(postId)) });
+            removeLike(postId, uid).then(() => { resolve(null) })
       } catch { reject(err('server/update-failed')) }
    })
 }

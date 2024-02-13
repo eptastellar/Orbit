@@ -11,8 +11,8 @@ export const POST = [checkIfSessionTokenIsValid, (req: Request, res: Response) =
    postIdValidation(postId).then(async () => {
       getPostOwner(postId).then((post_owner: string) => {
          areFriends(tokenUid, post_owner).then(() => {
-            updateLike(postId, tokenUid).then((likes_number: number) => {
-               res.status(200).json({ success: true, likes_number: likes_number })
+            updateLike(postId, tokenUid).then(() => {
+               res.status(200).json({ success: true })
             }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
          }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
