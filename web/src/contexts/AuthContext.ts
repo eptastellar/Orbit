@@ -75,7 +75,7 @@ export const jwtValidation = (token: string): Promise<JWTPayload> => {
       try {
          const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
          const { payload } = await jwtVerify(token, secret) //validate the user token and return the user payload
-         
+
          if (payload.exp! < (Date.now() / 1000)) //check if the token is expired
             reject(err('auth/expired-token'))
 
