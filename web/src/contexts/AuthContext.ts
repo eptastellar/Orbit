@@ -16,7 +16,8 @@ const db: Firestore = firestore()
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
    const authorization: string = req.headers.authorization!
 
-   jwtValidation(authorization).then((payload: JWTPayload) => { //validate if the token is signed
+   const token: string = authorization.split('Bearer ')[1]
+   jwtValidation(token).then((payload: JWTPayload) => { //validate if the token is signed
       const uid: string = payload.uid as string
 
       const docRef: DocumentReference = db.collection('sessions').doc(uid)
@@ -57,31 +58,25 @@ export const checkIfCronSecretIsValid = async (req: express.Request, res: expres
 }
 
 export const newSessionJWT = async (uid: string) => {
-   const payload = {
-      'uid': uid,
-      'owner': 'eptastellar',
-      'application': 'orbit',
-   }
-
-   const jwt: SignJWT = new SignJWT(payload)
-   jwt.setProtectedHeader({ alg: 'HS256' }) //TODO: enhance the security using asymmetric enc
-   jwt.setIssuedAt()
-   jwt.setExpirationTime('4w') //create a jwt and set the expire time to 4 weeks
-
+   const payload = { 'uid': uid }
    const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
-   const signedJwt: string = await jwt.sign(secret)
 
-   return signedJwt
+   const jwt: string = await new SignJWT(payload)
+      .setProtectedHeader({ alg: 'HS256' }) //TODO: enhance the security using asymmetric enc
+      .setIssuedAt()
+      .setExpirationTime('4w') //create a jwt and set the expire time to 4 weeks
+      .sign(secret)
+
+   return jwt
 }
 
 export const jwtValidation = (token: string): Promise<JWTPayload> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const jwt: string = token.split('Bearer ')[1] //split the bearer scheme
          const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
-         const { payload } = await jwtVerify(jwt, secret) //validate the user token and return the user payload
-
-         if (payload.exp! < Date.now() / 1000) //check if the token is expired
+         const { payload } = await jwtVerify(token, secret) //validate the user token and return the user payload
+         
+         if (payload.exp! < (Date.now() / 1000)) //check if the token is expired
             reject(err('auth/expired-token'))
 
          resolve(payload) //return the token payload
@@ -92,7 +87,7 @@ export const jwtValidation = (token: string): Promise<JWTPayload> => {
 export const createNewSession = async (uid: string): Promise<string> => {
    const docRef: DocumentReference = db.collection('sessions').doc(uid) //create a new doc in the collection /sessions
    const doc: DocumentData = (await docRef.get()).data()! //get data inside the document
-   const token: string = doc?.token
+   const token: string = doc?.jwt
 
    return new Promise(async (resolve, reject) => {
       if (token) {
