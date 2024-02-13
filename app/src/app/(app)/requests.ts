@@ -68,6 +68,5 @@ export const fetchPosts = async (
          lastPostId: undefined
       }
 
-
    throw new Error(message)
 }

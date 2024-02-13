@@ -20,7 +20,7 @@ const Post = ({ post }: Props) => {
    return (
       <div className="flex flex-col items-start justify-center w-full p-4 bg-gray-7/50 rounded-md">
          <div
-            className="flex center gap-3"
+            className="flex center gap-3 cursor-pointer"
             onClick={() => router.push(`/u/${post.userData.username}`)}
          >
             <div className="relative min-h-10 max-h-10 min-w-10 max-w-10 rounded-full overflow-hidden">

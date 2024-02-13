@@ -9,7 +9,7 @@ import { profileEmpty } from "@/assets"
 import { Gear, IconButton, ThreeDotsVertical } from "@/assets/icons"
 import { HeaderWithButton, InfiniteLoader, InterestButton, Navbar, Post } from "@/components"
 import { useUserContext } from "@/contexts"
-import { Post as PostType } from "@/types"
+import { Post as PostType, ServerError } from "@/types"
 
 import { fetchPosts, fetchProfile } from "./requests"
 
@@ -31,7 +31,9 @@ const User = ({ params }: Props) => {
 
    const { data: fetchedUser, error: profileError } = useQuery({
       queryKey: ["user", username],
-      queryFn: () => fetchProfile(username, userProfile?.sessionToken)
+      queryFn: () => fetchProfile(username, userProfile?.sessionToken),
+
+      retry: false
    })
 
    const {
@@ -44,6 +46,8 @@ const User = ({ params }: Props) => {
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
          fetchPosts(username, pageParam, userProfile?.sessionToken),
 
+      retry: false,
+
       initialPageParam: undefined,
       getNextPageParam: (prev) => prev.lastPostId
    })
@@ -52,8 +56,21 @@ const User = ({ params }: Props) => {
       .flatMap((page) => page.posts.flatMap((post) => post))
 
    useEffect(() => {
-      if (profileError) console.error(profileError)
-      if (postsError) console.error(postsError)
+      if (profileError) {
+         const error = profileError.message as ServerError
+
+         if (error === "server/not-friends")
+            router.replace(`/u/${userProfile?.username}`)
+         else console.error(profileError)
+      }
+
+      if (postsError) {
+         const error = postsError.message as ServerError
+
+         if (error === "server/not-friends")
+            router.replace(`/u/${userProfile?.username}`)
+         else console.error(postsError)
+      }
    }, [profileError, postsError])
 
    return (
