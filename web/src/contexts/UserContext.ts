@@ -5,7 +5,6 @@ import { UserInfo } from '@local-types/index'
 import { firestore } from 'firebase-admin'
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
 import { QueryResult, Session } from 'neo4j-driver'
-import { getLikesNumber } from './ContentContext'
 
 firebase()
 const db: Firestore = firestore()
@@ -77,7 +76,7 @@ export const getFriendList = (uid: string): Promise<string[]> => {
          tempArray.push(element.properties['name'])
       })
 
-      if(tempArray.length > 0)
+      if (tempArray.length > 0)
          resolve(tempArray)
       else reject(err('server/no-friends'))
    })
