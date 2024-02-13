@@ -14,7 +14,7 @@ export const POST = [checkIfSessionTokenIsValid, (req: Request, res: Response) =
             updateLike(postId, tokenUid).then((likes_number: number) => {
                res.status(200).json({ success: true, likes_number: likes_number })
             }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+         }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
       }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
    }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
 }]
