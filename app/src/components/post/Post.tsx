@@ -1,10 +1,12 @@
-"use router"
+"use client"
 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 
-import { Comment, Like } from "@/assets/icons"
-import { Post as PostType } from "@/types"
+import { Comment, IconButton, Like } from "@/assets/icons"
+import { useUserContext } from "@/contexts"
+import { Post as PostType, ServerError } from "@/types"
 
 import AudioEmbed from "./AudioEmbed"
 import ImageEmbed from "./ImageEmbed"
@@ -14,8 +16,44 @@ type Props = {
 }
 
 const Post = ({ post }: Props) => {
+   // Context hooks
+   const { userProfile } = useUserContext()
+
    // Next router for navigation
    const router = useRouter()
+
+   // Interaction states
+   const [isLiked, setIsLiked] = useState<boolean>(post.isLiked)
+   const [likesCount, setLikesCount] = useState<number>(post.counters.likeCount)
+
+   const [locked, setLocked] = useState<boolean>(false)
+
+   const likePost = () => {
+      if (locked) return
+
+      setLocked(true)
+
+      const params: RequestInit = {
+         method: "POST",
+         headers: { "Authorization": "Bearer " + userProfile?.sessionToken }
+      }
+
+      type ResponseType = {
+         success: boolean
+         message: ServerError
+      }
+
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/l/${post.id}`, params)
+         .then((response) => response.json())
+         .then(({ success, message }: ResponseType) => {
+            if (success) {
+               setIsLiked((prev) => !prev)
+               setLikesCount((prev) => isLiked ? prev - 1 : prev + 1)
+
+               setLocked(false)
+            } else console.error(message)
+         })
+   }
 
    return (
       <div className="flex flex-col items-start justify-center w-full p-4 bg-gray-7/50 rounded-md">
@@ -48,8 +86,11 @@ const Post = ({ post }: Props) => {
 
          <div className="flex flex-row items-center justify-start gap-4 mt-2">
             <div className="flex flex-row center gap-1.5">
-               <Like height={16} color={post.isLiked ? "fill-red-5" : "fill-gray-3"} fill={post.isLiked} />
-               <p className="text-base font-normal text-white">{post.counters.likeCount}</p>
+               <IconButton
+                  icon={<Like height={16} color={isLiked ? "fill-red-5" : "fill-gray-3"} fill={isLiked} />}
+                  onClick={likePost}
+               />
+               <p className="text-base font-normal text-white">{likesCount}</p>
             </div>
             <div className="flex flex-row center gap-1.5">
                <Comment height={16} color="fill-gray-3" />
