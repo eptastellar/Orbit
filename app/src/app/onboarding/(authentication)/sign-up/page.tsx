@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-import { BackButton, Input, SpinnerText } from "@/components"
+import { BackButton, Input, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
@@ -23,9 +23,7 @@ const Signup = () => {
    const [password, setPassword] = useState<string>("")
    const [confirmPassword, setConfirmPassword] = useState<string>("")
 
-   const handleSubmit = async (event: React.FormEvent) => {
-      event.preventDefault()
-
+   const handleSubmit = async () => {
       // Preliminary checks
       if (password !== confirmPassword)
          return setError("Passwords do not match.")
@@ -52,10 +50,7 @@ const Signup = () => {
          </div>
 
          <div className="flex flex-col center gap-4 w-full">
-            <form
-               className="flex flex-col w-full gap-4"
-               onSubmit={handleSubmit}
-            >
+            <div className="flex flex-col w-full gap-4" onSubmit={handleSubmit}>
                <Input
                   label="Your personal email"
                   placeholder="astro@email.com"
@@ -80,13 +75,13 @@ const Signup = () => {
 
                <p className="text-center text-red-5">{error}</p>
 
-               <button
-                  type="submit"
-                  className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-               >
-                  {loading ? <SpinnerText message="Building your rocket..." /> : <p>Join the galaxy</p>}
-               </button>
-            </form>
+               <LargeButton
+                  text="Join the galaxy"
+                  loading={loading}
+                  loadingText="Building your rocket..."
+                  onClick={handleSubmit}
+               />
+            </div>
 
             <p className="text-base font-medium text-gray-3">
                Already have an account? {" "}

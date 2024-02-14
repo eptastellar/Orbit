@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
-import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
+import { BackButton, Input, InterestButton, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveServerError } from "@/libraries/serverErrors"
 import { ServerError } from "@/types"
@@ -61,9 +61,7 @@ const Interests = () => {
       }
    }
 
-   const handleSubmit = async (event: React.FormEvent) => {
-      event.preventDefault()
-
+   const handleSubmit = async () => {
       // Preliminary checks
       const profilePicture: string | null =
          JSON.parse(localStorage.getItem("profilePicture") ?? "null")
@@ -155,10 +153,7 @@ const Interests = () => {
             </p>
          </div>
 
-         <form
-            className="flex flex-col gap-4 h-104 w-full"
-            onSubmit={handleSubmit}
-         >
+         <div className="flex flex-col gap-4 h-104 w-full">
             <div className="flex flex-col gap-8 w-full">
                <Input
                   id="search-box"
@@ -205,12 +200,12 @@ const Interests = () => {
 
             <p className="text-center text-red-5">{error}</p>
 
-            <button
-               type="submit"
-               className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-            >
-               {loading ? <SpinnerText message="Building your rocket..." /> : <p>Start to orbit!</p>}
-            </button>
+            <LargeButton
+               text="Start to orbit!"
+               loading={loading}
+               loadingText="Building your rocket..."
+               onClick={handleSubmit}
+            />
 
             <p className="text-center text-xs text-gray-3">
                When creating an account, you accept <br />
@@ -221,7 +216,7 @@ const Interests = () => {
                   Orbit’s Terms & Conditions
                </span>.
             </p>
-         </form>
+         </div>
 
          <div className="mb-12">
             <BackButton />

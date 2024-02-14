@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-import { BackButton, Input, SpinnerText } from "@/components"
+import { BackButton, Input, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
@@ -19,9 +19,7 @@ const ForgotPassword = () => {
    const [email, setEmail] = useState<string>("")
    const [confirmEmail, setConfirmEmail] = useState<string>("")
 
-   const handleSubmit = async (event: React.FormEvent) => {
-      event.preventDefault()
-
+   const handleSubmit = async () => {
       // Preliminary checks
       if (email !== confirmEmail)
          return setError("Emails do not match.")
@@ -52,10 +50,7 @@ const ForgotPassword = () => {
          </div>
 
          <div className="flex flex-col center gap-16 w-full">
-            <form
-               className="flex flex-col w-full gap-4"
-               onSubmit={handleSubmit}
-            >
+            <div className="flex flex-col w-full gap-4">
                <Input
                   label="Your personal email"
                   placeholder="astro@email.com"
@@ -73,13 +68,13 @@ const ForgotPassword = () => {
 
                <p className="text-center text-red-5">{error}</p>
 
-               <button
-                  type="submit"
-                  className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-               >
-                  {loading ? <SpinnerText message="Asking Houston..." /> : <p>Send a reset email</p>}
-               </button>
-            </form>
+               <LargeButton
+                  text="Send a reset email"
+                  loading={loading}
+                  loadingText="Asking Houston..."
+                  onClick={handleSubmit}
+               />
+            </div>
 
             {success && (
                <p className="text-center text-base font-medium text-gray-3">

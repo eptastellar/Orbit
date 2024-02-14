@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 import { CameraPlus } from "@/assets/icons"
-import { BackButton, Input, SpinnerText } from "@/components"
+import { BackButton, Input, LargeButton } from "@/components"
 import { useLocalStorage } from "@/hooks"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
@@ -80,9 +80,7 @@ const Profile = () => {
       }
    }
 
-   const handleSubmit = async (event: React.FormEvent) => {
-      event.preventDefault()
-
+   const handleSubmit = async () => {
       // Preliminary checks
       if (!username) return setError("Fill in the username.")
       if (!birthdate[0] || !birthdate[1] || !birthdate[2] || birthdate[0].length !== 4)
@@ -131,10 +129,7 @@ const Profile = () => {
             </p>
          </div>
 
-         <form
-            className="flex flex-col center gap-4 w-full"
-            onSubmit={handleSubmit}
-         >
+         <form className="flex flex-col center gap-4 w-full">
             <label
                className={`flex center min-h-32 min-w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
                style={{
@@ -210,12 +205,12 @@ const Profile = () => {
 
             <p className="text-center text-red-5">{error}</p>
 
-            <button
-               type="submit"
-               className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-            >
-               {loading ? <SpinnerText message="Building your rocket..." /> : <p>Save your profile</p>}
-            </button>
+            <LargeButton
+               text="Save your profile"
+               loading={loading}
+               loadingText="Building your rocket..."
+               onClick={handleSubmit}
+            />
          </form>
 
          <div /> {/* For spacing */}

@@ -3,6 +3,7 @@
 import Image from "next/image"
 
 import { emailVerification } from "@/assets"
+import { LargeButton } from "@/components"
 
 const Verification = () => (
    <div className="flex flex-col items-center justify-between h-full w-full px-8">
@@ -28,13 +29,9 @@ const Verification = () => (
          </p>
       </div>
 
-      <button
-         type="submit"
-         className="w-full mb-12 py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-         onClick={() => window.location.reload()}
-      >
-         Refresh
-      </button>
+      <div className="mb-12">
+         <LargeButton text="Refresh" onClick={() => window.location.reload()} />
+      </div>
    </div>
 )
 
