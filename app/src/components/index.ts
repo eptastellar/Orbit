@@ -1,5 +1,6 @@
 import BackButton from "./button/BackButton"
 import InterestButton from "./button/InterestButton"
+import LargeButton from "./button/LargeButton"
 import SettingsButton from "./button/SettingsButton"
 import WelcomeButton from "./button/WelcomeButton"
 
@@ -25,6 +26,7 @@ export {
    InfiniteLoader,
    Input,
    InterestButton,
+   LargeButton,
    LoadingOverlay,
    Navbar,
    Post,

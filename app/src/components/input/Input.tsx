@@ -20,7 +20,7 @@ const Input = ({ error, id, label, onChange, placeholder, type, value }: Props) 
          placeholder={placeholder}
          value={value}
          onChange={(event) => onChange(event)}
-         className="px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
+         className={`px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ${error ? "ring-red-5" : "ring-gray-5"} bg-gray-7 rounded-md transition-shadow duration-200`}
       />
    </div>
 )

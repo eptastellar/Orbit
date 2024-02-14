@@ -65,6 +65,7 @@ const Settings = () => {
    return (
       <div className="flex flex-col center h-full w-full">
          <HeaderWithButton
+            title="Settings"
             icon={
                <IconButton
                   icon={<Cross height={24} />}
