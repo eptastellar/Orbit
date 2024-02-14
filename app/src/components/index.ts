@@ -1,5 +1,6 @@
 import BackButton from "./button/BackButton"
 import InterestButton from "./button/InterestButton"
+import SettingsButton from "./button/SettingsButton"
 import WelcomeButton from "./button/WelcomeButton"
 
 import Input from "./input/Input"
@@ -24,6 +25,7 @@ export {
    LoadingOverlay,
    Navbar,
    Post,
+   SettingsButton,
    SpinnerText,
    WelcomeButton
 }
