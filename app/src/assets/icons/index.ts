@@ -3,7 +3,9 @@ import IconButton from "./IconButton"
 import ArrowLeft from "./ArrowLeft"
 import CameraPlus from "./CameraPlus"
 import Comment from "./Comment"
+import Cross from "./Cross"
 import Gear from "./Gear"
+import HandWave from "./HandWave"
 import Home from "./Home"
 import Like from "./Like"
 import Notifications from "./Notifications"
@@ -20,7 +22,9 @@ export {
    ArrowLeft,
    CameraPlus,
    Comment,
+   Cross,
    Gear,
+   HandWave,
    Home,
    IconButton,
    Like,

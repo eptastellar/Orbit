@@ -11,7 +11,7 @@ const SupernovaRefused = () => {
 
    return (
       <div className="flex flex-col items-center justify-between h-full w-full p-8">
-         <p className="text-3xl text-white font-bold mt-3">DENIED!</p>
+         <p className="text-3xl text-white font-bold mt-8">DENIED!</p>
          <div className="flex center flex-col gap-8 w-full">
             <Image
                src={supernovaRejected}
