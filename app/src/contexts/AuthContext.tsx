@@ -4,6 +4,7 @@ import {
    User,
    UserCredential,
    createUserWithEmailAndPassword,
+   deleteUser as deleteUserAccount,
    onAuthStateChanged,
    sendEmailVerification,
    sendPasswordResetEmail,
@@ -33,6 +34,7 @@ type authContextType = {
    googleLogin: () => Promise<UserCredential>
 
    // Global authentication functions
+   deleteUser: () => Promise<void>
    logout: () => Promise<void>
 }
 
@@ -71,6 +73,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signInWithPopup(auth, googleProvider)
 
    // Global authentication functions
+   const deleteUser = () =>
+      deleteUserAccount(currentUser!)
+
    const logout = () =>
       signOut(auth)
 
@@ -96,6 +101,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             googleLogin,
 
             // Global authentication functions
+            deleteUser,
             logout,
          }}
       >

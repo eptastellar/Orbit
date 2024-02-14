@@ -13,10 +13,13 @@ import Header from "./navigation/Header"
 import HeaderWithButton from "./navigation/HeaderWithButton"
 import Navbar from "./navigation/Navbar"
 
+import FloatingConfirmation from "./popup/FloatingConfirmation"
+
 import Post from "./post/Post"
 
 export {
    BackButton,
+   FloatingConfirmation,
    Header,
    HeaderWithButton,
    InfiniteLoader,
