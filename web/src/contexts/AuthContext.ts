@@ -153,3 +153,13 @@ export const createUserNode = (uid: string, interests: string[]): Promise<null> 
       resolve(null)
    })
 }
+
+export const logOut = (uid: string): Promise<null> => {
+   return new Promise(async (resolve, reject) => {
+      try {
+         const docRef: DocumentReference = db.collection('sessions').doc(uid)
+         await docRef.set({ jwt: '' })
+         resolve(null)
+      } catch { reject('auth/log-out-failed') }
+   })
+}
