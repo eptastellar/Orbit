@@ -1,8 +1,8 @@
-import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
-import { fetchRootComments } from '@contexts/ContentContext'
-import { commentRootIdValidation, postIdValidation } from '@contexts/ValidationContext'
-import { ContentFetch } from '@local-types/index'
-import { Request, Response } from 'express'
+import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
+import { fetchRootComments } from "@contexts/ContentContext"
+import { commentRootIdValidation, postIdValidation } from "@contexts/ValidationContext"
+import { ContentFetch } from "@local-types/index"
+import { Request, Response } from "express"
 
 export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const postId: string = req.params.id

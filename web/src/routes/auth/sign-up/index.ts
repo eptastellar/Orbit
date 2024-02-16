@@ -1,7 +1,7 @@
-import { checkIfAccessTokenIsValid, createNewSession, createUserDocument, createUserNode } from '@contexts/AuthContext'
-import { birthdateValidation, interestsValidation, mediaValidation, usernameValidation } from '@contexts/ValidationContext'
-import { UserInfo } from '@local-types/index'
-import { Request, Response } from 'express'
+import { checkIfAccessTokenIsValid, createNewSession, createUserDocument, createUserNode } from "@contexts/AuthContext"
+import { birthdateValidation, interestsValidation, mediaValidation, usernameValidation } from "@contexts/ValidationContext"
+import { UserInfo } from "@local-types/index"
+import { Request, Response } from "express"
 
 export const POST = (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!

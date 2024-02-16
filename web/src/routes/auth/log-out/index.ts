@@ -1,5 +1,5 @@
-import { checkIfSessionTokenIsValid, logOut } from '@contexts/AuthContext'
-import { Request, Response } from 'express'
+import { checkIfSessionTokenIsValid, logOut } from "@contexts/AuthContext"
+import { Request, Response } from "express"
 
 export const GET = [checkIfSessionTokenIsValid, (req: Request, res: Response) => {
    const uid: string = res.locals.uid

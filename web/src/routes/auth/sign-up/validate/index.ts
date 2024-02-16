@@ -1,5 +1,5 @@
-import { birthdateValidation, usernameValidation } from "@contexts/ValidationContext";
-import { Request, Response } from "express";
+import { birthdateValidation, usernameValidation } from "@contexts/ValidationContext"
+import { Request, Response } from "express"
 
 export const POST = (req: Request, res: Response) => {
    const username: string = req.body.username

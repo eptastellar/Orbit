@@ -36,7 +36,7 @@ export const DELETE = [checkIfSessionTokenIsValid, async (req: Request, res: Res
          else
             await commentLeafIdValidation(commentId, rootId as string, postId)
 
-         hasPermission(uid, commentId, 'comments').then(() => {
+         hasPermission(uid, commentId, "comments").then(() => {
             deleteComment(commentId).then(() => {
                res.status(200).json({ success: true })
             }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })

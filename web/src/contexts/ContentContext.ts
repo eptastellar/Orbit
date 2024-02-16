@@ -1,8 +1,8 @@
-import { err } from '@config/error'
-import { firebase, firestorage, firestore } from '@config/firebase-admin.config'
-import { getUserDatafromUID } from '@contexts/UserContext'
-import { ContentFetch, UserInfo } from '@local-types/index'
-import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from 'firebase-admin/firestore'
+import { err } from "@config/error"
+import { firebase, firestorage, firestore } from "@config/firebase-admin.config"
+import { getUserDatafromUID } from "@contexts/UserContext"
+import { ContentFetch, UserInfo } from "@local-types/index"
+import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
 
 firebase()
 const db: Firestore = firestore()
@@ -19,7 +19,7 @@ export const randomPicture = (prefix: string): Promise<string> => {
                Promise.all(
                   files.map(file => // map over the files array and create a new promise for each file
                      file.getSignedUrl({
-                        action: 'read',
+                        action: "read",
                         expires: Date.now() + 30 * 24 * 60 * 60 * 1000 * 12 * 10, // expiration set to 10 years from now
                      })
                   )
@@ -32,7 +32,7 @@ export const randomPicture = (prefix: string): Promise<string> => {
                   })
             }
          })
-      } catch { reject(err('server/no-content')) }
+      } catch { reject(err("server/no-content")) }
    })
 }
 
@@ -40,13 +40,13 @@ export const fetchPosts = (uids: string[], lastPostId: string, personalUID: stri
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
-      let docRef: Query = db.collection('posts')
-         .where('owner', 'in', uids)
-         .orderBy('createdAt', 'desc')
+      let docRef: Query = db.collection("posts")
+         .where("owner", "in", uids)
+         .orderBy("createdAt", "desc")
          .limit(limit)
 
       if (lastPostId) {
-         const lastDoc: DocumentData = await db.collection('posts').doc(lastPostId).get()
+         const lastDoc: DocumentData = await db.collection("posts").doc(lastPostId).get()
          docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
       }
 
@@ -79,47 +79,47 @@ export const fetchPosts = (uids: string[], lastPostId: string, personalUID: stri
          const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
-         reject(err('server/no-content'))
+         reject(err("server/no-content"))
    })
 }
 
 export const isLikedBy = (postId: string, uid: string): Promise<boolean> => {
    return new Promise(async (resolve) => {
-      const snapshot: QuerySnapshot = await db.collection('likes')
-         .where('liker', '==', uid)
-         .where('postId', '==', postId)
-         .get();
+      const snapshot: QuerySnapshot = await db.collection("likes")
+         .where("liker", "==", uid)
+         .where("postId", "==", postId)
+         .get()
 
-      resolve(!snapshot.empty);
-   });
+      resolve(!snapshot.empty)
+   })
 }
 
 export const getLikesNumber = (postId: string): Promise<number> => {
    return new Promise(async (resolve) => {
-      const queryRef: Query = db.collection('likes')
-         .where('postId', '==', postId)
+      const queryRef: Query = db.collection("likes")
+         .where("postId", "==", postId)
 
-      const snapshot = await queryRef.count().get();
+      const snapshot = await queryRef.count().get()
       resolve(snapshot.data().count)
    })
 }
 
 export const getRootsCommentsNumber = (postId: string): Promise<number> => {
    return new Promise(async (resolve) => {
-      const queryRef: Query = db.collection('comments')
-         .where('postId', '==', postId)
+      const queryRef: Query = db.collection("comments")
+         .where("postId", "==", postId)
 
-      const snapshot = await queryRef.count().get();
+      const snapshot = await queryRef.count().get()
       resolve(snapshot.data().count)
    })
 }
 
 export const getLeafsCommentsNumber = (rootId: string): Promise<number> => {
    return new Promise(async (resolve) => {
-      const queryRef: Query = db.collection('comments')
-         .where('root', '==', rootId)
+      const queryRef: Query = db.collection("comments")
+         .where("root", "==", rootId)
 
-      const snapshot = await queryRef.count().get();
+      const snapshot = await queryRef.count().get()
       resolve(snapshot.data().count)
    })
 }
@@ -128,14 +128,14 @@ export const fetchRootComments = (postId: string, lastRootCommentId: string): Pr
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
-      let docRef: Query = db.collection('comments')
-         .where('postId', '==', postId)
-         .where('root', '==', true)
-         .orderBy('createdAt', 'desc')
+      let docRef: Query = db.collection("comments")
+         .where("postId", "==", postId)
+         .where("root", "==", true)
+         .orderBy("createdAt", "desc")
          .limit(limit)
 
       if (lastRootCommentId) {
-         const lastDoc: DocumentData = await db.collection('comments').doc(lastRootCommentId).get()
+         const lastDoc: DocumentData = await db.collection("comments").doc(lastRootCommentId).get()
          docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
       }
 
@@ -162,7 +162,7 @@ export const fetchRootComments = (postId: string, lastRootCommentId: string): Pr
          const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
-         reject(err('server/no-content'))
+         reject(err("server/no-content"))
    })
 }
 
@@ -170,13 +170,13 @@ export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): P
    const limit: number = 5
 
    return new Promise(async (resolve, reject) => {
-      let docRef: Query = db.collection('comments')
-         .where('root', '==', rootId)
-         .orderBy('createdAt', 'desc')
+      let docRef: Query = db.collection("comments")
+         .where("root", "==", rootId)
+         .orderBy("createdAt", "desc")
          .limit(limit)
 
       if (lastLeafCommentId) {
-         const lastDoc: DocumentData = await db.collection('comments').doc(lastLeafCommentId).get()
+         const lastDoc: DocumentData = await db.collection("comments").doc(lastLeafCommentId).get()
          docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
       }
 
@@ -202,14 +202,14 @@ export const fetchLeafsComments = (rootId: string, lastLeafCommentId: string): P
          const fetch: ContentFetch = { content, lastDocId }
          resolve(fetch)
       } else
-         reject(err('server/no-content'))
+         reject(err("server/no-content"))
    })
 }
 
 export const uploadPost = (uid: string, text?: string, type?: string, content?: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('posts').doc() //set the docRef to posts
+         const docRef: DocumentReference = db.collection("posts").doc() //set the docRef to posts
 
          docRef.set({ //set the post information in firestore
             owner: uid,
@@ -220,14 +220,14 @@ export const uploadPost = (uid: string, text?: string, type?: string, content?: 
          if (content) docRef.update({ content: content, type: type })
 
          resolve(docRef.id)
-      } catch { reject(err('server/upload-failed')) }
+      } catch { reject(err("server/upload-failed")) }
    })
 }
 
 export const uploadComment = (uid: string, rootId: string, postId: string, content: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('comments').doc() //set the docRef to comments
+         const docRef: DocumentReference = db.collection("comments").doc() //set the docRef to comments
          let root: string | boolean = ""
 
          if (rootId)
@@ -243,37 +243,37 @@ export const uploadComment = (uid: string, rootId: string, postId: string, conte
             createdAt: Date.now() //unix format
          })
          resolve(docRef.id)
-      } catch { reject(err('server/upload-failed')) }
+      } catch { reject(err("server/upload-failed")) }
    })
 }
 
 export const updatePost = (postId: string, text?: string, content?: string, type?: string): Promise<string> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('posts').doc(postId)
+         const docRef: DocumentReference = db.collection("posts").doc(postId)
 
          if (text) docRef.update({ text: text })
          if (content) docRef.update({ content: content, type: type })
 
          resolve(docRef.id)
-      } catch { reject(err('server/update-failed')) }
+      } catch { reject(err("server/update-failed")) }
    })
 }
 
 export const deletePost = (postId: string): Promise<null> => {
    return new Promise((resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('posts').doc(postId)
+         const docRef: DocumentReference = db.collection("posts").doc(postId)
 
          docRef.delete()
          resolve(null)
-      } catch { reject(err('server/delete-failed')) }
+      } catch { reject(err("server/delete-failed")) }
    })
 }
 
 export const getPostOwner = (postId: string): Promise<string> => {
    return new Promise(async (resolve) => {
-      const docRef: DocumentReference = db.collection('posts').doc(postId)
+      const docRef: DocumentReference = db.collection("posts").doc(postId)
 
       const doc: DocumentData = await docRef.get()
 
@@ -284,38 +284,38 @@ export const getPostOwner = (postId: string): Promise<string> => {
 export const deleteComment = (commentId: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('comments').doc(commentId);
+         const docRef: DocumentReference = db.collection("comments").doc(commentId)
 
-         const leafsRef: Query = db.collection('comments').where('root', '==', commentId)
+         const leafsRef: Query = db.collection("comments").where("root", "==", commentId)
          const snapshot: QuerySnapshot = await leafsRef.get()
 
-         const batch = db.batch();
+         const batch = db.batch()
          snapshot.docs.forEach((doc) => { batch.delete(doc.ref) })
 
          batch.delete(docRef)
          await batch.commit()
 
          resolve(null)
-      } catch { reject(err('server/delete-failed')) }
+      } catch { reject(err("server/delete-failed")) }
    })
 }
 
 export const updateLike = (postId: string, uid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+         const docRef: DocumentReference = db.collection("likes").doc(uid + postId)
 
          if (!(await docRef.get()).exists)
             addLike(postId, uid).then(() => { resolve(null) })
          else
             removeLike(postId, uid).then(() => { resolve(null) })
-      } catch { reject(err('server/update-failed')) }
+      } catch { reject(err("server/update-failed")) }
    })
 }
 
 export const addLike = (postId: string, uid: string): Promise<null> => {
    return new Promise(async (resolve) => {
-      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+      const docRef: DocumentReference = db.collection("likes").doc(uid + postId)
 
       await docRef.set({
          liker: uid,
@@ -327,7 +327,7 @@ export const addLike = (postId: string, uid: string): Promise<null> => {
 
 export const removeLike = (postId: string, uid: string): Promise<null> => {
    return new Promise(async (resolve) => {
-      const docRef: DocumentReference = db.collection('likes').doc(uid + postId)
+      const docRef: DocumentReference = db.collection("likes").doc(uid + postId)
       docRef.delete()
       resolve(null)
    })
