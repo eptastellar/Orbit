@@ -8,9 +8,7 @@ firebase()
 const db: Firestore = firestore()
 const bucket = firestorage()
 
-export const randomProfilePicture = (): Promise<string> => {
-   const prefix: string = 'default/pfps'
-
+export const randomPicture = (prefix: string): Promise<string> => {
    return new Promise((resolve, reject) => {
       try {
          bucket.getFiles({ prefix: prefix }, (_, files) => { // get the files from the bucket with the defined prefix

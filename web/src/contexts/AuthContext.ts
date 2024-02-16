@@ -1,7 +1,7 @@
 import { err } from '@config/error'
 import { firebase } from '@config/firebase-admin.config'
 import { neoStart } from '@config/neo4j.config'
-import { randomProfilePicture } from '@contexts/ContentContext'
+import { randomPicture } from '@contexts/ContentContext'
 import { UserInfo } from '@local-types/index'
 import express, { NextFunction } from 'express'
 import admin, { firestore } from 'firebase-admin'
@@ -129,7 +129,7 @@ export const createUserDocument = (uid: string, username: string, pfp: string, b
 
       if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
          try {
-            pfp = pfp ? pfp : await randomProfilePicture() //set the pfp url to the one sent from the client, or if is null, select a random one
+            pfp = pfp ? pfp : await randomPicture('default/personal') //set the pfp url to the one sent from the client, or if is null, select a random one
 
             await docRef.set({ //set the user data into the doc
                username: username,
