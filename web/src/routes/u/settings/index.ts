@@ -1,8 +1,8 @@
-import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
-import { deleteUser, getInterestsFromUID, getUserDatafromUID, patchUserInfo, removeBatch } from '@contexts/UserContext'
-import { interestsValidation, usernameValidation } from '@contexts/ValidationContext'
-import { UserInfo } from '@local-types/index'
-import { Request, Response } from 'express'
+import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
+import { deleteUser, getInterestsFromUID, getUserDatafromUID, patchUserInfo, removeBatch } from "@contexts/UserContext"
+import { interestsValidation, usernameValidation } from "@contexts/ValidationContext"
+import { UserInfo } from "@local-types/index"
+import { Request, Response } from "express"
 
 export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid

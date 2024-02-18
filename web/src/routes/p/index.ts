@@ -1,7 +1,7 @@
-import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
-import { uploadPost } from '@contexts/ContentContext'
-import { contentValidation } from '@contexts/ValidationContext'
-import { Request, Response } from 'express'
+import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
+import { uploadPost } from "@contexts/ContentContext"
+import { contentValidation } from "@contexts/ValidationContext"
+import { Request, Response } from "express"
 
 export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid

@@ -5,7 +5,9 @@
    "scripts": {
       "build": "pnpm i && tsc && tsc-alias",
       "start": "node dist/app.js",
-      "dev": "nodemon src/app.ts"
+      "dev": "eslint src --fix && eslint src && nodemon src/app.ts",
+      "lint": "eslint src",
+      "lintfix": "eslint src --fix"
    },
    "dependencies": {
       "cors": "^2.8.5",
@@ -24,6 +26,9 @@
       "@types/neo4j": "^2.0.6",
       "@types/node": "^20.11.6",
       "@types/node-jose": "^1.1.13",
+      "@typescript-eslint/eslint-plugin": "^7.0.1",
+      "@typescript-eslint/parser": "^7.0.1",
+      "eslint": "^8.56.0",
       "nodemon": "^3.0.3",
       "ts-node": "^10.9.2",
       "typescript": "^5.3.3"

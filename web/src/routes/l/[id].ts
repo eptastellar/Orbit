@@ -1,8 +1,8 @@
-import { checkIfSessionTokenIsValid } from "@contexts/AuthContext";
-import { getPostOwner, updateLike } from "@contexts/ContentContext";
-import { areFriends } from "@contexts/UserContext";
-import { postIdValidation } from "@contexts/ValidationContext";
-import { Request, Response } from "express";
+import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
+import { getPostOwner, updateLike } from "@contexts/ContentContext"
+import { areFriends } from "@contexts/UserContext"
+import { postIdValidation } from "@contexts/ValidationContext"
+import { Request, Response } from "express"
 
 export const POST = [checkIfSessionTokenIsValid, (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid

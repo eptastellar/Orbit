@@ -13,7 +13,7 @@ export const PATCH = [checkIfSessionTokenIsValid, async (req: Request, res: Resp
 
    contentValidation(text, content, type).then(() => {
       postIdValidation(postId).then(() => {
-         hasPermission(uid, postId, 'posts').then(() => {
+         hasPermission(uid, postId, "posts").then(() => {
             updatePost(postId, text, content, type).then((updatedPostId: string) => {
                res.status(200).json({ success: true, post: updatedPostId }) //return the updated post id
             }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
@@ -27,7 +27,7 @@ export const DELETE = [checkIfSessionTokenIsValid, async (req: Request, res: Res
    const postId: string = req.params.id
 
    postIdValidation(postId).then(() => {
-      hasPermission(uid, postId, 'posts').then(() => {
+      hasPermission(uid, postId, "posts").then(() => {
          deletePost(postId).then(() => {
             res.status(200).json({ success: true }) //return a success message
          }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })

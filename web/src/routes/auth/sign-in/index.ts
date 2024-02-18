@@ -1,7 +1,7 @@
-import { checkIfAccessTokenIsValid, checkIfDocumentExists, createNewSession } from '@contexts/AuthContext'
-import { getUserDatafromUID } from '@contexts/UserContext'
-import { UserInfo } from '@local-types/index'
-import { Request, Response } from 'express'
+import { checkIfAccessTokenIsValid, checkIfDocumentExists, createNewSession } from "@contexts/AuthContext"
+import { getUserDatafromUID } from "@contexts/UserContext"
+import { UserInfo } from "@local-types/index"
+import { Request, Response } from "express"
 
 export const GET = (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!
