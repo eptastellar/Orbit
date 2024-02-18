@@ -15,8 +15,8 @@ const db: Firestore = firestore()
 
 export const checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
    const authorization: string = req.headers.authorization!
-
    const token: string = authorization.split("Bearer ")[1]
+   
    jwtValidation(token).then((payload: JWTPayload) => { //validate if the token is signed
       const uid: string = payload.uid as string
 
@@ -65,8 +65,6 @@ export const newSessionJWT = async (uid: string) => {
       .setProtectedHeader({ alg: "HS256" }) //TODO: enhance the security using asymmetric enc
       .setIssuedAt()
       .setExpirationTime("4w") //create a jwt and set the expire time to 4 weeks
-      .sign(secret)
-
    return jwt
 }
 
@@ -77,7 +75,7 @@ export const jwtValidation = (token: string): Promise<JWTPayload> => {
          const { payload } = await jwtVerify(token, secret) //validate the user token and return the user payload
 
          if (payload.exp! < (Date.now() / 1000)) //check if the token is expired
-            reject(err("auth/expired-token"))
+            reject(err('auth/expired-token'))
 
          resolve(payload) //return the token payload
       } catch { reject(err("auth/invalid-token")) }
@@ -157,9 +155,9 @@ export const createUserNode = (uid: string, interests: string[]): Promise<null> 
 export const logOut = (uid: string): Promise<null> => {
    return new Promise(async (resolve, reject) => {
       try {
-         const docRef: DocumentReference = db.collection("sessions").doc(uid)
-         await docRef.set({ jwt: "" })
+         const docRef: DocumentReference = db.collection('sessions').doc(uid)
+         await docRef.set({ jwt: '' })
          resolve(null)
-      } catch { reject("auth/log-out-failed") }
+      } catch { reject('auth/log-out-failed') }
    })
 }
