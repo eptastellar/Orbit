@@ -11,7 +11,7 @@
    },
    "dependencies": {
       "cors": "^2.8.5",
-      "dotenv": "^16.4.1",
+      "dotenv": "^16.4.4",
       "express": "^4.18.2",
       "express-file-routing": "^3.0.3",
       "firebase-admin": "^12.0.0",
