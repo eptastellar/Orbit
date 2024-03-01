@@ -29,8 +29,8 @@ dependencies:
 
 devDependencies:
   '@types/node':
-    specifier: ^20.11.5
-    version: 20.11.5
+    specifier: ^20.11.24
+    version: 20.11.24
   '@types/react':
     specifier: ^18.2.48
     version: 18.2.48
@@ -521,7 +521,7 @@ packages:
     engines: {node: ^8.13.0 || >=10.10.0}
     dependencies:
       '@grpc/proto-loader': 0.7.10
-      '@types/node': 20.11.5
+      '@types/node': 20.11.24
     dev: false
 
   /@grpc/proto-loader@0.7.10:
@@ -940,8 +940,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@types/node@20.11.5:
-    resolution: {integrity: sha512-g557vgQjUUfN76MZAN/dt1z3dzcUsimuysco0KeluHgrPdJXkP/XdAURgyO2W9fZWHRtRBiVKzKn8vyOAwlG+w==}
+  /@types/node@20.11.24:
+    resolution: {integrity: sha512-Kza43ewS3xoLgCEpQrsT+xRo/EJej1y0kVYGiLFE1NEODXGzTfwiC6tXTLMQskn1X4/Rjlh0MQUvx9W+L9long==}
     dependencies:
       undici-types: 5.26.5
 
@@ -1682,7 +1682,7 @@ packages:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 20.11.5
+      '@types/node': 20.11.24
       long: 5.2.3
     dev: false
 
