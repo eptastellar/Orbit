@@ -7,7 +7,7 @@
       "start": "node dist/app.js",
       "dev": "eslint src --fix && eslint src && nodemon src/app.ts",
       "lint": "eslint src",
-      "lintfix": "eslint src --fix"
+      "lint-fix": "eslint src --fix"
    },
    "dependencies": {
       "cors": "^2.8.5",
