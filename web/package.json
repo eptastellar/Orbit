@@ -26,7 +26,7 @@
       "@types/neo4j": "^2.0.6",
       "@types/node": "^20.11.6",
       "@types/node-jose": "^1.1.13",
-      "@typescript-eslint/eslint-plugin": "^7.0.1",
+      "@typescript-eslint/eslint-plugin": "^7.1.1",
       "@typescript-eslint/parser": "^7.0.1",
       "eslint": "^8.56.0",
       "nodemon": "^3.0.3",
