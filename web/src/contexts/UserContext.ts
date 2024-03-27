@@ -169,3 +169,27 @@ export const removeBatch = (type: string, uid: string): Promise<null> => {
       process.nextTick(() => { removeBatch(type, uid) })
    })
 }
+
+export const setRandomFriendNumber = (uid: string, friendNumber: number): Promise<null> => {
+   return new Promise(async (resolve) => {
+
+      const friendCodeTimer: number = Date.now() + 60000
+      const neo4j: Session = neoStart()
+      const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.friendCode = '${friendNumber}', u.friendCodeTime = '${friendCodeTimer}'` //sets the random number to myself in neo
+      await neo4j.executeWrite(tx => tx.run(query))
+
+      resolve(null)
+   })
+}
+
+export const findRandomFriendNumber = (uid: string, friendNumber: number): Promise<null> => {
+   return new Promise(async (resolve) => {
+
+      const friendCodeRequest: number = Date.now()
+      const neo4j: Session = neoStart()
+      const query: string = `MATCH (u:User{friendCode : '${friendNumber}'}), (t:User{name : "${uid}"}) WHERE u.friendCodeTime >=  "${friendCodeRequest}" MERGE (u)-[:Friend]-(t)` //sets the friend connection
+      await neo4j.executeWrite(tx => tx.run(query))
+
+      resolve(null)
+   })
+}
