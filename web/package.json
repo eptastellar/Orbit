@@ -12,10 +12,10 @@
    "dependencies": {
       "cors": "^2.8.5",
       "dotenv": "^16.4.1",
-      "express": "^4.18.2",
+      "express": "^4.19.2",
       "express-file-routing": "^3.0.3",
       "firebase-admin": "^12.0.0",
-      "jose": "^5.2.0",
+      "jose": "^5.2.1",
       "neo4j-driver": "^5.16.0",
       "tsc-alias": "^1.8.8",
       "tsconfig-paths": "^4.2.0"
