@@ -7,7 +7,19 @@ export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Respon
    const randomInt = (min: number, max: number) =>
       Math.floor(Math.random() * (max - min + 1)) + min
 
-   const randomNumber: number = randomInt(0, 2048) //TODO: Need changes for more combinations
+   const createRandomString = (length: number): string => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+      let result = ""
+      const randomArray = new Uint8Array(length)
+
+      randomArray.forEach((number) => {
+         result += chars[randomInt(0, chars.length)]
+      })
+      return result
+   }
+
+
+   const randomNumber: string = createRandomString(16) //TODO: Need changes for more combinations
    setRandomFriendNumber(res.locals.uid, randomNumber)
 
    res.status(200).json({ success: true, message: randomNumber })
@@ -16,9 +28,10 @@ export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Respon
 export const POST = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
 
    const uid: string = res.locals.uid
-   const randomNumber: number = req.body.friendCode
+   const randomNumber: string = req.body.friendCode
 
-   findRandomFriendNumber(uid, randomNumber)
+   const friendName: string | null = await findRandomFriendNumber(uid, randomNumber) // Returns null if the connection is not created
 
-   res.status(200).json({ success: true })
+   if (friendName === null) res.status(408).json({ success: false, message: "Request Time Out" })
+   else res.status(200).json({ success: true, name: friendName })
 }]

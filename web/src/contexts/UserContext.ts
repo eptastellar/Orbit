@@ -170,7 +170,7 @@ export const removeBatch = (type: string, uid: string): Promise<null> => {
    })
 }
 
-export const setRandomFriendNumber = (uid: string, friendNumber: number): Promise<null> => {
+export const setRandomFriendNumber = (uid: string, friendNumber: string): Promise<null> => {
    return new Promise(async (resolve) => {
 
       const friendCodeTimer: number = Date.now() + 60000
@@ -182,14 +182,22 @@ export const setRandomFriendNumber = (uid: string, friendNumber: number): Promis
    })
 }
 
-export const findRandomFriendNumber = (uid: string, friendNumber: number): Promise<null> => {
+export const findRandomFriendNumber = (uid: string, friendNumber: string): Promise<string | null> => {
    return new Promise(async (resolve) => {
 
       const friendCodeRequest: number = Date.now()
       const neo4j: Session = neoStart()
-      const query: string = `MATCH (u:User{friendCode : '${friendNumber}'}), (t:User{name : "${uid}"}) WHERE u.friendCodeTime >=  "${friendCodeRequest}" MERGE (u)-[:Friend]-(t)` //sets the friend connection
-      await neo4j.executeWrite(tx => tx.run(query))
+      const queryXFriend: string = `MATCH (u:User{friendCode : '${friendNumber}'}), (t:User{name : "${uid}"}) WHERE u.friendCodeTime >=  "${friendCodeRequest}" MERGE (u)-[:Friend]-(t)` //sets the friend connection
+      await neo4j.executeWrite(tx => tx.run(queryXFriend))
 
-      resolve(null)
+      const queryXUser: string = `MATCH (u:User{friendCode : '${friendNumber}'}) RETURN u.name` // Searches for the name of the friend which i scanned the code
+      const nameResult: QueryResult = await neo4j.executeRead(tx => tx.run(queryXUser))
+      const name: string[] = nameResult.records.map(row => row.get("u.name"))
+
+      const queryXConfirm: string = `OPTIONAL MATCH p = (u:User {name : "${uid}"}) - [:Friend] - (t:User {name:"${name}"}) RETURN p` //Checks if it created the connection, if it doesnt returns null
+      const confirmResult: QueryResult = await neo4j.executeRead(tx => tx.run(queryXConfirm))
+      const confirm: string[] = confirmResult.records.map(row => row.get("p"))
+      if (confirm[0] === null) resolve(null)
+      else resolve(name[0])
    })
 }
