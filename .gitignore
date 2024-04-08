@@ -9,7 +9,7 @@
 */out/
 
 # Production
-*/build
+*/.express
 
 # Miscellaneous
 .DS_Store

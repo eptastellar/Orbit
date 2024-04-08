@@ -5,6 +5,7 @@ updates:
     directory: "/app"
     assignees:
       - "74C17N3P7UN3"
+      - "mzyxnuel"
     schedule:
       interval: "monthly"
       time: "08:00"
@@ -19,7 +20,7 @@ updates:
       - "mzyxnuel"
       - "TheInfernalNick"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       time: "08:00"
       timezone: "Europe/Rome"
     labels:

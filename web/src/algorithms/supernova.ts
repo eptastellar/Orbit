@@ -1,8 +1,8 @@
-import { neoStart } from "@config/neo4j.config"
+import { neo } from "config"
 import { Session } from "neo4j-driver"
 
 export const supernova = async (user: string): Promise<string> => {
-   const neo4j: Session = neoStart() //TODO: @TheInfernalNick add neoClose for each transaction
+   const neo4j: Session = neo() //TODO: @TheInfernalNick add neoClose for each transaction
    let startingPoint: string | undefined = user
    const friendList: Map<string, number> = new Map()
    let arrayFriends: Array<string> = []
@@ -119,7 +119,7 @@ const sortFriendsMap = (friendsMap: Map<string, number>) => {
          }
       }
    }
-   
+
    friendsMap.forEach(check)
    return temp
 }

@@ -4,7 +4,7 @@
    "license": "MIT",
    "scripts": {
       "build": "pnpm i && tsc && tsc-alias",
-      "start": "node dist/app.js",
+      "start": "node .express/app.js",
       "dev": "eslint src --fix && eslint src && nodemon src/app.ts",
       "lint": "eslint src",
       "lint-fix": "eslint src --fix"
