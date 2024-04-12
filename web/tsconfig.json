@@ -20,6 +20,7 @@
       "**/*.ts",
    ],
    "exclude": [
-      "dist"
+      ".express",
+      "__mocks__"
    ]
 }
