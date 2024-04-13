@@ -7,22 +7,7 @@ const valid = new ValidationService()
 
 export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
 
-   const randomInt = (min: number, max: number) =>
-      Math.floor(Math.random() * (max - min + 1)) + min
-
-   const createRandomString = (length: number): string => {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-      let result = ""
-      const randomArray = new Uint8Array(length)
-
-      randomArray.forEach((number) => {
-         result += chars[randomInt(0, chars.length)]
-      })
-      return result
-   }
-
-
-   const randomNumber: string = createRandomString(16) //TODO: Need changes for more combinations
+   const randomNumber: string = user.createRandomString(16) //TODO: Need changes for more combinations
    user.setRandomFriendCode(res.locals.uid, randomNumber)
 
    res.status(200).json({ success: true, message: randomNumber })

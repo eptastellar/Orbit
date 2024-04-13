@@ -202,4 +202,19 @@ export default class UserService {
          else resolve(name[0])
       })
    }
+
+   public randomInt = (min: number, max: number) =>
+      Math.floor(Math.random() * (max - min + 1)) + min
+
+   public createRandomString = (length: number): string => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+      let result = ""
+      const randomArray = new Uint8Array(length)
+
+      randomArray.forEach((number) => {
+         result += chars[this.randomInt(0, chars.length)]
+      })
+      return result
+   }
+
 }
