@@ -15,6 +15,12 @@
    "plugins": [
       "@typescript-eslint"
    ],
+   "ignorePatterns": [
+      "coverage",
+      ".express",
+      "node_modules",
+      "jest.config.js"
+   ],
    "rules": {
       "indent": [
          "error",
