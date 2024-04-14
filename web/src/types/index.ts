@@ -1,12 +1,17 @@
 import { DocumentData } from "firebase-admin/firestore"
 
-export type UserInfo = {
+export {
+   ContentFetch,
+   UserInfo
+}
+
+type UserInfo = {
    username: string,
    name: string,
    pfp: string
 }
 
-export type ContentFetch = {
+type ContentFetch = {
    content: DocumentData[],
    lastDocId: string
 }

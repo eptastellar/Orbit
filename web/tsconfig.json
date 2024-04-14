@@ -1,6 +1,6 @@
 {
    "compilerOptions": {
-      "outDir": "dist",
+      "outDir": ".express",
       "sourceMap": true,
       "target": "ESNext",
       "module": "commonjs",
@@ -10,23 +10,6 @@
       "strict": true,
       "skipLibCheck": true,
       "baseUrl": "src",
-      "paths": {
-         "@assets/*": [
-            "./assets/*"
-         ],
-         "@contexts/*": [
-            "./contexts/*"
-         ],
-         "@config/*": [
-            "./config/*"
-         ],
-         "@algorithms/*": [
-            "./algorithms/*"
-         ],
-         "@local-types/*": [
-            "./types/*"
-         ]
-      }
    },
    "ts-node": {
       "require": [
@@ -34,9 +17,10 @@
       ]
    },
    "include": [
-      "**/*.ts",
+      "**/*.ts"
    ],
    "exclude": [
-      "dist"
+      ".express",
+      "src/algorithms/__mocks__"
    ]
 }

@@ -1,26 +1,28 @@
-import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
-import { areFriends, getFriendsCount, getInterestsFromUID, getMeteorCount, getPostCount, getUIDfromUserData, getUserDatafromUID } from "@contexts/UserContext"
-import { UserInfo } from "@local-types/index"
 import { Request, Response } from "express"
+import { AuthService, UserService } from "services"
+import { UserInfo } from "types"
 
-export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+const auth = new AuthService()
+const user = new UserService()
+
+export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const username: string = req.params.username
 
    try {
-      getUIDfromUserData(username).then(async (uid: string) => { //also validate the username
-         areFriends(tokenUid, uid).then(async () => { //if they are not friends it will reject an error
-            getUserDatafromUID(uid).then((user: UserInfo) => {
-               getInterestsFromUID(uid).then((interests: string[]) => {
-                  getPostCount(uid).then((post_count: number) => {
-                     getFriendsCount(uid).then((friends_count: number) => {
-                        getMeteorCount(uid).then((meteor_count: number) => {
+      user.getUIDfromUserData(username).then(async (uid: string) => { //also validate the username
+         user.areFriends(tokenUid, uid).then(async () => { //if they are not friends it will reject an error
+            user.getUserDatafromUID(uid).then((userInfo: UserInfo) => {
+               user.getInterestsFromUID(uid).then((interests: string[]) => {
+                  user.getPostCount(uid).then((post_count: number) => {
+                     user.getFriendsCount(uid).then((friends_count: number) => {
+                        user.getMeteorCount(uid).then((meteor_count: number) => {
                            res.status(200).json({
                               success: true,
                               personal: tokenUid == uid, //check if is the user personal profile
-                              username: user.username,
-                              name: user.name,
-                              pfp: user.pfp,
+                              username: userInfo.username,
+                              name: userInfo.name,
+                              pfp: userInfo.pfp,
                               interests: interests,
                               counters: {
                                  post_count: post_count,

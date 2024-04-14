@@ -12,5 +12,4 @@ const driver: Driver = neo4j.driver(
    neo4j.auth.basic(NEO4J_USERNAME, NEO4J_PASSWORD)
 )
 
-export const neoStart = (): Session => { return driver.session() }
-export const neoClose = (): void => { driver.close() }
+export const neo = (): Session => { return driver.session() }
