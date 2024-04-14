@@ -1,5 +1,5 @@
-import dotenv from 'dotenv'
-import neo4j, { Driver, Session } from 'neo4j-driver'
+import dotenv from "dotenv"
+import neo4j, { Driver, Session } from "neo4j-driver"
 
 dotenv.config()
 

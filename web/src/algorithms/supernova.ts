@@ -1,19 +1,19 @@
-import { neoStart } from '@config/neo4j.config'
-import { Session } from 'neo4j-driver'
+import { neoStart } from "@config/neo4j.config"
+import { Session } from "neo4j-driver"
 
 export const supernova = async (user: string): Promise<string> => {
    const neo4j: Session = neoStart() //TODO: @TheInfernalNick add neoClose for each transaction
    let startingPoint: string | undefined = user
-   let friendList: Map<string, number> = new Map()
+   const friendList: Map<string, number> = new Map()
    let arrayFriends: Array<string> = []
-   let friendListSearched: Array<string | undefined> = []
-   let alreadySearched: Array<string | undefined> = []
+   const friendListSearched: Array<string | undefined> = []
+   const alreadySearched: Array<string | undefined> = []
    let friend: string = ""
    let startingPointInterests: Array<string> = []
    let arrayInterests: Array<string> = []
 
    //query to retrieve the starting user node
-   let queryStartingPoint = `MATCH (u:User) WHERE u.name = "${startingPoint}" RETURN u`
+   const queryStartingPoint = `MATCH (u:User) WHERE u.name = "${startingPoint}" RETURN u`
    //query to find friends connected to the starting user node
    let queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
 
@@ -21,21 +21,21 @@ export const supernova = async (user: string): Promise<string> => {
       if (neo4j) {
          //retrieve the starting user node and its interests
          const resultStartingPoint = await neo4j.executeRead(tx => tx.run(queryStartingPoint))
-         const startingNode = resultStartingPoint.records.map(row => row.get('u'))
+         const startingNode = resultStartingPoint.records.map(row => row.get("u"))
          startingPointInterests = startingNode.at(0).properties["interests"]
 
          //retrieve friends of the starting user and calculate compatibility
          const result = await neo4j.executeRead(tx => tx.run(queryFriends))
-         let results = result.records.map(row => row.get('t'))
+         let results = result.records.map(row => row.get("t"))
          results.forEach(element => {
             arrayInterests = []
             if (element.properties["interests"] !== undefined) {
-               let interests: string = element.properties["interests"]
-               let cleanInput = interests.slice(1, -1)
+               const interests: string = element.properties["interests"]
+               const cleanInput = interests.slice(1, -1)
                arrayInterests = cleanInput.split(",")
             }
             friendList.set(element.properties["name"], checkInterestsCompatibility(startingPointInterests, arrayInterests))
-         });
+         })
          arrayFriends = sortFriendsMap(friendList)
 
          //explore the network of friends until a suitable match is found
@@ -50,11 +50,11 @@ export const supernova = async (user: string): Promise<string> => {
 
             queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
             const result1 = await neo4j.executeRead(tx => tx.run(queryFriends))
-            results = result1.records.map(row => row.get('t'))
+            results = result1.records.map(row => row.get("t"))
             //TODO : Non mi sembra ancora scalabile, è da ricontrollare
 
             //Itera attraverso tutti gli amici che sono stati trovati per quell'utente
-            for await (let element of results) {
+            for await (const element of results) {
                friend = element.properties["name"]
                //Se quell'amico è già stato cercato una volta allora salterà quell'iterazione
                if (alreadySearched.includes(friend)) continue
@@ -62,7 +62,7 @@ export const supernova = async (user: string): Promise<string> => {
                if (user != friend) {
                   const queryAlreadyFriend = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) WHERE u.name="${user}" AND t.name="${friend}" RETURN t`
                   const result = await neo4j?.executeRead(tx => tx.run(queryAlreadyFriend))
-                  let testNull = result.records.map(row => row.get('t'))
+                  const testNull = result.records.map(row => row.get("t"))
                   //Ritorna quando testNull[0] è null dato che l'optional match risponde con NULL solamente quando non trova il match tra le persone, ma se abbiamo controllato esattamente che quelle persone esistono e non hanno una connessione allora vuol dire che abbiamo un match
                   if (testNull[0] === null) {
                      resolve(friend)
@@ -94,12 +94,11 @@ const checkInterestsCompatibility = (startingNode: Array<string>, friendToBeChec
 
 //sort friends by compatibility score in descending order
 const sortFriendsMap = (friendsMap: Map<string, number>) => {
-   let temp: Array<string> = []
-   let tempNumbers: Array<number> = []
+   const temp: Array<string> = []
+   const tempNumbers: Array<number> = []
 
-   friendsMap.forEach(check)
    //sort the map entries based on their associated numeric values
-   function check(value: number, key: string, map: Map<string, number>) {
+   const check = (value: number, key: string) => {
       //TODO: FIXA L'ORDINE
       if (value <= Math.max(...tempNumbers)) {
          tempNumbers.push(value)
@@ -109,7 +108,7 @@ const sortFriendsMap = (friendsMap: Map<string, number>) => {
          temp[0] = key
       } else {
          if (tempNumbers.length > 0) {
-            let greaterNumberIndex: number = tempNumbers.findIndex((element) => element >= value)
+            const greaterNumberIndex: number = tempNumbers.findIndex((element) => element >= value)
             //TODO: Potrebbbe non funzionare, controllare in futuro con dei test case
             shiftArrays(tempNumbers, temp, greaterNumberIndex)
             tempNumbers[greaterNumberIndex] = value
@@ -120,11 +119,13 @@ const sortFriendsMap = (friendsMap: Map<string, number>) => {
          }
       }
    }
+   
+   friendsMap.forEach(check)
    return temp
 }
 
 //shift array elements to insert a new value at the given index
-function shiftArrays(tempNumbers: Array<number>, temp: Array<string>, index: number) {
+const shiftArrays = (tempNumbers: Array<number>, temp: Array<string>, index: number) => {
    for (let i = temp.length; i >= index; i--) {
       tempNumbers[i + 1] = tempNumbers[i]
       temp[i + 1] = temp[i]

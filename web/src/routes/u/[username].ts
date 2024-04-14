@@ -1,7 +1,7 @@
-import { checkIfSessionTokenIsValid } from '@contexts/AuthContext'
-import { areFriends, getFriendsCount, getInterestsFromUID, getMeteorCount, getPostCount, getUIDfromUserData, getUserDatafromUID } from '@contexts/UserContext'
-import { UserInfo } from '@local-types/index'
-import { Request, Response } from 'express'
+import { checkIfSessionTokenIsValid } from "@contexts/AuthContext"
+import { areFriends, getFriendsCount, getInterestsFromUID, getMeteorCount, getPostCount, getUIDfromUserData, getUserDatafromUID } from "@contexts/UserContext"
+import { UserInfo } from "@local-types/index"
+import { Request, Response } from "express"
 
 export const GET = [checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid

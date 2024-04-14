@@ -5,7 +5,9 @@
    "scripts": {
       "build": "pnpm i && tsc && tsc-alias",
       "start": "node dist/app.js",
-      "dev": "nodemon src/app.ts"
+      "dev": "eslint src --fix && eslint src && nodemon src/app.ts",
+      "lint": "eslint src",
+      "lint-fix": "eslint src --fix"
    },
    "dependencies": {
       "cors": "^2.8.5",
@@ -14,7 +16,7 @@
       "express-file-routing": "^3.0.3",
       "firebase-admin": "^12.0.0",
       "jose": "^5.2.0",
-      "neo4j-driver": "^5.16.0",
+      "neo4j-driver": "^5.19.0",
       "tsc-alias": "^1.8.8",
       "tsconfig-paths": "^4.2.0"
    },
@@ -24,6 +26,9 @@
       "@types/neo4j": "^2.0.6",
       "@types/node": "^20.11.6",
       "@types/node-jose": "^1.1.13",
+      "@typescript-eslint/eslint-plugin": "^7.3.1",
+      "@typescript-eslint/parser": "^7.0.1",
+      "eslint": "^8.56.0",
       "nodemon": "^3.0.3",
       "ts-node": "^10.9.2",
       "typescript": "^5.3.3"
