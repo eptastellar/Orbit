@@ -6,13 +6,13 @@ import { useState } from "react"
 
 import { passwordUpdate } from "@/assets"
 import { Cross, IconButton } from "@/assets/icons"
-import { HeaderWithButton, Input, LargeButton } from "@/components"
+import { FullInput, HeaderWithButton, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
 const UpdatePassword = () => {
    // Context hooks
-   const { updateUserPassword } = useAuthContext()
+   const { hasRecentLogin, updateUserPassword } = useAuthContext()
 
    // Next router for navigation
    const router = useRouter()
@@ -20,24 +20,33 @@ const UpdatePassword = () => {
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
+   const [passwordError, setPasswordError] = useState<string>("")
+   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("")
    const [success, setSuccess] = useState<boolean>(false)
 
    // Interaction states
    const [password, setPassword] = useState<string>("")
    const [confirmPassword, setConfirmPassword] = useState<string>("")
 
-   const handleSubmit = () => {
-      // Preliminary checks
-      if (password !== confirmPassword)
-         return setError("Passwords do not match.")
+   const handleSubmit = async (event: React.FormEvent) => {
+      event.preventDefault()
 
+      // Preliminary checks
+      setError("")
+      setPasswordError("")
+      setConfirmPasswordError("")
+
+      if (!password) return setPasswordError("Input a password.")
+      if (!confirmPassword) return setConfirmPasswordError("Input a password.")
+      if (password !== confirmPassword) return setConfirmPasswordError("Passwords do not match.")
+
+      if (!hasRecentLogin()) return setError(resolveFirebaseError("auth/requires-recent-login"))
+
+      // Update the user's password
       setLoading(true)
 
       updateUserPassword(password)
-         .then(() => {
-            setError("")
-            setSuccess(true)
-         })
+         .then(() => setSuccess(true))
          .catch((error: any) => {
             setError(resolveFirebaseError(error.message))
             setSuccess(false)
@@ -57,48 +66,58 @@ const UpdatePassword = () => {
             }
          />
 
-         <div className="flex flex-grow flex-col center gap-16 w-full p-8">
-            <Image
-               src={passwordUpdate}
-               alt="Update password illustration"
-               className="w-3/4"
-            />
-
-            <div className="flex flex-col center gap-4 w-full">
-               <Input
-                  label="New Password"
-                  placeholder="SeCrE7#Pa5sW0rD"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-               />
-               <Input
-                  label="Confirm Password"
-                  placeholder="SeCrE7#Pa5sW0rD"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
+         <form
+            className="flex flex-col gap-8 h-full w-full p-8"
+            onSubmit={handleSubmit}
+         >
+            <div className="flex flex-grow flex-col center gap-16 w-full">
+               <Image
+                  src={passwordUpdate}
+                  alt="Update password illustration"
+                  className="w-3/4"
                />
 
-               <p className="text-center text-red-5">{error}</p>
+               <div className="flex flex-col center gap-4 w-full">
+                  <FullInput
+                     type="password"
+                     label="New Password"
+                     placeholder="SeCrE7#Pa5sW0rD"
+                     value={password}
+                     error={passwordError}
+                     onChange={setPassword}
+                  />
+                  <FullInput
+                     type="password"
+                     label="Confirm Password"
+                     placeholder="SeCrE7#Pa5sW0rD"
+                     value={confirmPassword}
+                     error={confirmPasswordError}
+                     onChange={setConfirmPassword}
+                  />
 
-               {success && (
-                  <p className="text-center text-base font-medium text-gray-3">
-                     A password reset email has been sent. <br />
-                     Check your email for further instructions!
-                  </p>
-               )}
+                  {error && (
+                     <p className="text-center text-base font-normal text-red-5">
+                        {error}
+                     </p>
+                  )}
+
+                  {success && (
+                     <p className="text-center text-base font-medium text-gray-3">
+                        A password reset email has been sent. <br />
+                        Check your email for further instructions!
+                     </p>
+                  )}
+               </div>
             </div>
-         </div>
 
-         <div className="w-full p-8 pt-0">
             <LargeButton
                text="Update Password"
                loading={loading}
                loadingText="Updating your password..."
+               submitBtn
                onClick={handleSubmit}
             />
-         </div>
+         </form>
       </div>
    )
 }

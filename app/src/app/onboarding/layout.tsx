@@ -13,12 +13,11 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
    // Next router for navigation
    const router = useRouter()
 
-   // Loading and session states
+   // Loading and async states
    const [loading, setLoading] = useState<boolean>(true)
-   const sessionToken = userProfile?.sessionToken
 
    useEffect(() => {
-      if (sessionToken) router.push("/")
+      if (userProfile?.sessionToken) router.push("/")
       else setLoading(false)
    }, [])
 

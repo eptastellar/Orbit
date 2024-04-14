@@ -1,3 +1,5 @@
+"use client"
+
 type Props = {
    isDanger?: boolean
    text: string

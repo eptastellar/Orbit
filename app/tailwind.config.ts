@@ -22,7 +22,7 @@ const config: Config = {
             "white": "#FBFBFB",
          },
          height: {
-            "104": "26rem"
+            "108": "27rem"
          },
          screens: {
             "device": "512px"

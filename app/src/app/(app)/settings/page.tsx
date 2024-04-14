@@ -10,11 +10,14 @@ import { ServerError } from "@/types"
 
 const Settings = () => {
    // Context hooks
-   const { deleteUser, logout } = useAuthContext()
+   const { deleteUser, hasPassword, hasRecentLogin, logout } = useAuthContext()
    const { userProfile, removeUserProfile } = useUserContext()
 
    // Next router for navigation
    const router = useRouter()
+
+   // Fetching and async states
+   const [error, setError] = useState<boolean>(false)
 
    // Interaction states
    const [loggingOut, setLoggingOut] = useState<boolean>(false)
@@ -32,8 +35,9 @@ const Settings = () => {
       }
    }
 
-   const handleDeletion = () => {
-      if (!deleting) {
+   const handleDeletion = async () => {
+      if (!deleting && hasRecentLogin()) {
+         // Delete the user's account profile and data
          setDeleting(true)
 
          const params: RequestInit = {
@@ -59,6 +63,10 @@ const Settings = () => {
                   console.error(message)
                }
             })
+            .catch((error) => {
+               setDeleting(false)
+               console.error(error)
+            })
       }
    }
 
@@ -75,7 +83,7 @@ const Settings = () => {
          />
 
          <div className="flex flex-grow flex-col center w-full p-8">
-            <div className="flex flex-col w-full gap-16">
+            <div className="flex flex-col gap-16 w-full">
                <div className="flex flex-col w-full">
                   <p className="text-base font-semibold text-gray-3 uppercase">
                      - Personal Data
@@ -92,7 +100,7 @@ const Settings = () => {
                      - Security
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     <SettingsButton text="Update Password" onClick={() => router.push("/settings/update-password")} />
+                     {hasPassword && <SettingsButton text="Update Password" onClick={() => router.push("/settings/update-password")} />}
                      <SettingsButton
                         text={loggingOut ? "Logging out..." : "Log Out"}
                         onClick={handleLogout}
@@ -105,7 +113,14 @@ const Settings = () => {
                      - Danger Zone
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     <SettingsButton text="Delete Account" isDanger onClick={() => setPopupVisible(true)} />
+                     <SettingsButton
+                        text="Delete Account"
+                        isDanger
+                        onClick={() => {
+                           setError(!hasRecentLogin())
+                           setPopupVisible(true)
+                        }}
+                     />
                   </div>
                </div>
             </div>
@@ -113,9 +128,9 @@ const Settings = () => {
 
          {popupVisible && <FloatingConfirmation
             title="Confirm Deletion"
-            text="This is a sensitive operation. If you wish to continue, please log out and back in before proceeding."
-            actionText={deleting ? "Deleting..." : "Confirm"}
-            actionColor={deleting ? undefined : "text-red-5"}
+            text="This is a sensitive operation. If you wish to continue, make sure you have logged in recently and press confirm to complete your account's deletion."
+            actionText={error ? "Relog" : deleting ? "Deleting..." : "Confirm"}
+            actionColor={error || deleting ? undefined : "text-red-5"}
             action={handleDeletion}
             closePopup={() => setPopupVisible(false)}
          />}

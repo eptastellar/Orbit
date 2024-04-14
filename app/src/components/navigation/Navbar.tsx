@@ -15,7 +15,7 @@ const Navbar = () => {
    const router = useRouter()
 
    return (
-      <div className="flex flex-row items-center justify-between w-full px-8 py-4 text-white border-t border-gray-7">
+      <div className="flex flex-row between w-full px-8 py-4 text-white border-t border-gray-7">
          <IconButton
             icon={<Home height={24} fill={pathname === "/"} />}
             onClick={() => router.push("/")}

@@ -17,7 +17,7 @@ const InfiniteLoader = ({ onScreen }: Props) => {
    }, [isVisible])
 
    return (
-      <div ref={ref} className="flex flex-row gap-2 center w-full mt-2">
+      <div ref={ref} className="flex flex-row center gap-2 w-full mt-2">
          {[0, 1, 2].map((index) =>
             <div
                key={`bouncer-${index}`}

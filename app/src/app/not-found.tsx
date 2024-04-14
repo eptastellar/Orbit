@@ -1,7 +1,7 @@
 import { BackButton } from "@/components"
 
-const ErrorPage = () => (
-   <div className="flex flex-col gap-12 center h-screen w-screen px-8">
+const NotFound = () => (
+   <div className="flex flex-col center gap-12 h-screen w-screen p-8">
       <div>
          <h1 className="text-9xl font-black text-black text-stroke">
             404
@@ -11,8 +11,8 @@ const ErrorPage = () => (
          </p>
       </div>
 
-      <BackButton colors="text-black bg-white" text="Go back" />
+      <BackButton colors="text-black bg-white" />
    </div>
 )
 
-export default ErrorPage
+export default NotFound

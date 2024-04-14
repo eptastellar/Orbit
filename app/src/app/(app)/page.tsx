@@ -15,6 +15,7 @@ const Homepage = () => {
    // Context hooks
    const { userProfile } = useUserContext()
 
+   // Async query loading/error states
    const {
       data: fetchedPostPages,
       error: postsError,
@@ -24,6 +25,8 @@ const Homepage = () => {
       queryKey: ["homepage", "posts"],
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
          fetchPosts(pageParam, userProfile?.sessionToken),
+
+      retry: false,
 
       initialPageParam: undefined,
       getNextPageParam: (prev) => prev.lastPostId
@@ -44,7 +47,7 @@ const Homepage = () => {
             {fetchedPosts ?
                fetchedPosts.length > 0
                   // There are some posts available in the homepage
-                  ? <div className="flex flex-col gap-4 items-center justify-start w-full">
+                  ? <div className="flex flex-col start gap-4 w-full">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}
                      {hasNextPosts
                         ? <InfiniteLoader onScreen={fetchNextPosts} />
@@ -63,7 +66,7 @@ const Homepage = () => {
                      </p>
                   </div>
                // The posts are still being fetched
-               : <div className="flex flex-col gap-4 items-center justify-start w-full">
+               : <div className="flex flex-col start gap-4 w-full">
                   {["h-32", "h-40", "h-20", "h-52", "h-16", "h-28"].map((height, index) =>
                      <div
                         key={`post-${height}`}

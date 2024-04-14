@@ -4,6 +4,7 @@ import LargeButton from "./button/LargeButton"
 import SettingsButton from "./button/SettingsButton"
 import WelcomeButton from "./button/WelcomeButton"
 
+import FullInput from "./input/FullInput"
 import Input from "./input/Input"
 
 import InfiniteLoader from "./loading/InfiniteLoader"
@@ -21,6 +22,7 @@ import Post from "./post/Post"
 export {
    BackButton,
    FloatingConfirmation,
+   FullInput,
    Header,
    HeaderWithButton,
    InfiniteLoader,

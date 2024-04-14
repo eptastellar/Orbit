@@ -84,7 +84,7 @@ const Post = ({ post }: Props) => {
             {new Date(post.createdAt * 1000).toLocaleString("en-US").replace(", ", " · ")}
          </p>
 
-         <div className="flex flex-row items-center justify-start gap-4 mt-2">
+         <div className="flex flex-row start gap-4 mt-2">
             <div className="flex flex-row center gap-1.5">
                <IconButton
                   icon={<Like height={16} color={isLiked ? "fill-red-5" : "fill-gray-3"} fill={isLiked} />}

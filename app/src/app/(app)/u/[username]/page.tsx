@@ -152,7 +152,7 @@ const User = ({ params }: Props) => {
                      <p className="text-base font-semibold text-gray-3">METEORS</p>
                   </div>
                </div>
-               <div className="flex flex-row gap-2 items-center justify-start w-full p-4 overflow-x-scroll">
+               <div className="flex flex-row start gap-2 w-full p-4 overflow-x-scroll">
                   {fetchedUser?.interests ?
                      fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
                      : ["w-1/4", "w-1/2", "w-1/3"].map((width) =>
@@ -165,7 +165,7 @@ const User = ({ params }: Props) => {
             {fetchedUser && fetchedPosts ?
                fetchedPosts.length > 0
                   // The user has posted something
-                  ? <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
+                  ? <div className="flex flex-col start gap-4 w-full mt-6">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}
                      {hasNextPosts
                         ? <InfiniteLoader onScreen={fetchNextPosts} />
@@ -187,7 +187,7 @@ const User = ({ params }: Props) => {
                      </p>
                   </div>
                // The posts are still being fetched
-               : <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
+               : <div className="flex flex-col start gap-4 w-full mt-6">
                   {["h-28", "h-40", "h-20"].map((height, index) =>
                      <div
                         key={`post-${height}`}

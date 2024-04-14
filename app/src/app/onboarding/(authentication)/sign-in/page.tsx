@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-import { BackButton, Input, LargeButton } from "@/components"
+import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 import { resolveServerError } from "@/libraries/serverErrors"
@@ -17,15 +17,28 @@ const Signin = () => {
    // Next router for navigation
    const router = useRouter()
 
-   // Fetching and async states
+   // Loading and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
+   const [emailError, setEmailError] = useState<string>("")
+   const [passwordError, setPasswordError] = useState<string>("")
 
    // Interaction states
    const [email, setEmail] = useState<string>("")
    const [password, setPassword] = useState<string>("")
 
-   const handleSubmit = async () => {
+   const handleSubmit = async (event: React.FormEvent) => {
+      event.preventDefault()
+
+      // Preliminary checks
+      setError("")
+      setEmailError("")
+      setPasswordError("")
+
+      if (!email) return setEmailError("Input an email.")
+      if (!password) return setPasswordError("Input a password.")
+
+      // Login the user with firebase and the server
       setLoading(true)
 
       emailSignin(email, password)
@@ -47,8 +60,6 @@ const Signin = () => {
                .then((response) => response.json())
                .then(({ success, message, jwt, pfp, username }: ResponseType) => {
                   if (success) {
-                     setError("")
-
                      setUserProfile({
                         profilePicture: pfp,
                         username: username,
@@ -71,32 +82,37 @@ const Signin = () => {
    }
 
    return (
-      <div className="flex flex-col items-center justify-between h-full w-full px-8">
-         <div className="flex flex-col gap-1.5 center mt-32">
+      <div className="flex flex-col between gap-16 h-full w-full p-8">
+         <div className="flex flex-col center gap-2 mt-16">
             <h1 className="text-4xl font-bold text-white">
                Sign in
             </h1>
-            <p className="text-sm font-medium text-gray-3">
+            <p className="text-sm font-semibold text-gray-3">
                Access your space account
             </p>
          </div>
 
-         <div className="flex flex-col center gap-4 w-full">
-            <div className="flex flex-col w-full gap-4">
-               <Input
+         <div className="flex flex-col center gap-8 w-full">
+            <form
+               className="flex flex-col center gap-4 w-full"
+               onSubmit={handleSubmit}
+            >
+               <FullInput
+                  type="email"
                   label="Your personal email"
                   placeholder="astro@email.com"
-                  type="email"
                   value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  error={emailError}
+                  onChange={setEmail}
                />
                <div className="flex flex-col items-end justify-center gap-1 w-full">
-                  <Input
+                  <FullInput
+                     type="password"
                      label="Your password"
                      placeholder="SeCrE7#Pa5sW0rD"
-                     type="password"
                      value={password}
-                     onChange={(event) => setPassword(event.target.value)}
+                     error={passwordError}
+                     onChange={setPassword}
                   />
                   <p className="text-xs font-medium text-gray-3">
                      Did you {" "}
@@ -109,15 +125,20 @@ const Signin = () => {
                   </p>
                </div>
 
-               <p className="text-center text-red-5">{error}</p>
+               {error && (
+                  <p className="text-center text-base font-normal text-red-5">
+                     {error}
+                  </p>
+               )}
 
                <LargeButton
                   text="Join the galaxy"
                   loading={loading}
                   loadingText="Reaching your rocket..."
+                  submitBtn
                   onClick={handleSubmit}
                />
-            </div>
+            </form>
 
             <p className="text-base font-medium text-gray-3">
                Don't have an account? {" "}
@@ -130,9 +151,7 @@ const Signin = () => {
             </p>
          </div>
 
-         <div className="mb-12">
-            <BackButton />
-         </div>
+         <BackButton destinationPage="/onboarding" />
       </div>
    )
 }

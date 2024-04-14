@@ -21,7 +21,7 @@ import notifications from "./illustrations/notifications.svg"
 import passwordUpdate from "./illustrations/password-update.svg"
 import privacyPolicy from "./illustrations/privacy-policy.svg"
 import profileEmpty from "./illustrations/profile-empty.svg"
-import rotatePhone from "./illustrations/rotate-phone.svg"
+import rotateDevice from "./illustrations/rotate-device.svg"
 import supernovaAccepted from "./illustrations/supernova-accepted.svg"
 import supernovaRejected from "./illustrations/supernova-rejected.svg"
 
@@ -54,7 +54,7 @@ export {
    passwordUpdate,
    privacyPolicy,
    profileEmpty,
-   rotatePhone,
+   rotateDevice,
    supernovaAccepted,
    supernovaRejected
 }

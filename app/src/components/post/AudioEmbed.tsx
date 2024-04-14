@@ -38,7 +38,7 @@ const AudioEmbed = ({ src }: Props) => {
    }
 
    return (
-      <div className="flex flex-row items-center justify-start gap-4 w-full mt-4 px-4 py-2 bg-gray-5/50 rounded-md">
+      <div className="flex flex-row start gap-4 w-full mt-4 px-4 py-2 bg-gray-5/50 rounded-md">
          {isPlaying
             ? <IconButton icon={<PauseCircle height={32} color="fill-white" />} onClick={togglePlayPause} />
             : <IconButton icon={<PlayCircle height={32} color="fill-white" />} onClick={togglePlayPause} />
@@ -51,7 +51,7 @@ const AudioEmbed = ({ src }: Props) => {
             max={duration}
             value={elapsedTime}
             onChange={handleChange}
-            style={{ backgroundSize: `${(elapsedTime / duration) * 100}% 100%` }}
+            style={{ backgroundSize: `${Math.round((elapsedTime / duration) * 100)}% 100%` }}
          />
 
          <p className="text-xs font-normal text-white">
