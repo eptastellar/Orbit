@@ -13,7 +13,7 @@ const AuthenticationRules = ({ children }: { children: React.ReactNode }) => {
    // Next router for navigation
    const router = useRouter()
 
-   // Loading and session states
+   // Loading and async states
    const [loading, setLoading] = useState<boolean>(true)
 
    useEffect(() => {

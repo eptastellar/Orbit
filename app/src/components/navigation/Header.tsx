@@ -9,7 +9,7 @@ const Header = () => {
    const router = useRouter()
 
    return (
-      <div className="flex flex-row items-center justify-between w-full px-8 py-4 text-white border-b border-gray-7">
+      <div className="flex flex-row between gap-4 w-full px-8 py-4 text-white border-b border-gray-7">
          <p className="text-2xl leading-6 font-semibold">
             Orbit
          </p>

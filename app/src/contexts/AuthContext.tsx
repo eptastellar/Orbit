@@ -4,6 +4,7 @@ import {
    User,
    UserCredential,
    createUserWithEmailAndPassword,
+   deleteUser as deleteUserAccount,
    onAuthStateChanged,
    sendEmailVerification,
    sendPasswordResetEmail,
@@ -21,6 +22,8 @@ import { auth, googleProvider } from "@/libraries/firebase"
 type authContextType = {
    currentUser: User | null
    getUserId: (forceRefresh?: boolean) => Promise<string>
+   hasPassword: boolean
+   hasRecentLogin: () => boolean
 
    // Email and password actions
    emailSignin: (email: string, password: string) => Promise<UserCredential>
@@ -33,6 +36,7 @@ type authContextType = {
    googleLogin: () => Promise<UserCredential>
 
    // Global authentication functions
+   deleteUser: () => Promise<void>
    logout: () => Promise<void>
 }
 
@@ -41,9 +45,15 @@ const AuthContext = createContext<authContextType>({} as authContextType)
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
    const [currentUser, setCurrentUser] = useState<User | null>(null)
    const [loading, setLoading] = useState<boolean>(true)
+   const [hasPassword, setHasPassword] = useState<boolean>(false)
 
    const getUserId = async (forceRefresh?: boolean) =>
       await currentUser?.getIdToken(forceRefresh) ?? ""
+
+   const hasRecentLogin = () => (
+      new Date(currentUser?.metadata.lastSignInTime!)
+         .getTime() > (Date.now() - 180 * 1000)
+   )
 
    // Email and password actions
    const emailSignin = (email: string, password: string) =>
@@ -71,11 +81,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signInWithPopup(auth, googleProvider)
 
    // Global authentication functions
+   const deleteUser = () =>
+      deleteUserAccount(currentUser!)
+
    const logout = () =>
       signOut(auth)
 
    useEffect(() => onAuthStateChanged(auth, user => {
       setCurrentUser(user)
+      setHasPassword(user?.providerData.some((provider) => provider.providerId === "password") ?? false)
       setLoading(false)
    }), [])
 
@@ -84,6 +98,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
          value={{
             currentUser,
             getUserId,
+            hasPassword,
+            hasRecentLogin,
 
             // Email and password actions
             emailSignin,
@@ -96,6 +112,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             googleLogin,
 
             // Global authentication functions
+            deleteUser,
             logout,
          }}
       >

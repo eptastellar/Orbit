@@ -1,3 +1,5 @@
+"use client"
+
 type Props = {
    interest: string
    onClick?: () => void
@@ -8,7 +10,9 @@ const InterestButton = ({ interest, onClick }: Props) => (
       className={`min-w-fit px-3 py-1 bg-blue-3 rounded-full ${onClick ? "cursor-pointer" : ""}`}
       onClick={onClick}
    >
-      <p className="text-xs font-semibold text-black">{interest}</p>
+      <p className="text-xs font-semibold text-black">
+         {interest.length > 32 ? `${interest.substring(0, 32 - 3)}...` : interest}
+      </p>
    </div>
 )
 

@@ -2,13 +2,14 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
-import { BackButton, Input, InterestButton, SpinnerText } from "@/components"
+import { BackButton, FullInput, InterestButton, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
 import { resolveServerError } from "@/libraries/serverErrors"
 import { ServerError } from "@/types"
 
+import { useLocalStorage } from "@/hooks"
 import { fetchInterests } from "./requests"
 
 const Interests = () => {
@@ -24,47 +25,54 @@ const Interests = () => {
    const [error, setError] = useState<string>("")
 
    // Interaction states
-   const [interests, setInterests] = useState<string[]>([])
-   const [interestsShown, setInterestsShown] = useState<string[]>([])
+   const [selectedInterests, setSelectedInterests] = useLocalStorage<string[]>("interests", [])
+   const [displayedInterests, setDisplayedInterests] = useState<string[]>([])
    const [searchQuery, setSearchQuery] = useState<string>("")
 
-   const filterInterestsShown = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(event.target.value)
+   const searchRef = useRef<HTMLInputElement>(null)
 
-      if (!event.target.value) return randomizeInterestsShown(interestsList!)
+   const filterDisplayedInterests = (value: string) => {
+      setSearchQuery(value)
+
+      if (!value) return randomizeDisplayedInterests(interestsList!)
 
       const filtered = interestsList!
-         .filter((interest) => interest.toLowerCase().includes(event.target.value.toLowerCase()))
+         .filter((interest) =>
+            interest.toLowerCase().includes(value.toLowerCase())
+            && !selectedInterests.includes(interest)
+         )
+         .sort()
          .slice(0, 20)
-      setInterestsShown(filtered)
+      setDisplayedInterests(filtered)
    }
 
-   const randomizeInterestsShown = (interests: string[]) => {
+   const randomizeDisplayedInterests = (interests: string[]) => {
       const shuffled = interests
+         .filter((interest) => !selectedInterests.includes(interest))
          .sort(() => 0.5 - Math.random())
          .slice(0, 20)
-      setInterestsShown(shuffled)
+      setDisplayedInterests(shuffled)
    }
 
    const handleSelectedInterestClick = (interest: string) => {
-      const newInterests = interests.filter((item) => item !== interest)
-      setInterests(newInterests.sort())
-      randomizeInterestsShown(interestsList!)
+      const newInterests = selectedInterests.filter((item) => item !== interest)
+      setSelectedInterests(newInterests.sort())
+      randomizeDisplayedInterests(interestsList!)
    }
 
-   const handleInterestListClick = (interest: string) => {
-      if (interests.length < 5) {
+   const handleDisplayedInterestsClick = (interest: string) => {
+      if (selectedInterests.length < 5) {
          setSearchQuery("")
-         setInterests((prev) => [...prev, interest].sort())
-         randomizeInterestsShown(interestsList!)
-         document.getElementById("search-box")?.focus()
+         setSelectedInterests((prev) => [...prev, interest].sort())
+         randomizeDisplayedInterests(interestsList!)
+         searchRef.current?.focus()
       }
    }
 
-   const handleSubmit = async (event: React.FormEvent) => {
-      event.preventDefault()
-
+   const handleSubmit = async () => {
       // Preliminary checks
+      setError("")
+
       const profilePicture: string | null =
          JSON.parse(localStorage.getItem("profilePicture") ?? "null")
       const username: string | null =
@@ -80,14 +88,14 @@ const Interests = () => {
       const unixBirthdate = Math.floor(new Date(birthdate).getTime() / 1000)
       if (!unixBirthdate) return router.push("/onboarding/profile")
 
+      // Send the user object to the api endpoint
       setLoading(true)
 
-      // Send the user object to the api endpoint
       const requestBody = JSON.stringify({
          pfp: profilePicture,
          username: username,
          bday: unixBirthdate,
-         interests: interests
+         interests: selectedInterests
       })
 
       const params: RequestInit = {
@@ -111,8 +119,6 @@ const Interests = () => {
          .then((response) => response.json())
          .then(({ success, message, jwt, pfp, username }: ResponseType) => {
             if (success) {
-               setError("")
-
                setUserProfile({
                   profilePicture: pfp,
                   username: username,
@@ -123,6 +129,7 @@ const Interests = () => {
                localStorage.removeItem("profilePicture")
                localStorage.removeItem("username")
                localStorage.removeItem("birthdate")
+               localStorage.removeItem("interests")
                router.push(`/u/${username}`)
             } else {
                setError(resolveServerError(message))
@@ -135,7 +142,7 @@ const Interests = () => {
    const { isLoading: fetchingInterests, data: interestsList, error: interestsError } = useQuery({
       queryKey: ["interests"],
       queryFn: () => fetchInterests().then((interests) => {
-         randomizeInterestsShown(interests)
+         randomizeDisplayedInterests(interests)
          return interests
       })
    })
@@ -145,40 +152,37 @@ const Interests = () => {
    }, [interestsError])
 
    return (
-      <div className="flex flex-col items-center justify-between h-full w-full px-8">
-         <div className="flex flex-col gap-1.5 center mt-32">
-            <h1 className="text-4xl font-bold text-white">
+      <div className="flex flex-col between gap-16 h-full w-full p-8">
+         <div className="flex flex-col center gap-2 mt-16">
+            <p className="text-4xl font-bold text-white">
                Polish your profile
-            </h1>
-            <p className="text-sm font-medium text-gray-3">
+            </p>
+            <p className="text-sm font-semibold text-gray-3">
                Let's find some matching stars
             </p>
          </div>
 
-         <form
-            className="flex flex-col gap-4 h-104 w-full"
-            onSubmit={handleSubmit}
-         >
+         <div className="flex flex-col gap-4 h-108 w-full">
             <div className="flex flex-col gap-8 w-full">
-               <Input
-                  id="search-box"
+               <FullInput
+                  ref={searchRef}
                   label="Search interests"
                   placeholder="Ex: Basketball, Cars, Football"
                   type="text"
                   value={searchQuery}
-                  onChange={filterInterestsShown}
+                  onChange={filterDisplayedInterests}
                />
 
-               <div className="flex flex-col w-full gap-1.5">
+               <div className="flex flex-col gap-2 w-full">
                   <div className="flex justify-between">
                      <p className="text-base font-semibold text-white">
-                        Your interests ({interests.length === 0 ? "5 at most" : `chosen ${interests.length}/5`})
+                        Your interests ({selectedInterests.length === 0 ? "5 at most" : `chosen ${selectedInterests.length}/5`})
                      </p>
                   </div>
-                  <div className="flex flex-wrap gap-2 px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md">
-                     {interests.length === 0 ? (
+                  <div className="flex flex-row gap-2 px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md overflow-x-scroll">
+                     {selectedInterests.length === 0 ? (
                         <p className="text-gray-3 cursor-default">Your interests will appear here</p>
-                     ) : interests.map((interest, index) => (
+                     ) : selectedInterests.map((interest, index) => (
                         <InterestButton
                            key={`sel-${index}`}
                            interest={interest}
@@ -193,24 +197,32 @@ const Interests = () => {
                <div className="flex flex-wrap gap-2">
                   {fetchingInterests ? (
                      <p className="text-gray-3">Fetching interests...</p>
-                  ) : interestsShown.map((interest, index) => (
-                     <InterestButton
-                        key={`list-${index}`}
-                        interest={interest}
-                        onClick={() => handleInterestListClick(interest)}
-                     />
-                  ))}
+                  ) : !displayedInterests.length ? (
+                     <p className="text-gray-3">No matching interests</p>
+                  ) : (
+                     displayedInterests.map((interest, index) => (
+                        <InterestButton
+                           key={`list-${index}`}
+                           interest={interest}
+                           onClick={() => handleDisplayedInterestsClick(interest)}
+                        />
+                     ))
+                  )}
                </div>
             </div>
 
-            <p className="text-center text-red-5">{error}</p>
+            {error && (
+               <p className="text-center text-base font-normal text-red-5">
+                  {error}
+               </p>
+            )}
 
-            <button
-               type="submit"
-               className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-            >
-               {loading ? <SpinnerText message="Building your rocket..." /> : <p>Start to orbit!</p>}
-            </button>
+            <LargeButton
+               text="Start to orbit!"
+               loading={loading}
+               loadingText="Building your rocket..."
+               onClick={handleSubmit}
+            />
 
             <p className="text-center text-xs text-gray-3">
                When creating an account, you accept <br />
@@ -221,11 +233,9 @@ const Interests = () => {
                   Orbit’s Terms & Conditions
                </span>.
             </p>
-         </form>
-
-         <div className="mb-12">
-            <BackButton />
          </div>
+
+         <BackButton />
       </div>
    )
 }

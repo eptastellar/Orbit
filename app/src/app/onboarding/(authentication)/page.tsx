@@ -18,15 +18,17 @@ const Welcome = () => {
    // Next router for navigation
    const router = useRouter()
 
+   // Fetching and async states
+   const [googleLoading, setGoogleLoading] = useState<boolean>(false)
+
    // Interaction states
    const [activeView, setActiveView] = useState<Views>("default")
-   const [googleLoading, setGoogleLoading] = useState<boolean>(false)
 
    const handleGoogleAuth = () => {
       setGoogleLoading(true)
 
-      googleLogin() // Login with google
-         .then(async (user) => { // Login with the server
+      googleLogin()
+         .then(async (user) => {
             const params: RequestInit = {
                method: "GET",
                headers: { "Authorization": "Bearer " + await user.user.getIdToken() }
@@ -73,12 +75,12 @@ const Welcome = () => {
             autoPlay disablePictureInPicture loop muted playsInline preload="" unselectable="on"
          />
 
-         <div className="absolute flex flex-col items-center justify-between h-full w-full p-8 bg-black/50">
+         <div className="absolute flex flex-col between h-full w-full p-8 bg-black/50">
             <p className="mt-36 text-center text-4xl font-bold text-white">
                Welcome, to your personal orbit.
             </p>
 
-            <div className="flex flex-col gap-2 w-full center">
+            <div className="flex flex-col center gap-2 w-full">
                {
                   activeView === "default" ? <>
                      <WelcomeButton

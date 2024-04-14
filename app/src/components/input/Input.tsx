@@ -1,28 +1,37 @@
+"use client"
+
+import { forwardRef } from "react"
+
 type Props = {
    error?: string
-   id?: string
-   label: string
-   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-   placeholder: string
    type: React.HTMLInputTypeAttribute
+   placeholder: string
    value: string
-}
+} & ({
+   changeEvent?: false
+   onChange: (value: string) => void
+} | {
+   changeEvent: true
+   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+})
 
-const Input = ({ error, id, label, onChange, placeholder, type, value }: Props) => (
-   <div className="flex flex-col w-full gap-1.5">
-      <div className="flex justify-between">
-         <p className="text-base font-semibold text-white">{label}</p>
-         <p className="text-base font-normal text-red-5">{error}</p>
-      </div>
-      <input
-         id={id}
-         type={type}
-         placeholder={placeholder}
-         value={value}
-         onChange={(event) => onChange(event)}
-         className="px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
-      />
-   </div>
-)
+const Input = forwardRef<HTMLInputElement, Props>(({
+   error = "",
+   type,
+   placeholder,
+   value,
+   changeEvent,
+   onChange
+}, ref) => (
+   <input
+      ref={ref}
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={changeEvent ? onChange : (event) => onChange(event.target.value)}
+      className={`w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ${error ? "ring-red-5" : "ring-gray-5"} bg-gray-7 rounded-md transition-shadow duration-200`}
+   />
+))
 
+Input.displayName = "Input"
 export default Input

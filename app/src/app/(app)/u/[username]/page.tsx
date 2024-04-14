@@ -9,7 +9,7 @@ import { profileEmpty } from "@/assets"
 import { Gear, IconButton, ThreeDotsVertical } from "@/assets/icons"
 import { HeaderWithButton, InfiniteLoader, InterestButton, Navbar, Post } from "@/components"
 import { useUserContext } from "@/contexts"
-import { Post as PostType } from "@/types"
+import { Post as PostType, ServerError } from "@/types"
 
 import { fetchPosts, fetchProfile } from "./requests"
 
@@ -31,7 +31,9 @@ const User = ({ params }: Props) => {
 
    const { data: fetchedUser, error: profileError } = useQuery({
       queryKey: ["user", username],
-      queryFn: () => fetchProfile(username, userProfile?.sessionToken)
+      queryFn: () => fetchProfile(username, userProfile?.sessionToken),
+
+      retry: false
    })
 
    const {
@@ -44,6 +46,8 @@ const User = ({ params }: Props) => {
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
          fetchPosts(username, pageParam, userProfile?.sessionToken),
 
+      retry: false,
+
       initialPageParam: undefined,
       getNextPageParam: (prev) => prev.lastPostId
    })
@@ -52,8 +56,21 @@ const User = ({ params }: Props) => {
       .flatMap((page) => page.posts.flatMap((post) => post))
 
    useEffect(() => {
-      if (profileError) console.error(profileError)
-      if (postsError) console.error(postsError)
+      if (profileError) {
+         const error = profileError.message as ServerError
+
+         if (error === "server/not-friends")
+            router.replace(`/u/${userProfile?.username}`)
+         else console.error(profileError)
+      }
+
+      if (postsError) {
+         const error = postsError.message as ServerError
+
+         if (error === "server/not-friends")
+            router.replace(`/u/${userProfile?.username}`)
+         else console.error(postsError)
+      }
    }, [profileError, postsError])
 
    return (
@@ -135,7 +152,7 @@ const User = ({ params }: Props) => {
                      <p className="text-base font-semibold text-gray-3">METEORS</p>
                   </div>
                </div>
-               <div className="flex flex-row gap-2 items-center justify-start w-full p-4 overflow-x-scroll">
+               <div className="flex flex-row start gap-2 w-full p-4 overflow-x-scroll">
                   {fetchedUser?.interests ?
                      fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
                      : ["w-1/4", "w-1/2", "w-1/3"].map((width) =>
@@ -148,7 +165,7 @@ const User = ({ params }: Props) => {
             {fetchedUser && fetchedPosts ?
                fetchedPosts.length > 0
                   // The user has posted something
-                  ? <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
+                  ? <div className="flex flex-col start gap-4 w-full mt-6">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}
                      {hasNextPosts
                         ? <InfiniteLoader onScreen={fetchNextPosts} />
@@ -170,7 +187,7 @@ const User = ({ params }: Props) => {
                      </p>
                   </div>
                // The posts are still being fetched
-               : <div className="flex flex-col gap-4 items-center justify-start w-full mt-6">
+               : <div className="flex flex-col start gap-4 w-full mt-6">
                   {["h-28", "h-40", "h-20"].map((height, index) =>
                      <div
                         key={`post-${height}`}

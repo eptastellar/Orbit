@@ -41,6 +41,7 @@ export type ServerError =
    "validation/invalid-document-id" |
    "validation/malformed-input" |
    // Server errors
+   "server/not-friends" |
    "server/no-content" |
    "server/no-friends"
 

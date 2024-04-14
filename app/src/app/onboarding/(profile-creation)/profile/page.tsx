@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 import { CameraPlus } from "@/assets/icons"
-import { BackButton, Input, SpinnerText } from "@/components"
+import { BackButton, FullInput, Input, LargeButton } from "@/components"
 import { useLocalStorage } from "@/hooks"
 import { storage } from "@/libraries/firebase"
 import { resolveServerError } from "@/libraries/serverErrors"
@@ -30,6 +30,7 @@ const Profile = () => {
    const [bdayMonth, setBdayMonth] = useState<string>("")
    const [bdayDay, setBdayDay] = useState<string>("")
 
+   const yearRef = useRef<HTMLInputElement>(null)
    const monthRef = useRef<HTMLInputElement>(null)
    const dayRef = useRef<HTMLInputElement>(null)
 
@@ -56,27 +57,29 @@ const Profile = () => {
       }
    }
 
-   const updateUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.value.substring(1).match(/[^a-zA-Z0-9\_\-\.]/)) return
+   const updateUsername = (value: string) => {
+      if (value.substring(1).match(/[^a-zA-Z0-9\_\-\.]/)) return
 
-      if (!event.target.value.startsWith("@")) setUsername("@" + event.target.value)
-      else setUsername(event.target.value)
+      if (!value.startsWith("@")) setUsername("@" + value)
+      else setUsername(value)
    }
 
    const updateBirthdate = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.value !== "" && isNaN(parseInt(event.target.value))) return
+      const value = event.target.value
+      if (value !== "" && (isNaN(parseInt(value)) || parseInt(value) < 0)) return
 
-      if (event.target.id === "birthdate-year") {
-         setBdayYear(event.target.value)
-         setBirthdate((prev) => [event.target.value, prev[1], prev[2]])
-         if (event.target.value.length === 4) monthRef.current?.focus()
-      } else if (event.target.id === "birthdate-month") {
-         setBdayMonth(event.target.value)
-         setBirthdate((prev) => [prev[0], event.target.value, prev[2]])
-         if (event.target.value.length === 2) dayRef.current?.focus()
-      } else if (event.target.id === "birthdate-day") {
-         setBdayDay(event.target.value)
-         setBirthdate((prev) => [prev[0], prev[1], event.target.value])
+      const currentYear = new Date().getFullYear()
+      if (event.target === yearRef.current && (value === "" || parseInt(value) <= currentYear)) {
+         setBdayYear(value)
+         setBirthdate((prev) => [value, prev[1], prev[2]])
+         if (value.length === 4) monthRef.current?.focus()
+      } else if (event.target === monthRef.current && (value === "" || parseInt(value) <= 12)) {
+         setBdayMonth(value)
+         setBirthdate((prev) => [prev[0], value, prev[2]])
+         if (value.length === 2) dayRef.current?.focus()
+      } else if (event.target === dayRef.current && (value === "" || parseInt(value) <= 31)) {
+         setBdayDay(value)
+         setBirthdate((prev) => [prev[0], prev[1], value])
       }
    }
 
@@ -84,6 +87,8 @@ const Profile = () => {
       event.preventDefault()
 
       // Preliminary checks
+      setError("")
+
       if (!username) return setError("Fill in the username.")
       if (!birthdate[0] || !birthdate[1] || !birthdate[2] || birthdate[0].length !== 4)
          return setError("Fill in all birthdate fields.")
@@ -91,9 +96,9 @@ const Profile = () => {
       const unixBirthdate = Math.floor(new Date(birthdate.join("/")).getTime() / 1000)
       if (!unixBirthdate) return setError("Invalid birthdate.")
 
+      // Check form validity with api endpoint
       setLoading(true)
 
-      // Check form validity with api endpoint
       const requestBody = JSON.stringify({
          username: username,
          bday: unixBirthdate
@@ -110,8 +115,6 @@ const Profile = () => {
          .then((response) => response.json())
          .then(({ success, message }: ResponseType) => {
             if (success) {
-               setError("")
-
                router.push("/onboarding/interests")
             } else {
                setError(resolveServerError(message))
@@ -121,22 +124,19 @@ const Profile = () => {
    }
 
    return (
-      <div className="flex flex-col items-center justify-between h-full w-full px-8">
-         <div className="flex flex-col gap-1.5 center mt-32">
+      <div className="flex flex-col between gap-16 h-full w-full p-8">
+         <div className="flex flex-col center gap-2 mt-16">
             <h1 className="text-4xl font-bold text-white">
                About you
             </h1>
-            <p className="text-sm font-medium text-gray-3">
+            <p className="text-sm font-semibold text-gray-3">
                Let others know more about yourself
             </p>
          </div>
 
-         <form
-            className="flex flex-col center gap-4 w-full"
-            onSubmit={handleSubmit}
-         >
+         <form className="flex flex-col center gap-4 w-full">
             <label
-               className={`flex center min-h-32 min-w-32 ${progress === 0 ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
+               className={`flex center min-h-32 min-w-32 ${progress === 0 && !pfpUrl ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
                style={{
                   background: pfpUrl ? "#1D5C96" :
                      `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`
@@ -162,7 +162,7 @@ const Profile = () => {
                />
             </label>
 
-            <Input
+            <FullInput
                label="Username"
                placeholder="@4stroNebul4"
                type="text"
@@ -170,35 +170,35 @@ const Profile = () => {
                onChange={updateUsername}
             />
             <div className="flex flex-col items-end justify-center gap-1 w-full">
-               <div className="flex flex-col w-full gap-1.5">
+               <div className="flex flex-col gap-2 w-full">
                   <p className="text-base font-semibold text-white">Birthdate</p>
                   <div className="flex gap-2 w-full">
-                     <input
-                        id="birthdate-year"
-                        type="text"
-                        placeholder="YYYY"
-                        value={bdayYear}
-                        onChange={updateBirthdate}
-                        className="w-1/2 px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
-                     />
+                     <div className="w-1/2">
+                        <Input
+                           ref={yearRef}
+                           type="text"
+                           placeholder="YYYY"
+                           value={bdayYear}
+                           changeEvent
+                           onChange={updateBirthdate}
+                        />
+                     </div>
                      <div className="flex gap-2 w-1/2">
-                        <input
+                        <Input
                            ref={monthRef}
-                           id="birthdate-month"
                            type="text"
                            placeholder="MM"
                            value={bdayMonth}
+                           changeEvent
                            onChange={updateBirthdate}
-                           className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
                         />
-                        <input
+                        <Input
                            ref={dayRef}
-                           id="birthdate-day"
                            type="text"
                            placeholder="DD"
                            value={bdayDay}
+                           changeEvent
                            onChange={updateBirthdate}
-                           className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md"
                         />
                      </div>
                   </div>
@@ -210,19 +210,16 @@ const Profile = () => {
 
             <p className="text-center text-red-5">{error}</p>
 
-            <button
-               type="submit"
-               className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-            >
-               {loading ? <SpinnerText message="Building your rocket..." /> : <p>Save your profile</p>}
-            </button>
+            <LargeButton
+               text="Save your profile"
+               loading={loading}
+               loadingText="Building your rocket..."
+               submitBtn
+               onClick={handleSubmit}
+            />
          </form>
 
-         <div /> {/* For spacing */}
-
-         <div className="mb-12">
-            <BackButton />
-         </div>
+         <BackButton />
       </div>
    )
 }

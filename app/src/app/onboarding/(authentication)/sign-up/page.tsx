@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-import { BackButton, Input, SpinnerText } from "@/components"
+import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
@@ -17,6 +17,9 @@ const Signup = () => {
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
+   const [emailError, setEmailError] = useState<string>("")
+   const [passwordError, setPasswordError] = useState<string>("")
+   const [confirmPasswordError, setConfirmPasswordError] = useState<string>("")
 
    // Interaction states
    const [email, setEmail] = useState<string>("")
@@ -27,9 +30,17 @@ const Signup = () => {
       event.preventDefault()
 
       // Preliminary checks
-      if (password !== confirmPassword)
-         return setError("Passwords do not match.")
+      setError("")
+      setEmailError("")
+      setPasswordError("")
+      setConfirmPasswordError("")
 
+      if (!email) return setEmailError("Input an email.")
+      if (!password) return setPasswordError("Input a password.")
+      if (!confirmPassword) return setConfirmPasswordError("Input a password.")
+      if (password !== confirmPassword) return setConfirmPasswordError("Passwords do not match.")
+
+      // Signup the user with firebase
       setLoading(true)
 
       emailSignup(email, password)
@@ -41,51 +52,59 @@ const Signup = () => {
    }
 
    return (
-      <div className="flex flex-col items-center justify-between h-full w-full px-8">
-         <div className="flex flex-col gap-1.5 center mt-32">
+      <div className="flex flex-col between gap-16 h-full w-full p-8">
+         <div className="flex flex-col center gap-2 mt-16">
             <h1 className="text-4xl font-bold text-white">
                Join us in space
             </h1>
-            <p className="text-sm font-medium text-gray-3">
+            <p className="text-sm font-semibold text-gray-3">
                Connect with people around the galaxy
             </p>
          </div>
 
-         <div className="flex flex-col center gap-4 w-full">
+         <div className="flex flex-col center gap-8 w-full">
             <form
-               className="flex flex-col w-full gap-4"
+               className="flex flex-col center gap-4 w-full"
                onSubmit={handleSubmit}
             >
-               <Input
+               <FullInput
+                  type="email"
                   label="Your personal email"
                   placeholder="astro@email.com"
-                  type="email"
                   value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  error={emailError}
+                  onChange={setEmail}
                />
-               <Input
+               <FullInput
+                  type="password"
                   label="Your password"
                   placeholder="SeCrE7#Pa5sW0rD"
-                  type="password"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  error={passwordError}
+                  onChange={setPassword}
                />
-               <Input
+               <FullInput
+                  type="password"
                   label="Confirm password"
                   placeholder="SeCrE7#Pa5sW0rD"
-                  type="password"
                   value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  error={confirmPasswordError}
+                  onChange={setConfirmPassword}
                />
 
-               <p className="text-center text-red-5">{error}</p>
+               {error && (
+                  <p className="text-center text-base font-normal text-red-5">
+                     {error}
+                  </p>
+               )}
 
-               <button
-                  type="submit"
-                  className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-               >
-                  {loading ? <SpinnerText message="Building your rocket..." /> : <p>Join the galaxy</p>}
-               </button>
+               <LargeButton
+                  text="Join the galaxy"
+                  loading={loading}
+                  loadingText="Building your rocket..."
+                  submitBtn
+                  onClick={handleSubmit}
+               />
             </form>
 
             <p className="text-base font-medium text-gray-3">
@@ -99,9 +118,7 @@ const Signup = () => {
             </p>
          </div>
 
-         <div className="mb-12">
-            <BackButton />
-         </div>
+         <BackButton destinationPage="/onboarding" />
       </div>
    )
 }

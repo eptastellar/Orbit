@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 
-import { BackButton, Input, SpinnerText } from "@/components"
+import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
 import { resolveFirebaseError } from "@/libraries/firebaseErrors"
 
@@ -10,9 +10,11 @@ const ForgotPassword = () => {
    // Context hooks
    const { resetUserPassword } = useAuthContext()
 
-   // Fetching and async states
+   // Loading and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
+   const [emailError, setEmailError] = useState<string>("")
+   const [confirmEmailError, setConfirmEmailError] = useState<string>("")
    const [success, setSuccess] = useState<boolean>(false)
 
    // Interaction states
@@ -23,62 +25,74 @@ const ForgotPassword = () => {
       event.preventDefault()
 
       // Preliminary checks
-      if (email !== confirmEmail)
-         return setError("Emails do not match.")
+      setError("")
+      setEmailError("")
+      setConfirmEmailError("")
+      setSuccess(false)
 
+      if (!email) return setEmailError("Input an email.")
+      if (!confirmEmail) return setConfirmEmailError("Input an email.")
+      if (email !== confirmEmail) return setConfirmEmailError("Emails do not match.")
+
+      // Send password reset email
       setLoading(true)
 
       resetUserPassword(email)
-         .then(() => {
-            setError("")
-            setSuccess(true)
-         })
+         .then(() => setSuccess(true))
          .catch((error: any) => {
-            setError(resolveFirebaseError(error.message))
-            setSuccess(false)
+            if (error.message.includes("auth/invalid-email"))
+               setEmailError("Invalid email.")
+            else setError(resolveFirebaseError(error.message))
          })
          .finally(() => setLoading(false))
    }
 
    return (
-      <div className="flex flex-col items-center justify-between h-full w-full px-8">
-         <div className="flex flex-col gap-1.5 center mt-32">
-            <h1 className="text-4xl font-bold text-white">
+      <div className="flex flex-col between gap-16 h-full w-full p-8">
+         <div className="flex flex-col center gap-2 mt-16">
+            <p className="text-4xl font-bold text-white">
                Forgot password
-            </h1>
-            <p className="text-sm font-medium text-gray-3">
+            </p>
+            <p className="text-sm font-semibold text-gray-3">
                Mayday Houston, I forgot my password
             </p>
          </div>
 
-         <div className="flex flex-col center gap-16 w-full">
+         <div className="flex flex-col center gap-8 w-full">
             <form
-               className="flex flex-col w-full gap-4"
+               className="flex flex-col center gap-4 w-full"
                onSubmit={handleSubmit}
             >
-               <Input
+               <FullInput
+                  type="email"
                   label="Your personal email"
                   placeholder="astro@email.com"
-                  type="email"
                   value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  error={emailError}
+                  onChange={setEmail}
                />
-               <Input
+               <FullInput
+                  type="email"
                   label="Confirm email"
                   placeholder="astro@email.com"
-                  type="email"
                   value={confirmEmail}
-                  onChange={(event) => setConfirmEmail(event.target.value)}
+                  error={confirmEmailError}
+                  onChange={setConfirmEmail}
                />
 
-               <p className="text-center text-red-5">{error}</p>
+               {error && (
+                  <p className="text-center text-base font-normal text-red-5">
+                     {error}
+                  </p>
+               )}
 
-               <button
-                  type="submit"
-                  className="w-full py-2 text-base font-semibold text-white bg-blue-7 rounded-md"
-               >
-                  {loading ? <SpinnerText message="Asking Houston..." /> : <p>Send a reset email</p>}
-               </button>
+               <LargeButton
+                  text="Send a reset email"
+                  loading={loading}
+                  loadingText="Asking Houston..."
+                  submitBtn
+                  onClick={handleSubmit}
+               />
             </form>
 
             {success && (
@@ -89,9 +103,7 @@ const ForgotPassword = () => {
             )}
          </div>
 
-         <div className="mb-12">
-            <BackButton />
-         </div>
+         <BackButton destinationPage="/onboarding/sign-in" />
       </div>
    )
 }

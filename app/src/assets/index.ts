@@ -18,10 +18,10 @@ import emptyChat from "./illustrations/empty-chat.svg"
 import groupChat from "./illustrations/group-chat.svg"
 import homeEmpty from "./illustrations/home-empty.svg"
 import notifications from "./illustrations/notifications.svg"
-import passwordReset from "./illustrations/password-reset.svg"
+import passwordUpdate from "./illustrations/password-update.svg"
 import privacyPolicy from "./illustrations/privacy-policy.svg"
 import profileEmpty from "./illustrations/profile-empty.svg"
-import rotatePhone from "./illustrations/rotate-phone.svg"
+import rotateDevice from "./illustrations/rotate-device.svg"
 import supernovaAccepted from "./illustrations/supernova-accepted.svg"
 import supernovaRejected from "./illustrations/supernova-rejected.svg"
 
@@ -51,10 +51,10 @@ export {
    logoBlack,
    logoWhite,
    notifications,
-   passwordReset,
+   passwordUpdate,
    privacyPolicy,
    profileEmpty,
-   rotatePhone,
+   rotateDevice,
    supernovaAccepted,
    supernovaRejected
 }
