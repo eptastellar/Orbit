@@ -38,4 +38,5 @@ const FullInput = forwardRef<HTMLInputElement, Props>(({
    </div>
 ))
 
+FullInput.displayName = "FullInput"
 export default FullInput
