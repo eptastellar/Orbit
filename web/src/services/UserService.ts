@@ -73,7 +73,7 @@ export default class UserService {
          const neo4j: Session = neo()
          const tempArray: string[] = []
          const queryFriends: string = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`
-         const resultMap = await neo4j.executeRead(tx => tx.run(queryFriends))
+         const resultMap: QueryResult = await neo4j.executeRead(tx => tx.run(queryFriends))
          const uids = resultMap.records.map(row => row.get("p"))
          uids.forEach(element => {
             tempArray.push(element.properties["name"])

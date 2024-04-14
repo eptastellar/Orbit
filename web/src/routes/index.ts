@@ -1,4 +1,3 @@
-import { supernova } from "algorithms"
 import { Request, Response } from "express"
 
 export const GET = async (_: Request, res: Response) => {
@@ -8,6 +7,5 @@ export const GET = async (_: Request, res: Response) => {
       platform: process.platform,
       arch: process.arch,
       node: process.version,
-      supernova: await supernova("8DBxwxXYIhSnyJEeFtY20nQaoBa2")
    })
 }

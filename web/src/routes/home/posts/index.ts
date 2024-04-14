@@ -18,6 +18,6 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
          cont.fetchPosts(friendList, lastPostId, uid).then((fetch: ContentFetch) => {
             res.status(200).json({ success: true, posts: fetch.content, lastPostId: fetch.lastDocId })
          }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+      }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
    } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
 }]

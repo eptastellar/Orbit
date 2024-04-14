@@ -1,5 +1,5 @@
-import { neo } from "config"
-import { Session } from "neo4j-driver"
+import { err, neo } from "config"
+import { QueryResult, Session } from "neo4j-driver"
 
 export const supernova = async (user: string): Promise<string> => {
    const neo4j: Session = neo() //TODO: @TheInfernalNick add neoClose for each transaction
@@ -13,14 +13,17 @@ export const supernova = async (user: string): Promise<string> => {
    let arrayInterests: Array<string> = []
 
    //query to retrieve the starting user node
-   const queryStartingPoint = `MATCH (u:User) WHERE u.name = "${startingPoint}" RETURN u`
+   const queryStartingPoint: string = `OPTIONAL MATCH (u:User) WHERE u.name = "${startingPoint}" RETURN u`
    //query to find friends connected to the starting user node
-   let queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
+   let queryFriends: string = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
 
    return new Promise<string>(async (resolve, reject) => {
       //retrieve the starting user node and its interests
-      const resultStartingPoint = await neo4j.executeRead(tx => tx.run(queryStartingPoint))
+      const resultStartingPoint: QueryResult = await neo4j.executeRead(tx => tx.run(queryStartingPoint))
       const startingNode = resultStartingPoint.records.map(row => row.get("u"))
+      if (startingNode.includes(null)) {
+         return reject(err("User not found"))
+      }
       startingPointInterests = stringSlicing(startingNode.at(0).properties["interests"])
 
       //retrieve friends of the starting user and calculate compatibility
@@ -59,14 +62,14 @@ export const supernova = async (user: string): Promise<string> => {
                const testNull = result.records.map(row => row.get("t"))
                //Ritorna quando testNull[0] è null dato che l'optional match risponde con NULL solamente quando non trova il match tra le persone, ma se abbiamo controllato esattamente che quelle persone esistono e non hanno una connessione allora vuol dire che abbiamo un match
                if (testNull[0] === null) {
-                  resolve(friend)
+                  return resolve(friend)
                }
                //aggiunge alla lista di persone già cercate per ottimizzare l'algoritmo
                alreadySearched.push(friend)
             }
          }
       }
-      reject(new Error("Not Found"))
+      return reject(err("Impossible to find new friends"))
    })
 }
 
@@ -74,7 +77,6 @@ export const supernova = async (user: string): Promise<string> => {
 const checkInterestsCompatibility = (startingNode: Array<string>, friendToBeChecked: Array<string>) => {
    let compatibility: number = 0
    if (friendToBeChecked == undefined) friendToBeChecked = [""]
-   console.log(startingNode)
    startingNode.forEach(element => {
       if (typeof (friendToBeChecked) === "string") {
          if (element === friendToBeChecked) compatibility++
