@@ -1,0 +1,27 @@
+[package]
+name = "orbit"
+version = "1.0.0"
+description = "A social media application inspired by modern social media such as Instagram and X, which aim is to connect people through qr codes"
+authors = [
+   "mzyxnuel",
+   "74C17N3P7UN3",
+   "TheInfernalNick",
+   "MarcoMattei04",
+   "itspomo"
+]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "orbit_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.0-beta", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0-beta", features = [] }
+tauri-plugin-shell = "2.0.0-beta"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
