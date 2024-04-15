@@ -9,7 +9,7 @@ import { useAuthContext, useUserContext } from "@/contexts"
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
    // Context hooks
    const { currentUser } = useAuthContext()
-   const { userProfile } = useUserContext()
+   const { userProfile, removeUserProfile } = useUserContext()
 
    // Next router for navigation
    const router = useRouter()
@@ -19,9 +19,12 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
    const sessionToken = userProfile?.sessionToken
 
    useEffect(() => {
-      if (!currentUser || !currentUser.emailVerified || !sessionToken)
+      if (!currentUser && sessionToken) {
+         removeUserProfile()
          router.push("/onboarding")
-      else setLoading(false)
+      } else if (!currentUser || !currentUser.emailVerified || !sessionToken) {
+         router.push("/onboarding")
+      } else setLoading(false)
    }, [currentUser, userProfile])
 
    return loading ? <LoadingOverlay /> : (
