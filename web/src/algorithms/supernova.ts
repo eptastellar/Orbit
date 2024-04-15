@@ -1,4 +1,4 @@
-import { err, neo } from "config"
+import { close, err, neo } from "config"
 import { QueryResult, Session } from "neo4j-driver"
 
 export const supernova = async (user: string): Promise<string> => {
@@ -22,6 +22,7 @@ export const supernova = async (user: string): Promise<string> => {
       const resultStartingPoint: QueryResult = await neo4j.executeRead(tx => tx.run(queryStartingPoint))
       const startingNode = resultStartingPoint.records.map(row => row.get("u"))
       if (startingNode.includes(null)) {
+         close()
          return reject(err("User not found"))
       }
       startingPointInterests = stringSlicing(startingNode.at(0).properties["interests"])
