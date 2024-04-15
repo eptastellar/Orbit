@@ -138,7 +138,7 @@ const Interests = () => {
          })
    }
 
-   // Load all interests on page load
+   // Async query loading/error states
    const { isLoading: fetchingInterests, data: interestsList, error: interestsError } = useQuery({
       queryKey: ["interests"],
       queryFn: () => fetchInterests().then((interests) => {

@@ -2,7 +2,7 @@ import { Post, ServerError, UserProfile } from "@/types"
 
 export const fetchProfile = async (
    reqUsername: string,
-   sessionToken: string | undefined
+   sessionToken: string
 ): Promise<UserProfile> => {
    const requestParams: RequestInit = {
       method: "GET",
@@ -46,7 +46,7 @@ export const fetchProfile = async (
 export const fetchPosts = async (
    reqUsername: string,
    reqLastPostId: string | undefined,
-   sessionToken: string | undefined
+   sessionToken: string
 ): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
    const requestBody = JSON.stringify({
       lastPostId: reqLastPostId

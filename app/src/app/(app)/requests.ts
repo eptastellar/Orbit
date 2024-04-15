@@ -2,7 +2,7 @@ import { Post, ServerError } from "@/types"
 
 export const fetchPosts = async (
    reqLastPostId: string | undefined,
-   sessionToken: string | undefined
+   sessionToken: string
 ): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
    const requestBody = JSON.stringify({
       lastPostId: reqLastPostId

@@ -24,7 +24,7 @@ const Homepage = () => {
    } = useInfiniteQuery({
       queryKey: ["homepage", "posts"],
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
-         fetchPosts(pageParam, userProfile?.sessionToken),
+         fetchPosts(pageParam, userProfile?.sessionToken!),
 
       retry: false,
 

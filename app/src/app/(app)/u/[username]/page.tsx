@@ -29,9 +29,10 @@ const User = ({ params }: Props) => {
    // Dynamic route parameters
    const username = decodeURIComponent(params.username)
 
+   // Async query loading/error states
    const { data: fetchedUser, error: profileError } = useQuery({
       queryKey: ["user", username],
-      queryFn: () => fetchProfile(username, userProfile?.sessionToken),
+      queryFn: () => fetchProfile(username, userProfile?.sessionToken!),
 
       retry: false
    })
@@ -44,7 +45,7 @@ const User = ({ params }: Props) => {
    } = useInfiniteQuery({
       queryKey: ["user", "posts", username],
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
-         fetchPosts(username, pageParam, userProfile?.sessionToken),
+         fetchPosts(username, pageParam, userProfile?.sessionToken!),
 
       retry: false,
 
