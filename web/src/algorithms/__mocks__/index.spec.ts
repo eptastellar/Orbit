@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals"
 import { supernova } from "../supernova"
 
 //jest.mock("..\\config\\neo4j.config.ts") //TODO Servirà un mock di test per impedire al testing di fare richieste al vero db
