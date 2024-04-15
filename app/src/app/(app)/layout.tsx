@@ -21,9 +21,9 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
    useEffect(() => {
       if (!currentUser && sessionToken) {
          removeUserProfile()
-         router.push("/onboarding")
+         router.replace("/onboarding")
       } else if (!currentUser || !currentUser.emailVerified || !sessionToken) {
-         router.push("/onboarding")
+         router.replace("/onboarding")
       } else setLoading(false)
    }, [currentUser, userProfile])
 

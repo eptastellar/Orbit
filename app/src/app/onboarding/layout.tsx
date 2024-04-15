@@ -18,7 +18,7 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
    const sessionToken = userProfile?.sessionToken
 
    useEffect(() => {
-      if (sessionToken) router.push("/")
+      if (sessionToken) router.replace("/")
       else setLoading(false)
    }, [userProfile])
 

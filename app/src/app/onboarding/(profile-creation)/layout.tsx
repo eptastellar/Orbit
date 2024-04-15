@@ -18,8 +18,8 @@ const ProfileCreationRules = ({ children }: { children: React.ReactNode }) => {
 
    useEffect(() => {
       if (currentUser && !currentUser.emailVerified)
-         router.push("/onboarding/verification")
-      else if (!currentUser) router.push("/onboarding")
+         router.replace("/onboarding/verification")
+      else if (!currentUser) router.replace("/onboarding")
       else setLoading(false)
    }, [])
 
