@@ -4,6 +4,11 @@ export type LocalUser = {
    sessionToken: string
 }
 
+export type Notification = {
+   // TODO: Update the notification type
+   id: string
+}
+
 export type Post = {
    id: string
    createdAt: number

@@ -1,4 +1,5 @@
 import BackButton from "./button/BackButton"
+import FilterButton from "./button/FilterButton"
 import InterestButton from "./button/InterestButton"
 import LargeButton from "./button/LargeButton"
 import SettingsButton from "./button/SettingsButton"
@@ -15,12 +16,15 @@ import Header from "./navigation/Header"
 import HeaderWithButton from "./navigation/HeaderWithButton"
 import Navbar from "./navigation/Navbar"
 
+import Notification from "./notification/Notification"
+
 import FloatingConfirmation from "./popup/FloatingConfirmation"
 
 import Post from "./post/Post"
 
 export {
    BackButton,
+   FilterButton,
    FloatingConfirmation,
    FullInput,
    Header,
@@ -31,6 +35,7 @@ export {
    LargeButton,
    LoadingOverlay,
    Navbar,
+   Notification,
    Post,
    SettingsButton,
    SpinnerText,
