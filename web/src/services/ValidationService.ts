@@ -147,9 +147,9 @@ export default class ValidationService {
       })
    }
 
-   public harmfulContentValidation = (text: string): Promise<null> => {
-      return new Promise((resolve, reject) => {
-         //TODO enhance
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public harmfulContentValidation = (text: string): Promise<null> => { //TODO
+      return new Promise((resolve) => {
          resolve(null)
       })
    }

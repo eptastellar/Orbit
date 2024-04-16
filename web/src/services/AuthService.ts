@@ -67,7 +67,7 @@ export default class AuthService {
       const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 
       const jwt: string = await new SignJWT(payload)
-         .setProtectedHeader({ alg: "HS256" }) //TODO: enhance the security using asymmetric enc
+         .setProtectedHeader({ alg: "HS256" })
          .setIssuedAt()
          .setExpirationTime("4w") //create a jwt and set the expire time to 4 weeks
          .sign(secret)

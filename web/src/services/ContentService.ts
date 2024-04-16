@@ -1,6 +1,6 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { ContentFetch, UserInfo } from "types"
+import { ContentFetch, PostSchema, UserInfo } from "types"
 import UserService from "./UserService"
 
 export default class ContentService {
@@ -214,20 +214,52 @@ export default class ContentService {
    }
 
    public uploadPost = (uid: string, text?: string, type?: string, content?: string): Promise<string> => {
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("posts").doc() //set the docRef to posts
 
-            docRef.set({ //set the post information in firestore
+            await docRef.set({ //set the post information in firestore
                owner: uid,
                createdAt: Date.now() //unix format
             })
 
-            if (text) docRef.update({ text: text })
-            if (content) docRef.update({ content: content, type: type })
+            if (text) await docRef.update({ text: text })
+            if (content) await docRef.update({ content: content, type: type })
 
             resolve(docRef.id)
          } catch { reject(err("server/upload-failed")) }
+      })
+   }
+
+   public getPost = (personalUID: string, postId: string): Promise<PostSchema> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            const docRef: DocumentData = await this.db.collection("posts").doc(postId).get()
+            const doc: DocumentData = await docRef.data()
+
+            const userInfo: UserInfo = await this.user.getUserDatafromUID(doc.owner)
+            const isLiked: boolean = await this.isLikedBy(docRef.id, personalUID)
+            const likesNumber: number = await this.getLikesNumber(docRef.id)
+            const commentsNumber: number = await this.getRootsCommentsNumber(docRef.id)
+
+            const post: PostSchema = {
+               id: doc.id,
+               createdAt: doc.createdAt,
+               text: doc.text,
+               type: doc.type,
+               content: doc.content,
+               likes_number: likesNumber,
+               comments_number: commentsNumber,
+               is_liked: isLiked,
+               user_data: {
+                  username: userInfo.username,
+                  name: userInfo.name,
+                  pfp: userInfo.pfp,
+               },
+            }
+    
+            resolve(post)
+         } catch { reject(err("server/post-not-found")) }
       })
    }
 
@@ -259,8 +291,8 @@ export default class ContentService {
          try {
             const docRef: DocumentReference = this.db.collection("posts").doc(postId)
 
-            if (text) docRef.update({ text: text })
-            if (content) docRef.update({ content: content, type: type })
+            if (text) await docRef.update({ text: text })
+            if (content) await docRef.update({ content: content, type: type })
 
             resolve(docRef.id)
          } catch { reject(err("server/update-failed")) }
