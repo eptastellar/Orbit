@@ -12,8 +12,9 @@
       "windows": [
          {
             "title": "Orbit",
-            "width": 800,
-            "height": 900
+            "center": true,
+            "width": 430,
+            "height": 932
          }
       ],
       "security": {
@@ -29,6 +30,12 @@
          "icons/128x128@2x.png",
          "icons/icon.icns",
          "icons/icon.ico"
-      ]
+      ],
+      "copyright": "Eptastellar Inc.",
+      "publisher": "Eptastellar Inc.",
+      "category": "SocialNetworking",
+      "licenseFile": "https://github.com/eptastellar/Orbit/blob/main/LICENSE",
+      "longDescription": "A social media application inspired by modern social media such as Instagram and X, which aim is to connect people through qr codes",
+      "shortDescription": "The social to stay close to your friends"
    }
 }
