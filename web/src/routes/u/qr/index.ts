@@ -1,25 +1,23 @@
 import { Request, Response } from "express"
-import { AuthService, UserService, ValidationService } from "services"
+import { AuthService, UserService } from "services"
 
 const auth = new AuthService()
 const user = new UserService()
-const valid = new ValidationService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const GET = [auth.checkIfSessionTokenIsValid, async (_: Request, res: Response) => {
+   const randomCode: string = user.createRandomString(16) //TODO: Need changes for more combinations
+   user.setRandomFriendCode(res.locals.uid, randomCode)
 
-   const randomNumber: string = user.createRandomString(16) //TODO: Need changes for more combinations
-   user.setRandomFriendCode(res.locals.uid, randomNumber)
-
-   res.status(200).json({ success: true, message: randomNumber })
+   res.status(200).json({ success: true, message: randomCode })
 }]
 
 export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-
    const uid: string = res.locals.uid
-   const randomNumber: string = req.body.friendCode
+   const randomCode: string = req.body.friendCode
 
-   const friendName: string | null = await user.findRandomFriendCode(uid, randomNumber) // Returns null if the connection is not created
+   const friendName: string | null = await user.findRandomFriendCode(uid, randomCode) // Returns null if the connection is not created
 
-   if (friendName === null) res.status(408).json({ success: false, message: "Request Time Out" })
+   if (friendName === null)
+      res.status(408).json({ success: false, message: "Request Time Out" })
    else res.status(200).json({ success: true, name: friendName })
 }]
