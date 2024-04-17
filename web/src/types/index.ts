@@ -1,4 +1,3 @@
-import { interests } from "assets"
 import { DocumentData } from "firebase-admin/firestore"
 
 export type AuthResponse = {
@@ -100,8 +99,4 @@ export type UserResponse = {
       friends: number,
       meteors: number
    }
-}
-
-export type SettingsResponse = {
-   user_data: UserSchema
 }
