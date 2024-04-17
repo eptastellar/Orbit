@@ -77,10 +77,10 @@ export default class ContentService {
          }))
 
          if (posts.length > 0) {
-            const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+            const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
             const content: DocumentData[] = posts
-            const fetch: ContentFetch = { content, lastDocId }
-            resolve(fetch)
+            const contentFetch: ContentFetch = { content, last_doc_id }
+            resolve(contentFetch)
          } else
             reject(err("server/no-content"))
       })
@@ -156,10 +156,10 @@ export default class ContentService {
          }))
 
          if (comments.length > 0) {
-            const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+            const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
             const content: DocumentData[] = comments
-            const fetch: ContentFetch = { content, lastDocId }
-            resolve(fetch)
+            const contentFetch: ContentFetch = { content, last_doc_id }
+            resolve(contentFetch)
          } else
             reject(err("server/no-content"))
       })
@@ -192,10 +192,10 @@ export default class ContentService {
          }))
 
          if (comments.length > 0) {
-            const lastDocId: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+            const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
             const content: DocumentData[] = comments
-            const fetch: ContentFetch = { content, lastDocId }
-            resolve(fetch)
+            const contentFetch: ContentFetch = { content, last_doc_id }
+            resolve(contentFetch)
          } else
             reject(err("server/no-content"))
       })

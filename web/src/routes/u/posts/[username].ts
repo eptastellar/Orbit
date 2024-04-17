@@ -17,8 +17,11 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
 
       user.getUIDfromUserData(username).then(async (uid: string) => { //get the uid from the username, also validate the username
          user.areFriends(tokenUid, uid).then(() => {
-            cont.fetchPosts([uid], lastPostId, uid).then((fetch: ContentFetch) => {
-               res.status(200).json({ success: true, posts: fetch.content, lastPostId: fetch.lastDocId })
+            cont.fetchPosts([uid], lastPostId, uid).then((contentFetch: ContentFetch) => {
+               res.status(200).json({
+                  success: true,
+                  ...contentFetch
+               })
             }).catch((error) => { res.status(200).json({ error: error.message }) })
          }).catch((error) => { res.status(400).json({ error: error.message }) })
       }).catch((error) => { res.status(404).json({ error: error.message }) })

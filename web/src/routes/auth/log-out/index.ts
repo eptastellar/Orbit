@@ -3,7 +3,7 @@ import { AuthService } from "services"
 
 const auth = new AuthService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, (req: Request, res: Response) => {
+export const GET = [auth.checkIfSessionTokenIsValid, (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
    auth.logOut(uid).then(() => {

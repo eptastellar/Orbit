@@ -16,7 +16,7 @@ export type UserSchema = {
 
 export type ContentFetch = {
    content: DocumentData[],
-   lastDocId: string
+   last_doc_id: string
 }
 
 export type PostSchema = {

@@ -14,8 +14,11 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
       if (lastRootCommentId) await valid.commentRootIdValidation(lastRootCommentId, postId)
 
       valid.postIdValidation(postId).then(() => {
-         cont.fetchRootComments(postId, lastRootCommentId).then((fetch: ContentFetch) => {
-            res.status(200).json({ success: true, comments: fetch.content, lastRootCommentId: fetch.lastDocId })
+         cont.fetchRootComments(postId, lastRootCommentId).then((contentFetch: ContentFetch) => {
+            res.status(200).json({
+               success: true,
+               ...contentFetch
+            })
          }).catch((error) => { res.status(404).json({ error: error.message }) })
       }).catch((error) => { res.status(400).json({ error: error.message }) })
    } catch (error: any) { res.status(400).json({ error: error.message }) }
