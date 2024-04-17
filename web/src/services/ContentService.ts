@@ -65,7 +65,7 @@ export default class ContentService {
 
             return {
                id: doc.id,
-               creation: doc.createTime.seconds,
+               createdAt: doc.createTime.seconds,
                text: doc.data().text,
                type: doc.data().type,
                content: doc.data().content,
