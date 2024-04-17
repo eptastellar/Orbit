@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, UserService, ValidationService } from "services"
-import { ContentFetch, HomePostsRequest } from "types"
+import { ContentFetch, PostsRequest } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
@@ -11,7 +11,7 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const uid: string = res.locals.uid
    const last_post_id: string = req.body.last_post_id
 
-   const ereq: HomePostsRequest = {
+   const ereq: PostsRequest = {
       last_post_id
    }
 

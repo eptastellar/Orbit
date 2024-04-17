@@ -18,6 +18,6 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const friendName: string | null = await user.findRandomFriendCode(uid, randomCode) // Returns null if the connection is not created
 
    if (friendName === null)
-      res.status(408).json({ error: "Request Time Out" })
-   else res.status(200).json({ success: true, name: friendName })
+      res.status(408).json({ error: "Request Time Out" }) //TODO change error type
+   else res.status(200).json({ success: true, name: friendName }) //TODO add the firebase id to send the message
 }]

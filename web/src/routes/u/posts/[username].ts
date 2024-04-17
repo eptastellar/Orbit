@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, UserService, ValidationService } from "services"
-import { ContentFetch } from "types"
+import { ContentFetch, PostsRequest } from "types"
 
 const auth = new AuthService()
 const user = new UserService()
@@ -9,17 +9,20 @@ const cont = new ContentService()
 
 export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
-   const lastPostId: string = req.body.lastPostId //retrieve the last fetched document
    const username: string = req.params.username
+   const last_post_id: string = req.body.last_post_id //retrieve the last fetched document
+
+   const ereq: PostsRequest = {
+      last_post_id
+   }
 
    try {
-      if (lastPostId) await valid.postIdValidation(lastPostId)
+      if (ereq.last_post_id) await valid.postIdValidation(ereq.last_post_id)
 
       user.getUIDfromUserData(username).then(async (uid: string) => { //get the uid from the username, also validate the username
          user.areFriends(tokenUid, uid).then(() => {
-            cont.fetchPosts([uid], lastPostId, uid).then((contentFetch: ContentFetch) => {
+            cont.fetchPosts([uid], ereq.last_post_id, uid).then((contentFetch: ContentFetch) => {
                res.status(200).json({
-                  success: true,
                   ...contentFetch
                })
             }).catch((error) => { res.status(200).json({ error: error.message }) })

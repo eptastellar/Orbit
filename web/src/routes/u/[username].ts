@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, UserService } from "services"
-import { UserSchema } from "types"
+import { UserResponse, UserSchema } from "types"
 
 const auth = new AuthService()
 const user = new UserService()
@@ -14,19 +14,22 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
          user.areFriends(tokenUid, uid).then(async () => { //if they are not friends it will reject an error
             user.getUserDatafromUID(uid).then((userSchema: UserSchema) => {
                user.getInterestsFromUID(uid).then((interests: string[]) => {
-                  user.getPostCount(uid).then((post_count: number) => {
-                     user.getFriendsCount(uid).then((friends_count: number) => {
-                        user.getMeteorCount(uid).then((meteor_count: number) => {
-                           res.status(200).json({
-                              success: true,
-                              personal: tokenUid == uid, //check if is the user personal profile
-                              ...userSchema,
+                  user.getPostCount(uid).then((posts: number) => {
+                     user.getFriendsCount(uid).then((friends: number) => {
+                        user.getMeteorCount(uid).then((meteors: number) => {
+                           const userResponse: UserResponse = {
+                              personal: tokenUid === uid, //check if is the user personal profile
+                              user_data: { ...userSchema },
                               interests: interests,
                               counters: {
-                                 post_count: post_count,
-                                 friends_count: friends_count,
-                                 meteor_count: meteor_count,
+                                 posts: posts,
+                                 friends: friends,
+                                 meteors: meteors,
                               }
+                           }
+
+                           res.status(200).json({
+                              ...userResponse
                            })
                         }).catch((error) => { res.status(500).json({ error: error.message }) })
                      }).catch((error) => { res.status(500).json({ error: error.message }) })

@@ -1,3 +1,4 @@
+import { interests } from "assets"
 import { DocumentData } from "firebase-admin/firestore"
 
 export type AuthResponse = {
@@ -43,7 +44,7 @@ export type DeleteCommentRequest = {
    root_id: boolean | string
 }
 
-export type HomePostsRequest = {
+export type PostsRequest = {
    last_post_id: string
 }
 
@@ -59,7 +60,8 @@ export type UserSchema = {
    username: string,
    name: string,
    pfp: string,
-   bday?: number
+   bday?: number,
+   interests?: string[]
 }
 
 export type ContentFetch = {
@@ -87,4 +89,19 @@ export type PostRequest = {
 
 export type IdResponse = {
    id: string
+}
+
+export type UserResponse = {
+   personal: boolean,
+   user_data: UserSchema,
+   interests: string[],
+   counters: {
+      posts: number,
+      friends: number,
+      meteors: number
+   }
+}
+
+export type SettingsResponse = {
+   user_data: UserSchema
 }

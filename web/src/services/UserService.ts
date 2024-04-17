@@ -2,7 +2,7 @@ import { err, firebase, neo } from "config"
 import { firestore } from "firebase-admin"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
 import { QueryResult, Session } from "neo4j-driver"
-import { UserSchema } from "types"
+import { IdResponse, UserSchema } from "types"
 
 export default class UserService {
    private db: Firestore
@@ -111,15 +111,20 @@ export default class UserService {
       })
    }
 
-   public patchUserInfo = (uid: string, interests: string[], userSchema: UserSchema): Promise<null> => {
+   public patchUserInfo = (uid: string, userSchema: UserSchema): Promise<IdResponse> => {
       return new Promise(async (resolve) => {
          const neo4j: Session = neo()
-         const usersRef: DocumentReference = this.db.collection("users").doc(uid)
-         usersRef.set({ ...userSchema })
+         const docRef: DocumentReference = this.db.collection("users").doc(uid)
+         docRef.set({ ...userSchema })
 
-         const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'` //sets everything that can be changed
+         const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${userSchema.interests}'` //sets everything that can be changed
          await neo4j.executeWrite(tx => tx.run(query))
-         resolve(null)
+
+         const id: string = docRef.id
+         const idResponse: IdResponse = {
+            id
+         }
+         resolve(idResponse)
       })
    }
 
@@ -209,11 +214,10 @@ export default class UserService {
    public createRandomString = (length: number): string => {
       const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
       let result = ""
-      const randomArray = new Uint8Array(length)
 
-      randomArray.forEach((number) => {
+      for (let i = 0; i < length; i++)
          result += chars[this.randomInt(0, chars.length)]
-      })
+
       return result
    }
 
