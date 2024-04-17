@@ -1,6 +1,6 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { ContentFetch, PostSchema, UserSchema } from "types"
+import { CommentUploadResponse, ContentFetch, PostSchema, UserSchema } from "types"
 import UserService from "./UserService"
 
 export default class ContentService {
@@ -247,8 +247,8 @@ export default class ContentService {
       })
    }
 
-   public uploadComment = (uid: string, rootId: string, postId: string, content: string): Promise<string> => {
-      return new Promise((resolve, reject) => {
+   public uploadComment = (uid: string, rootId: string, postId: string, content: string): Promise<CommentUploadResponse> => {
+      return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("comments").doc() //set the docRef to comments
             let root: string | boolean = ""
@@ -258,14 +258,20 @@ export default class ContentService {
             else
                root = true //if the post has no root, set the root to true, so the comment is not a response comment
 
-            docRef.set({ //set the comment information in firestore
+            await docRef.set({ //set the comment information in firestore
                owner: uid,
                root: root,
                content: content,
                postId: postId,
                createdAt: Date.now() //unix format
             })
-            resolve(docRef.id)
+
+            const comment_id: string = docRef.id
+            const commentUploadResponse: CommentUploadResponse = {
+               comment_id
+            }
+
+            resolve(commentUploadResponse)
          } catch { reject(err("server/upload-failed")) }
       })
    }

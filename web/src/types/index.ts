@@ -31,6 +31,26 @@ export type RootCommentsRequest = {
    last_root_comment_id: string
 }
 
+export type CommentUploadRequest = {
+   post_id: string,
+   root_id: string,
+   content: string
+}
+
+export type CommentUploadResponse = {
+   comment_id: string
+}
+
+export type DeleteCommentRequest = {
+   post_id: string,
+   comment_id: string,
+   root_id: boolean | string
+}
+
+export type SuccessResponse = {
+   success: boolean
+}
+
 export type UserSchema = {
    username: string,
    name: string,
