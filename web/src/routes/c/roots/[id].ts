@@ -1,20 +1,25 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, ValidationService } from "services"
-import { ContentFetch } from "types"
+import { ContentFetch, RootCommentsRequest } from "types"
 
 const auth = new AuthService()
 const cont = new ContentService()
 const valid = new ValidationService()
 
 export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   const postId: string = req.params.id
-   const lastRootCommentId: string = req.body.lastRootCommentId
+   const post_id: string = req.params.id
+   const last_root_comment_id: string = req.body.last_root_comment_id
+
+   const ereq: RootCommentsRequest = {
+      post_id,
+      last_root_comment_id
+   }
 
    try {
-      if (lastRootCommentId) await valid.commentRootIdValidation(lastRootCommentId, postId)
+      if (ereq.last_root_comment_id) await valid.commentRootIdValidation(ereq.last_root_comment_id, ereq.post_id)
 
-      valid.postIdValidation(postId).then(() => {
-         cont.fetchRootComments(postId, lastRootCommentId).then((contentFetch: ContentFetch) => {
+      valid.postIdValidation(ereq.post_id).then(() => {
+         cont.fetchRootComments(ereq.post_id, ereq.last_root_comment_id).then((contentFetch: ContentFetch) => {
             res.status(200).json({
                ...contentFetch
             })

@@ -8,13 +8,13 @@ export const POST = (req: Request, res: Response) => {
    const username: string = req.body.username
    const bday: number = req.body.bday
 
-   const signUpValidateRequest: SignUpValidateRequest = {
+   const ereq: SignUpValidateRequest = {
       username,
       bday
    }
 
-   valid.usernameValidation(signUpValidateRequest.username).then(() => {
-      valid.birthdateValidation(signUpValidateRequest.bday).then(() => {
+   valid.usernameValidation(ereq.username).then(() => {
+      valid.birthdateValidation(ereq.bday).then(() => {
          res.status(200).json({
             success: true
          })

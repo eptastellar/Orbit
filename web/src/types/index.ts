@@ -26,6 +26,11 @@ export type LeafCommentsRequest = {
    post_id: string,
 }
 
+export type RootCommentsRequest = {
+   post_id: string,
+   last_root_comment_id: string
+}
+
 export type UserSchema = {
    username: string,
    name: string,

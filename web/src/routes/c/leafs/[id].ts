@@ -11,18 +11,18 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const last_leaf_comment_id: string = req.body.last_leaf_comment_id
    const post_id: string = req.body.post_id
 
-   const leafCommentsRequest: LeafCommentsRequest = {
+   const ereq: LeafCommentsRequest = {
       root_id,
       last_leaf_comment_id,
       post_id
    }
 
    try {
-      if (leafCommentsRequest.last_leaf_comment_id) await valid.commentLeafIdValidation(leafCommentsRequest.last_leaf_comment_id, leafCommentsRequest.root_id, leafCommentsRequest.post_id)
+      if (ereq.last_leaf_comment_id) await valid.commentLeafIdValidation(ereq.last_leaf_comment_id, ereq.root_id, ereq.post_id)
 
-      valid.postIdValidation(leafCommentsRequest.post_id).then(async () => {
-         valid.commentRootIdValidation(leafCommentsRequest.root_id, leafCommentsRequest.post_id).then(() => {
-            cont.fetchLeafsComments(leafCommentsRequest.root_id, leafCommentsRequest.last_leaf_comment_id).then((contentFetch: ContentFetch) => {
+      valid.postIdValidation(ereq.post_id).then(async () => {
+         valid.commentRootIdValidation(ereq.root_id, ereq.post_id).then(() => {
+            cont.fetchLeafsComments(ereq.root_id, ereq.last_leaf_comment_id).then((contentFetch: ContentFetch) => {
                res.status(200).json({
                   ...contentFetch
                })
