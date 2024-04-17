@@ -17,8 +17,8 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
 
       valid.postIdValidation(postId).then(() => {
          valid.contentValidation(text).then(() => {
-            cont.uploadComment(uid, rootId, postId, text).then((comment: string) => {
-               res.status(201).json({ success: true, comment: comment })
+            cont.uploadComment(uid, rootId, postId, text).then((commentId: string) => {
+               res.status(201).json({ success: true, commentId: commentId })
             }).catch((error) => { res.status(500).json({ error: error.message }) })
          }).catch((error) => { res.status(400).json({ error: error.message }) })
       }).catch((error) => { res.status(400).json({ error: error.message }) })

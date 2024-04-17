@@ -35,7 +35,6 @@ export const POST = (req: Request, res: Response) => {
                            }
 
                            res.status(201).json({
-                              success: true,
                               ...authResponse
                            })
                         }).catch((error) => { res.status(500).json({ error: error.message }) })

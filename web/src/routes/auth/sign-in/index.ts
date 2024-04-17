@@ -18,7 +18,6 @@ export const GET = (req: Request, res: Response) => {
                }
 
                res.status(202).json({
-                  success: true,
                   ...authResponse
                })
             }).catch((error) => { res.status(400).json({ error: error.message }) })

@@ -20,6 +20,12 @@ export type SignUpValidateRequest = {
    bday: number
 }
 
+export type LeafCommentsRequest = {
+   root_id: string,
+   last_leaf_comment_id: string,
+   post_id: string,
+}
+
 export type UserSchema = {
    username: string,
    name: string,
