@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { LikeRequest, SuccessResponse } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
@@ -8,13 +9,19 @@ const cont = new ContentService()
 
 export const POST = [auth.checkIfSessionTokenIsValid, (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
-   const postId: string = req.params.id
+   const post_id: string = req.params.id
 
-   valid.postIdValidation(postId).then(async () => {
-      cont.getPostOwner(postId).then((post_owner: string) => {
+   const ereq: LikeRequest = {
+      post_id
+   }
+
+   valid.postIdValidation(ereq.post_id).then(async () => {
+      cont.getPostOwner(ereq.post_id).then((post_owner: string) => {
          user.areFriends(tokenUid, post_owner).then(() => {
-            cont.updateLike(postId, tokenUid).then(() => {
-               res.status(200).json({ success: true })
+            cont.updateLike(ereq.post_id, tokenUid).then((success: SuccessResponse) => {
+               res.status(200).json({
+                  ...success
+               })
             }).catch((error) => { res.status(500).json({ error: error.message }) })
          }).catch((error) => { res.status(400).json({ error: error.message }) })
       }).catch((error) => { res.status(500).json({ error: error.message }) })

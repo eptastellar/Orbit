@@ -5,7 +5,7 @@ import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from "fi
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import { JWTPayload, SignJWT, jwtVerify } from "jose"
 import { Session } from "neo4j-driver"
-import { UserSchema } from "types"
+import { SuccessResponse, UserSchema } from "types"
 import ContentContext from "./ContentService"
 
 export default class AuthService {
@@ -159,12 +159,16 @@ export default class AuthService {
       })
    }
 
-   public logOut = (uid: string): Promise<null> => {
+   public logOut = (uid: string): Promise<SuccessResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("sessions").doc(uid)
             await docRef.set({ jwt: "" })
-            resolve(null)
+
+            const successResponse: SuccessResponse = {
+               success: true
+            }
+            resolve(successResponse)
          } catch { reject("auth/log-out-failed") }
       })
    }

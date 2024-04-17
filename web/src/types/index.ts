@@ -47,6 +47,18 @@ export type DeleteCommentRequest = {
    root_id: boolean | string
 }
 
+export type HomePostsRequest = {
+   last_post_id: string
+}
+
+export type InterestsResponse = {
+   interests: string[]
+}
+
+export type LikeRequest = {
+   post_id: string
+}
+
 export type SuccessResponse = {
    success: boolean
 }

@@ -1,6 +1,6 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { CommentUploadResponse, ContentFetch, PostSchema, UserSchema } from "types"
+import { CommentUploadResponse, ContentFetch, PostSchema, SuccessResponse, UserSchema } from "types"
 import UserService from "./UserService"
 
 export default class ContentService {
@@ -310,7 +310,7 @@ export default class ContentService {
       })
    }
 
-   public deleteComment = (commentId: string): Promise<null> => {
+   public deleteComment = (commentId: string): Promise<SuccessResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("comments").doc(commentId)
@@ -324,20 +324,28 @@ export default class ContentService {
             batch.delete(docRef)
             await batch.commit()
 
-            resolve(null)
+            const successResponse: SuccessResponse = {
+               success: true
+            }
+
+            resolve(successResponse)
          } catch { reject(err("server/delete-failed")) }
       })
    }
 
-   public updateLike = (postId: string, uid: string): Promise<null> => {
+   public updateLike = (postId: string, uid: string): Promise<SuccessResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("likes").doc(uid + postId)
 
+            const successResponse: SuccessResponse = {
+               success: true
+            }
+
             if (!(await docRef.get()).exists)
-               this.addLike(postId, uid).then(() => { resolve(null) })
+               this.addLike(postId, uid).then(() => { resolve(successResponse) })
             else
-               this.removeLike(postId, uid).then(() => { resolve(null) })
+               this.removeLike(postId, uid).then(() => { resolve(successResponse) })
          } catch { reject(err("server/update-failed")) }
       })
    }
