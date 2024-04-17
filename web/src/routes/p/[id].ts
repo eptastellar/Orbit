@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, UserService, ValidationService } from "services"
-import { PostSchema } from "types"
+import { IdResponse, PostRequest, PostResponse } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
@@ -9,15 +9,14 @@ const cont = new ContentService()
 
 export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
-   const postId: string = req.params.id
+   const post_id: string = req.params.id
 
-   valid.postIdValidation(postId).then(() => {
-      user.hasPermission(uid, postId, "posts").then(() => {
-         cont.getPost(uid, postId).then((post: PostSchema) => {
+   valid.postIdValidation(post_id).then(() => {
+      user.hasPermission(uid, post_id, "posts").then(() => {
+         cont.getPost(uid, post_id).then((postResponse: PostResponse) => {
             res.status(200).json({
-               success: true,
-               ...post
-            }) //return the post
+               ...postResponse //return the post
+            })
          }).catch((error) => { res.status(500).json({ error: error.message }) })
       }).catch((error) => { res.status(400).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })
@@ -25,16 +24,24 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
 
 export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
-   const postId: string = req.params.id
+   const post_id: string = req.params.id
    const text: string = req.body.text
    const type: string = req.body.type
    const content: string = req.body.content
 
-   valid.contentValidation(text, content, type).then(() => {
-      valid.postIdValidation(postId).then(() => {
-         user.hasPermission(uid, postId, "posts").then(() => {
-            cont.updatePost(postId, text, content, type).then((updatedPostId: string) => {
-               res.status(200).json({ success: true, post: updatedPostId }) //return the updated post id
+   const ereq: PostRequest = {
+      text,
+      type,
+      content
+   }
+
+   valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
+      valid.postIdValidation(post_id).then(() => {
+         user.hasPermission(uid, post_id, "posts").then(() => {
+            cont.updatePost(post_id, ereq.text, ereq.content, ereq.type).then((idResponse: IdResponse) => {
+               res.status(200).json({
+                  ...idResponse //return the updated post id
+               })
             }).catch((error) => { res.status(500).json({ error: error.message }) })
          }).catch((error) => { res.status(400).json({ error: error.message }) })
       }).catch((error) => { res.status(400).json({ error: error.message }) })
@@ -43,12 +50,14 @@ export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res:
 
 export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
-   const postId: string = req.params.id
+   const post_id: string = req.params.id
 
-   valid.postIdValidation(postId).then(() => {
-      user.hasPermission(uid, postId, "posts").then(() => {
-         cont.deletePost(postId).then(() => {
-            res.status(200).json({ success: true }) //return a success message
+   valid.postIdValidation(post_id).then(() => {
+      user.hasPermission(uid, post_id, "posts").then(() => {
+         cont.deletePost(post_id).then((idResponse: IdResponse) => {
+            res.status(200).json({
+               ...idResponse
+            })
          }).catch((error) => { res.status(500).json({ error: error.message }) })
       }).catch((error) => { res.status(400).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })

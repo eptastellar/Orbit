@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, ValidationService } from "services"
+import { IdResponse, PostRequest } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
@@ -11,9 +12,17 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const type: string = req.body.type
    const content: string = req.body.content
 
-   valid.contentValidation(text, content, type).then(() => {
-      cont.uploadPost(uid, text, type, content).then((postId: string) => {
-         res.status(201).json({ success: true, post: postId }) //return the post id
+   const ereq: PostRequest = {
+      text,
+      content,
+      type
+   }
+
+   valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
+      cont.uploadPost(uid, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+         res.status(201).json({
+            ...idResponse //return the post id
+         })
       }).catch((error) => { res.status(500).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]

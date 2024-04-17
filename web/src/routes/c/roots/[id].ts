@@ -11,15 +11,14 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const last_root_comment_id: string = req.body.last_root_comment_id
 
    const ereq: RootCommentsRequest = {
-      post_id,
       last_root_comment_id
    }
 
    try {
-      if (ereq.last_root_comment_id) await valid.commentRootIdValidation(ereq.last_root_comment_id, ereq.post_id)
+      if (ereq.last_root_comment_id) await valid.commentRootIdValidation(ereq.last_root_comment_id, post_id)
 
-      valid.postIdValidation(ereq.post_id).then(() => {
-         cont.fetchRootComments(ereq.post_id, ereq.last_root_comment_id).then((contentFetch: ContentFetch) => {
+      valid.postIdValidation(post_id).then(() => {
+         cont.fetchRootComments(post_id, ereq.last_root_comment_id).then((contentFetch: ContentFetch) => {
             res.status(200).json({
                ...contentFetch
             })

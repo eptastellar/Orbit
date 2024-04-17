@@ -14,17 +14,16 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const content: string = req.body.content
 
    const ereq: CommentUploadRequest = {
-      post_id,
       root_id,
       content
    }
 
    try {
-      if (ereq.root_id) await valid.commentRootIdValidation(ereq.root_id, ereq.post_id)
+      if (ereq.root_id) await valid.commentRootIdValidation(ereq.root_id, post_id)
 
-      valid.postIdValidation(ereq.post_id).then(() => {
+      valid.postIdValidation(post_id).then(() => {
          valid.contentValidation(ereq.content).then(() => {
-            cont.uploadComment(uid, ereq.root_id, ereq.post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
+            cont.uploadComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
                res.status(201).json({
                   ...commentUploadResponse
                })
@@ -41,17 +40,16 @@ export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res
    const root_id: boolean | string = req.body.root_id
 
    const ereq: DeleteCommentRequest = {
-      post_id,
       comment_id,
       root_id
    }
 
-   valid.postIdValidation(ereq.post_id).then(async () => {
+   valid.postIdValidation(post_id).then(async () => {
       try {
          if (ereq.root_id)
-            await valid.commentRootIdValidation(ereq.comment_id, ereq.post_id)
+            await valid.commentRootIdValidation(ereq.comment_id, post_id)
          else
-            await valid.commentLeafIdValidation(ereq.comment_id, ereq.root_id as string, ereq.post_id)
+            await valid.commentLeafIdValidation(ereq.comment_id, ereq.root_id as string, post_id)
 
          user.hasPermission(uid, ereq.comment_id, "comments").then(() => {
             cont.deleteComment(ereq.comment_id).then((success: SuccessResponse) => {

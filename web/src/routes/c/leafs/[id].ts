@@ -12,17 +12,16 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
    const post_id: string = req.body.post_id
 
    const ereq: LeafCommentsRequest = {
-      root_id,
       last_leaf_comment_id,
       post_id
    }
 
    try {
-      if (ereq.last_leaf_comment_id) await valid.commentLeafIdValidation(ereq.last_leaf_comment_id, ereq.root_id, ereq.post_id)
+      if (ereq.last_leaf_comment_id) await valid.commentLeafIdValidation(ereq.last_leaf_comment_id, root_id, ereq.post_id)
 
       valid.postIdValidation(ereq.post_id).then(async () => {
-         valid.commentRootIdValidation(ereq.root_id, ereq.post_id).then(() => {
-            cont.fetchLeafsComments(ereq.root_id, ereq.last_leaf_comment_id).then((contentFetch: ContentFetch) => {
+         valid.commentRootIdValidation(root_id, ereq.post_id).then(() => {
+            cont.fetchLeafsComments(root_id, ereq.last_leaf_comment_id).then((contentFetch: ContentFetch) => {
                res.status(200).json({
                   ...contentFetch
                })

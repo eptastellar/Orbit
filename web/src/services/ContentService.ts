@@ -1,6 +1,6 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { CommentUploadResponse, ContentFetch, PostSchema, SuccessResponse, UserSchema } from "types"
+import { CommentUploadResponse, ContentFetch, IdResponse, PostResponse, SuccessResponse, UserSchema } from "types"
 import UserService from "./UserService"
 
 export default class ContentService {
@@ -201,7 +201,7 @@ export default class ContentService {
       })
    }
 
-   public uploadPost = (uid: string, text?: string, type?: string, content?: string): Promise<string> => {
+   public uploadPost = (uid: string, text?: string, type?: string, content?: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("posts").doc() //set the docRef to posts
@@ -214,12 +214,16 @@ export default class ContentService {
             if (text) await docRef.update({ text: text })
             if (content) await docRef.update({ content: content, type: type })
 
-            resolve(docRef.id)
+            const id: string = docRef.id
+            const idResponse: IdResponse = {
+               id
+            }
+            resolve(idResponse)
          } catch { reject(err("server/upload-failed")) }
       })
    }
 
-   public getPost = (personalUID: string, postId: string): Promise<PostSchema> => {
+   public getPost = (personalUID: string, postId: string): Promise<PostResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentData = await this.db.collection("posts").doc(postId).get()
@@ -230,7 +234,7 @@ export default class ContentService {
             const likesNumber: number = await this.getLikesNumber(docRef.id)
             const commentsNumber: number = await this.getRootsCommentsNumber(docRef.id)
 
-            const post: PostSchema = {
+            const post: PostResponse = {
                id: doc.id,
                createdAt: doc.createdAt,
                text: doc.text,
@@ -276,7 +280,7 @@ export default class ContentService {
       })
    }
 
-   public updatePost = (postId: string, text?: string, content?: string, type?: string): Promise<string> => {
+   public updatePost = (postId: string, text?: string, content?: string, type?: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("posts").doc(postId)
@@ -284,18 +288,26 @@ export default class ContentService {
             if (text) await docRef.update({ text: text })
             if (content) await docRef.update({ content: content, type: type })
 
-            resolve(docRef.id)
+            const id: string = docRef.id
+            const idResponse: IdResponse = {
+               id
+            }
+            resolve(idResponse)
          } catch { reject(err("server/update-failed")) }
       })
    }
 
-   public deletePost = (postId: string): Promise<null> => {
+   public deletePost = (postId: string): Promise<IdResponse> => {
       return new Promise((resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("posts").doc(postId)
-
             docRef.delete()
-            resolve(null)
+
+            const id = docRef.id
+            const idResponse: IdResponse = {
+               id
+            }
+            resolve(idResponse)
          } catch { reject(err("server/delete-failed")) }
       })
    }
@@ -333,24 +345,33 @@ export default class ContentService {
       })
    }
 
-   public updateLike = (postId: string, uid: string): Promise<SuccessResponse> => {
+   public updateLike = (postId: string, uid: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("likes").doc(uid + postId)
 
-            const successResponse: SuccessResponse = {
-               success: true
-            }
+            if (!(await docRef.get()).exists) {
+               this.addLike(postId, uid).then((id: string) => {
+                  const idResponse: IdResponse = {
+                     id
+                  }
 
-            if (!(await docRef.get()).exists)
-               this.addLike(postId, uid).then(() => { resolve(successResponse) })
-            else
-               this.removeLike(postId, uid).then(() => { resolve(successResponse) })
+                  resolve(idResponse)
+               })
+            } else {
+               this.removeLike(postId, uid).then((id: string) => {
+                  const idResponse: IdResponse = {
+                     id
+                  }
+
+                  resolve(idResponse)
+               })
+            }
          } catch { reject(err("server/update-failed")) }
       })
    }
 
-   public addLike = (postId: string, uid: string): Promise<null> => {
+   public addLike = (postId: string, uid: string): Promise<string> => {
       return new Promise(async (resolve) => {
          const docRef: DocumentReference = this.db.collection("likes").doc(uid + postId)
 
@@ -358,15 +379,15 @@ export default class ContentService {
             liker: uid,
             postId: postId
          })
-         resolve(null)
+         resolve(docRef.id)
       })
    }
 
-   public removeLike = (postId: string, uid: string): Promise<null> => {
+   public removeLike = (postId: string, uid: string): Promise<string> => {
       return new Promise(async (resolve) => {
          const docRef: DocumentReference = this.db.collection("likes").doc(uid + postId)
          docRef.delete()
-         resolve(null)
+         resolve(docRef.id)
       })
    }
 

@@ -21,18 +21,15 @@ export type SignUpValidateRequest = {
 }
 
 export type LeafCommentsRequest = {
-   root_id: string,
    last_leaf_comment_id: string,
    post_id: string,
 }
 
 export type RootCommentsRequest = {
-   post_id: string,
    last_root_comment_id: string
 }
 
 export type CommentUploadRequest = {
-   post_id: string,
    root_id: string,
    content: string
 }
@@ -42,7 +39,6 @@ export type CommentUploadResponse = {
 }
 
 export type DeleteCommentRequest = {
-   post_id: string,
    comment_id: string,
    root_id: boolean | string
 }
@@ -53,10 +49,6 @@ export type HomePostsRequest = {
 
 export type InterestsResponse = {
    interests: string[]
-}
-
-export type LikeRequest = {
-   post_id: string
 }
 
 export type SuccessResponse = {
@@ -75,7 +67,7 @@ export type ContentFetch = {
    last_doc_id: string
 }
 
-export type PostSchema = {
+export type PostResponse = {
    id: string,
    user_data: UserSchema,
    createdAt: number,
@@ -85,4 +77,14 @@ export type PostSchema = {
    content?: string,
    text?: string,
    type?: string
+}
+
+export type PostRequest = {
+   text?: string,
+   type?: string,
+   content?: string
+}
+
+export type IdResponse = {
+   id: string
 }
