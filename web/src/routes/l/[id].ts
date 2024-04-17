@@ -15,8 +15,8 @@ export const POST = [auth.checkIfSessionTokenIsValid, (req: Request, res: Respon
          user.areFriends(tokenUid, post_owner).then(() => {
             cont.updateLike(postId, tokenUid).then(() => {
                res.status(200).json({ success: true })
-            }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+            }).catch((error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error) => { res.status(500).json({ error: error.message }) })
+   }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]

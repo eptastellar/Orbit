@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, UserService, ValidationService } from "services"
-import { UserInfo } from "types"
+import { UserSchema } from "types"
 
 const auth = new AuthService()
 const user = new UserService()
@@ -11,15 +11,13 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
 
    try {
       const interests: string[] = await user.getInterestsFromUID(uid)
-      const userInfo: UserInfo = await user.getUserDatafromUID(uid)
+      const userSchema: UserSchema = await user.getUserDatafromUID(uid)
 
       res.status(200).json({
          interests: interests,
-         username: userInfo.username,
-         name: userInfo.name,
-         pfp: userInfo.pfp
+         ...userSchema
       })
-   } catch (error: any) { res.status(400).json({ message: error.message }) }
+   } catch (error: any) { res.status(400).json({ error: error.message }) }
 }]
 
 export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
@@ -28,15 +26,15 @@ export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res:
    const username: string = req.body.username
    const name: string = req.body.name
    const pfp: string = req.body.pfp
-   const userInfo: UserInfo = { username, name, pfp }
+   const userSchema: UserSchema = { username, name, pfp }
 
    valid.usernameValidation(username).then(() => {
       valid.interestsValidation(interests).then(() => {
-         user.patchUserInfo(uid, interests, userInfo).then(() => {
+         user.patchUserInfo(uid, interests, userSchema).then(() => {
             res.status(200).json({ success: true })
-         }).catch((error) => res.status(500).json({ success: false, message: error.message }))
-      }).catch((error) => res.status(400).json({ success: false, message: error.message }))
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+         }).catch((error) => res.status(500).json({ error: error.message }))
+      }).catch((error) => res.status(400).json({ error: error.message }))
+   }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
 
 export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
@@ -47,7 +45,7 @@ export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res
       user.removeBatch("posts", uid).then(() => {
          user.removeBatch("comments", uid).then(() => {
             res.status(200).json({ success: true })
-         }).catch((error) => res.status(500).json({ success: false, message: error.message }))
-      }).catch((error) => res.status(500).json({ success: false, message: error.message }))
-   }).catch((error) => res.status(500).json({ success: false, message: error.message }))
+         }).catch((error) => res.status(500).json({ error: error.message }))
+      }).catch((error) => res.status(500).json({ error: error.message }))
+   }).catch((error) => res.status(500).json({ error: error.message }))
 }]

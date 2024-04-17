@@ -1,6 +1,6 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { ContentFetch, PostSchema, UserInfo } from "types"
+import { ContentFetch, PostSchema, UserSchema } from "types"
 import UserService from "./UserService"
 
 export default class ContentService {
@@ -60,7 +60,7 @@ export default class ContentService {
          const snapshot: DocumentData = await docRef.get()
 
          const posts: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            const user: UserInfo = await this.user.getUserDatafromUID(doc.data().owner)
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.data().owner)
             const isLiked: boolean = await this.isLikedBy(doc.id, personalUID)
 
             return {
@@ -72,11 +72,7 @@ export default class ContentService {
                likes_number: await this.getLikesNumber(doc.id),
                comments_number: await this.getRootsCommentsNumber(doc.id),
                is_liked: isLiked,
-               user_data: {
-                  username: user.username,
-                  name: user.name,
-                  pfp: user.pfp,
-               },
+               user_data: { ...userSchema }
             }
          }))
 
@@ -149,17 +145,13 @@ export default class ContentService {
          const snapshot: DocumentData = await docRef.get()
 
          const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            const user: UserInfo = await this.user.getUserDatafromUID(doc.data().owner)
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.data().owner)
             return {
                id: doc.id,
                creation: doc.createTime.seconds,
                content: doc.data().content,
                leafs_count: await this.getLeafsCommentsNumber(doc.id),
-               user_data: {
-                  username: user.username,
-                  name: user.name,
-                  pfp: user.pfp,
-               },
+               user_data: { ...userSchema },
             }
          }))
 
@@ -190,16 +182,12 @@ export default class ContentService {
          const snapshot: DocumentData = await docRef.get()
 
          const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            const user: UserInfo = await this.user.getUserDatafromUID(doc.data().owner)
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.data().owner)
             return {
                id: doc.id,
                creation: doc.createTime.seconds,
                content: doc.data().content,
-               user_data: {
-                  username: user.username,
-                  name: user.name,
-                  pfp: user.pfp,
-               },
+               user_data: { ...userSchema },
             }
          }))
 
@@ -237,7 +225,7 @@ export default class ContentService {
             const docRef: DocumentData = await this.db.collection("posts").doc(postId).get()
             const doc: DocumentData = await docRef.data()
 
-            const userInfo: UserInfo = await this.user.getUserDatafromUID(doc.owner)
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.owner)
             const isLiked: boolean = await this.isLikedBy(docRef.id, personalUID)
             const likesNumber: number = await this.getLikesNumber(docRef.id)
             const commentsNumber: number = await this.getRootsCommentsNumber(docRef.id)
@@ -251,13 +239,9 @@ export default class ContentService {
                likes_number: likesNumber,
                comments_number: commentsNumber,
                is_liked: isLiked,
-               user_data: {
-                  username: userInfo.username,
-                  name: userInfo.name,
-                  pfp: userInfo.pfp,
-               },
+               user_data: { ...userSchema },
             }
-    
+
             resolve(post)
          } catch { reject(err("server/post-not-found")) }
       })

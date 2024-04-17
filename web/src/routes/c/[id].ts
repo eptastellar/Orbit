@@ -19,10 +19,10 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
          valid.contentValidation(text).then(() => {
             cont.uploadComment(uid, rootId, postId, text).then((comment: string) => {
                res.status(201).json({ success: true, comment: comment })
-            }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+            }).catch((error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   } catch (error: any) { res.status(400).json({ error: error.message }) }
 }]
 
 export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
@@ -41,8 +41,8 @@ export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res
          user.hasPermission(uid, commentId, "comments").then(() => {
             cont.deleteComment(commentId).then(() => {
                res.status(200).json({ success: true })
-            }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+            }).catch((error) => { res.status(400).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      } catch (error: any) { res.status(400).json({ error: error.message }) }
    })
 }]

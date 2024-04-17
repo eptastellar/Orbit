@@ -2,7 +2,7 @@ import { err, firebase, neo } from "config"
 import { firestore } from "firebase-admin"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
 import { QueryResult, Session } from "neo4j-driver"
-import { UserInfo } from "types"
+import { UserSchema } from "types"
 
 export default class UserService {
    private db: Firestore
@@ -12,7 +12,7 @@ export default class UserService {
       this.db = firestore()
    }
 
-   public getUserDatafromUID = async (uid: string): Promise<UserInfo> => { //retrieve user informations based from the uid
+   public getUserDatafromUID = async (uid: string): Promise<UserSchema> => { //retrieve user informations based from the uid
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("users").doc(uid)
@@ -22,8 +22,8 @@ export default class UserService {
             const name: string = doc.data()?.name
             const pfp: string = doc.data()?.pfp
 
-            const user: UserInfo = { username, name, pfp }
-            resolve(user)
+            const userSchema: UserSchema = { username, name, pfp }
+            resolve(userSchema)
          } catch { reject(err("server/user-not-found")) }
       })
    }
@@ -111,11 +111,11 @@ export default class UserService {
       })
    }
 
-   public patchUserInfo = (uid: string, interests: string[], user: UserInfo): Promise<null> => {
+   public patchUserInfo = (uid: string, interests: string[], userSchema: UserSchema): Promise<null> => {
       return new Promise(async (resolve) => {
          const neo4j: Session = neo()
          const usersRef: DocumentReference = this.db.collection("users").doc(uid)
-         usersRef.set({ username: user.username, name: user.name, pfp: user.pfp })
+         usersRef.set({ ...userSchema })
 
          const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.interests = '${interests}'` //sets everything that can be changed
          await neo4j.executeWrite(tx => tx.run(query))

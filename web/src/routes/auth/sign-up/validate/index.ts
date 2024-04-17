@@ -9,7 +9,9 @@ export const POST = (req: Request, res: Response) => {
 
    valid.usernameValidation(username).then(() => {
       valid.birthdateValidation(bday).then(() => {
-         res.status(200).json({ success: true })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+         res.status(200).json({
+            success: true
+         })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error) => { res.status(400).json({ error: error.message }) })
 }

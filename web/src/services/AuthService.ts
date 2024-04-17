@@ -5,7 +5,7 @@ import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from "fi
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import { JWTPayload, SignJWT, jwtVerify } from "jose"
 import { Session } from "neo4j-driver"
-import { UserInfo } from "types"
+import { UserSchema } from "types"
 import ContentContext from "./ContentService"
 
 export default class AuthService {
@@ -33,8 +33,8 @@ export default class AuthService {
                res.locals.uid = uid //save the uid of the user to manipulate only his data
                next()
             } else throw err("auth/invalid-token")
-         }).catch((error: Error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(401).json({ success: false, message: error.message }) })
+         }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error) => { res.status(401).json({ error: error.message }) })
    }
 
    public checkIfAccessTokenIsValid = async (authorization: string): Promise<string> => {
@@ -58,8 +58,8 @@ export default class AuthService {
 
          if (secret === process.env.CRON_SECRET)
             next()
-         else res.status(400).json({ success: false, message: "auth/invalid-token" })
-      } catch { res.status(400).json({ success: false, message: "auth/invalid-token" }) }
+         else res.status(400).json({ error: "auth/invalid-token" })
+      } catch { res.status(400).json({ error: "auth/invalid-token" }) }
    }
 
    public newSessionJWT = async (uid: string) => {
@@ -127,7 +127,7 @@ export default class AuthService {
       })
    }
 
-   public createUserDocument = (uid: string, username: string, pfp: string, bday: number): Promise<UserInfo> => {
+   public createUserDocument = (uid: string, username: string, pfp: string, bday: number): Promise<UserSchema> => {
       return new Promise(async (resolve, reject) => {
          const docRef: DocumentReference = this.db.collection("users").doc(uid)
          const name: string = username.substring(1) //remove the "@" from the username
@@ -143,8 +143,8 @@ export default class AuthService {
                   bday: bday
                })
 
-               const user: UserInfo = { username, name, pfp }
-               resolve(user)
+               const userSchema: UserSchema = { username, name, pfp, bday }
+               resolve(userSchema)
             } catch (error) { reject(error) }
          } else reject(err("auth/user-already-exists"))
       })

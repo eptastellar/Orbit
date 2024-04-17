@@ -7,5 +7,5 @@ const cron = new CronJobsService()
 export const GET = [auth.checkIfCronSecretIsValid, async (_: Request, res: Response) => {
    cron.keepAliveNeo().then(() => {
       res.status(200).json({ success: true })
-   }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+   }).catch((error) => { res.status(500).json({ error: error.message }) })
 }]

@@ -18,9 +18,9 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
                success: true,
                ...post
             }) //return the post
-         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+         }).catch((error) => { res.status(500).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
 
 export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
@@ -35,10 +35,10 @@ export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res:
          user.hasPermission(uid, postId, "posts").then(() => {
             cont.updatePost(postId, text, content, type).then((updatedPostId: string) => {
                res.status(200).json({ success: true, post: updatedPostId }) //return the updated post id
-            }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+            }).catch((error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
 
 export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
@@ -49,7 +49,7 @@ export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res
       user.hasPermission(uid, postId, "posts").then(() => {
          cont.deletePost(postId).then(() => {
             res.status(200).json({ success: true }) //return a success message
-         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+         }).catch((error) => { res.status(500).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]

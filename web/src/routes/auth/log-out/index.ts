@@ -7,6 +7,8 @@ export const GET = [auth.checkIfSessionTokenIsValid, (req: Request, res: Respons
    const uid: string = res.locals.uid
 
    auth.logOut(uid).then(() => {
-      res.status(200).json({ success: true })
-   }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+      res.status(200).json({
+         success: true
+      })
+   }).catch((error) => { res.status(500).json({ error: error.message }) })
 }]

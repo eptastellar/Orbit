@@ -18,8 +18,8 @@ export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: 
          valid.commentRootIdValidation(rootId, postId).then(() => {
             cont.fetchLeafsComments(rootId, lastLeafCommentId).then((fetch: ContentFetch) => {
                res.status(200).json({ success: true, comments: fetch.content, lastLeafCommentId: fetch.lastDocId })
-            }).catch((error) => { res.status(404).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+            }).catch((error) => { res.status(404).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   } catch (error: any) { res.status(400).json({ error: error.message }) }
 }]
