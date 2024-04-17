@@ -7,6 +7,19 @@ export type AuthResponse = {
    jwt: string
 }
 
+export type SignUpRequest = {
+   authorization: string,
+   username: string,
+   interests: string[],
+   bday: number,
+   pfp?: string
+}
+
+export type SignUpValidateRequest = {
+   username: string,
+   bday: number
+}
+
 export type UserSchema = {
    username: string,
    name: string,
@@ -21,7 +34,7 @@ export type ContentFetch = {
 
 export type PostSchema = {
    id: string,
-   user_data: UserSchema
+   user_data: UserSchema,
    createdAt: number,
    likes_number: number,
    comments_number: number,

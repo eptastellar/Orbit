@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import { AuthService, ValidationService } from "services"
-import { AuthResponse, UserSchema } from "types"
+import { AuthResponse, SignUpRequest, UserSchema } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
@@ -12,14 +12,22 @@ export const POST = (req: Request, res: Response) => {
    const bday: number = req.body.bday
    const pfp: string = req.body.pfp
 
-   auth.checkIfAccessTokenIsValid(authorization).then((uid: string) => { //check if firebase access token is valid
-      valid.usernameValidation(username).then(() => {
-         valid.birthdateValidation(bday).then(() => {
-            valid.interestsValidation(interests).then(async () => {
+   const signUpRequest: SignUpRequest = {
+      authorization,
+      username,
+      interests,
+      bday,
+      pfp
+   }
+
+   auth.checkIfAccessTokenIsValid(signUpRequest.authorization).then((uid: string) => { //check if firebase access token is valid
+      valid.usernameValidation(signUpRequest.username).then(() => {
+         valid.birthdateValidation(signUpRequest.bday).then(() => {
+            valid.interestsValidation(signUpRequest.interests).then(async () => {
                try {
                   if (pfp) await valid.mediaValidation(pfp)
-                  auth.createUserDocument(uid, username, pfp, bday).then((userSchema: UserSchema) => { //create a new doc in /users
-                     auth.createUserNode(uid, interests).then(() => { //create a new node in neo4j
+                  auth.createUserDocument(uid, signUpRequest.username, signUpRequest.pfp!, signUpRequest.bday).then((userSchema: UserSchema) => { //create a new doc in /users
+                     auth.createUserNode(uid, signUpRequest.interests).then(() => { //create a new node in neo4j
                         auth.createNewSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
                            const authResponse: AuthResponse = {
                               jwt,
