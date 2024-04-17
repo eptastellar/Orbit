@@ -1,0 +1,41 @@
+{
+   "productName": "orbit",
+   "version": "0.0.0",
+   "identifier": "VyeXmHLwM2v54HfWGbR3GO",
+   "build": {
+      "beforeDevCommand": "pnpm dev",
+      "devUrl": "http://localhost:3000",
+      "beforeBuildCommand": "pnpm build",
+      "frontendDist": "../.next"
+   },
+   "app": {
+      "windows": [
+         {
+            "title": "Orbit",
+            "center": true,
+            "width": 430,
+            "height": 932
+         }
+      ],
+      "security": {
+         "csp": null
+      }
+   },
+   "bundle": {
+      "active": true,
+      "targets": "all",
+      "icon": [
+         "icons/32x32.png",
+         "icons/128x128.png",
+         "icons/128x128@2x.png",
+         "icons/icon.icns",
+         "icons/icon.ico"
+      ],
+      "copyright": "Eptastellar Inc.",
+      "publisher": "Eptastellar Inc.",
+      "category": "SocialNetworking",
+      "licenseFile": "https://github.com/eptastellar/Orbit/blob/main/LICENSE",
+      "longDescription": "A social media application inspired by modern social media such as Instagram and X, which aim is to connect people through qr codes",
+      "shortDescription": "The social to stay close to your friends"
+   }
+}
