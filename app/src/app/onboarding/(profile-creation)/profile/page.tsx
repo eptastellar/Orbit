@@ -1,6 +1,7 @@
 "use client"
 
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import { randomBytes } from "crypto"
+import { StorageReference, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -20,8 +21,11 @@ const Profile = () => {
    const [loading, setLoading] = useState<boolean>(false)
    const [error, setError] = useState<string>("")
    const [progress, setProgress] = useState<number>(0)
+   const [uploading, setUploading] = useState<boolean>(false)
 
    // Interaction states
+   const [dbRef] = useState<StorageReference>(ref(storage, `uploads/pfps/${randomBytes(16).toString("hex")}`))
+
    const [pfpUrl, setPfpUrl] = useLocalStorage<string>("profilePicture", "")
    const [username, setUsername] = useLocalStorage<string>("username", "")
    const [birthdate, setBirthdate] = useLocalStorage<string[]>("birthdate", ["", "", ""])
@@ -46,13 +50,17 @@ const Profile = () => {
 
       if (file && ["image/gif", "image/jpeg", "image/png"].includes(file.type)) {
          setPfpUrl("")
+         setUploading(true)
 
-         const uploadTask = uploadBytesResumable(ref(storage, `uploads/pfps/${crypto.randomUUID()}`), file)
+         const uploadTask = uploadBytesResumable(dbRef, file)
 
          uploadTask.on("state_changed",
             (snapshot) => setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
             (error) => setError(error.message),
-            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => setPfpUrl(downloadURL))
+            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+               setPfpUrl(downloadURL)
+               setUploading(false)
+            })
          )
       }
    }
@@ -161,6 +169,7 @@ const Profile = () => {
                   type="file"
                   accept="image/gif, image/jpeg, image/png"
                   onChange={handleUpload}
+                  disabled={uploading}
                   hidden
                />
             </label>
