@@ -108,21 +108,24 @@ const Interests = () => {
       }
 
       type ResponseType = {
-         success: boolean
-         message: ServerError
+         error?: ServerError
          jwt: string
-         pfp: string
+         name: string
          username: string
+         pfp: string
       }
 
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`, params)
          .then((response) => response.json())
-         .then(({ success, message, jwt, pfp, username }: ResponseType) => {
-            if (success) {
+         .then(({ error, ...result }: ResponseType) => {
+            if (!error) {
                setUserProfile({
-                  profilePicture: pfp,
-                  username: username,
-                  sessionToken: jwt
+                  sessionToken: result.jwt,
+                  userData: {
+                     displayName: result.name,
+                     username: result.username,
+                     profilePicture: result.pfp
+                  }
                })
 
                // Remove temporary user localStorage values
@@ -132,7 +135,7 @@ const Interests = () => {
                localStorage.removeItem("interests")
                router.push(`/u/${username}`)
             } else {
-               setError(resolveServerError(message))
+               setError(resolveServerError(error))
                setLoading(false)
             }
          })

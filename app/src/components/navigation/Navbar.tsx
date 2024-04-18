@@ -35,10 +35,10 @@ const Navbar = () => {
 
          <div
             className="relative min-h-6 max-h-6 min-w-6 max-w-6 rounded-full overflow-hidden cursor-pointer"
-            onClick={() => router.push(`/u/${userProfile!.username}`)}
+            onClick={() => router.push(`/u/${userProfile!.userData.username}`)}
          >
             <Image
-               src={userProfile!.profilePicture}
+               src={userProfile!.userData.profilePicture}
                alt="Profile picture"
                fill className="object-cover"
             />

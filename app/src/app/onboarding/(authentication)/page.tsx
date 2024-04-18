@@ -35,29 +35,28 @@ const Welcome = () => {
             }
 
             type ResponseType = {
-               success: boolean
-               message: ServerError
+               error?: ServerError
                jwt: string
-               pfp: string
+               name: string
                username: string
+               pfp: string
             }
 
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ success, jwt, pfp, username }: ResponseType) => {
-                  if (success) {
+               .then(({ error, ...result }: ResponseType) => {
+                  if (!error) {
                      setUserProfile({
-                        profilePicture: pfp,
-                        username: username,
-                        sessionToken: jwt
+                        sessionToken: result.jwt,
+                        userData: {
+                           displayName: result.name,
+                           username: result.username,
+                           profilePicture: result.pfp
+                        }
                      })
 
-                     router.push(`/u/${username}`)
+                     router.push(`/u/${result.username}`)
                   } else router.push("/onboarding/profile")
-               })
-               .catch((error: any) => {
-                  console.error(error)
-                  setGoogleLoading(false)
                })
          })
          .catch((error: any) => {

@@ -1,7 +1,6 @@
 export type LocalUser = {
-   username: string
-   profilePicture: string
    sessionToken: string
+   userData: UserData
 }
 
 export type Notification = {

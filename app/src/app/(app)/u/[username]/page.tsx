@@ -61,7 +61,7 @@ const User = ({ params }: Props) => {
          const error = profileError.message as ServerError
 
          if (error === "server/not-friends")
-            router.replace(`/u/${userProfile?.username}`)
+            router.replace(`/u/${userProfile?.userData.username}`)
          else console.error(profileError)
       }
 
@@ -69,7 +69,7 @@ const User = ({ params }: Props) => {
          const error = postsError.message as ServerError
 
          if (error === "server/not-friends")
-            router.replace(`/u/${userProfile?.username}`)
+            router.replace(`/u/${userProfile?.userData.username}`)
          else console.error(postsError)
       }
    }, [profileError, postsError])
@@ -77,7 +77,7 @@ const User = ({ params }: Props) => {
    return (
       <div className="flex flex-col center h-full w-full">
          <HeaderWithButton
-            icon={fetchedUser?.isPersonal ?? userProfile!.username === username
+            icon={fetchedUser?.isPersonal ?? userProfile!.userData.username === username
                ? <IconButton
                   icon={<Gear height={24} />}
                   onClick={() => router.push("/settings")}
@@ -91,11 +91,11 @@ const User = ({ params }: Props) => {
 
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
             {
-               fetchedUser?.isPersonal ?? userProfile!.username === username
+               fetchedUser?.isPersonal ?? userProfile!.userData.username === username
                   // The visited page is the user itself
                   ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
                      <Image
-                        src={fetchedUser?.profilePicture ?? userProfile!.profilePicture}
+                        src={fetchedUser?.userData.profilePicture ?? userProfile!.userData.profilePicture}
                         alt="Profile picture"
                         fill className="object-cover"
                      />
@@ -104,7 +104,7 @@ const User = ({ params }: Props) => {
                      // The visited page is not the user
                      ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
                         <Image
-                           src={fetchedUser?.profilePicture}
+                           src={fetchedUser?.userData.profilePicture}
                            alt="Profile picture"
                            fill className="object-cover"
                         />
@@ -115,11 +115,12 @@ const User = ({ params }: Props) => {
 
 
             <div className="flex flex-col center mt-8">
-               {fetchedUser?.displayName
-                  ? <p className="text-2xl font-semibold text-white">{fetchedUser.displayName}</p>
-                  : <div className="h-6 w-48 my-1 loader-pulse rounded-md" />
-               }
-
+               <p className="text-2xl font-semibold text-white">
+                  {fetchedUser?.isPersonal ?? userProfile!.userData.username === username
+                     ? fetchedUser?.userData.displayName ?? userProfile!.userData.displayName
+                     : fetchedUser?.userData.displayName
+                  }
+               </p>
                <p className="text-base font-semibold text-gray-3">{username}</p>
             </div>
 
