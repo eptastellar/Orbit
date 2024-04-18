@@ -17,11 +17,11 @@ const Header = () => {
          <div className="flex flex-row gap-8">
             <IconButton
                icon={<Supernova height={24} />}
-               onClick={() => alert("Supernova coming soon...")}
+               onClick={() => alert("Supernova coming soon...")} // "/supernova"
             />
             <IconButton
                icon={<PaperPlane height={24} />}
-               onClick={() => router.push("/chats")}
+               onClick={() => alert("Chats coming soon...")} // "/chats"
             />
          </div>
       </div>

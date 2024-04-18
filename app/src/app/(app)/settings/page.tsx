@@ -85,9 +85,9 @@ const Settings = () => {
                      - Personal Data
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     <SettingsButton text="Personal Information" onClick={() => router.push("/settings/personal-information")} />
-                     <SettingsButton text="Manage Interests" onClick={() => router.push("/settings/manage-interests")} />
-                     <SettingsButton text="Terms & Conditions" onClick={() => router.push("/terms-conditions")} />
+                     <SettingsButton text="Personal Information" onClick={() => alert("Coming soon...")} /> {/* "/settings/personal-information" */}
+                     <SettingsButton text="Manage Interests" onClick={() => alert("Coming soon...")} /> {/* "/settings/manage-interests" */}
+                     <SettingsButton text="Terms & Conditions" onClick={() => alert("Coming soon...")} /> {/* "/terms-conditions" */}
                   </div>
                </div>
 

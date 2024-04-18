@@ -84,7 +84,7 @@ const User = ({ params }: Props) => {
                />
                : <IconButton
                   icon={<ThreeDotsVertical height={24} />}
-                  onClick={() => router.push("/chats")}
+                  onClick={() => alert("Friends settings coming soon...")}
                />
             }
          />
