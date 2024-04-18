@@ -20,8 +20,8 @@ export const fetchPost = async (
       comments_number: number
       is_liked: boolean
       user_data: {
-         username: string
          name: string
+         username: string
          pfp: string
       }
    }

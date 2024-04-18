@@ -51,9 +51,11 @@ const Signin = () => {
             type ResponseType = {
                error?: ServerError
                jwt: string
-               name: string
-               username: string
-               pfp: string
+               user_data: {
+                  name: string
+                  username: string
+                  pfp: string
+               }
             }
 
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
@@ -63,13 +65,13 @@ const Signin = () => {
                      setUserProfile({
                         sessionToken: result.jwt,
                         userData: {
-                           displayName: result.name,
-                           username: result.username,
-                           profilePicture: result.pfp
+                           displayName: result.user_data.name,
+                           username: result.user_data.username,
+                           profilePicture: result.user_data.pfp
                         }
                      })
 
-                     router.push(`/u/${result.username}`)
+                     router.push(`/u/${result.user_data.username}`)
                   } else if (error === "auth/user-not-signed-up") {
                      router.push("/onboarding/profile")
                   } else {

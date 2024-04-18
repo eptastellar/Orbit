@@ -12,16 +12,16 @@ export const fetchProfile = async (
    type ResponseType = {
       error?: ServerError
       personal: boolean
-      interests: string[]
       counters: {
          posts: number
          friends: number
          meteors: number
       }
       user_data: {
-         username: string
          name: string
+         username: string
          pfp: string
+         interests: string[]
       }
    }
 
@@ -30,7 +30,7 @@ export const fetchProfile = async (
 
    if (!error) return {
       isPersonal: result.personal,
-      interests: result.interests,
+      interests: result.user_data.interests,
       counters: {
          postCount: result.counters.posts,
          friendCount: result.counters.friends,
@@ -38,8 +38,8 @@ export const fetchProfile = async (
       },
       userData: {
          displayName: result.user_data.name,
-         profilePicture: result.user_data.pfp,
-         username: result.user_data.username
+         username: result.user_data.username,
+         profilePicture: result.user_data.pfp
       }
    }
 
@@ -76,8 +76,8 @@ export const fetchPosts = async (
          likes_number: number
          comments_number: number
          user_data: {
-            username: string
             name: string
+            username: string
             pfp: string
          }
       }[]
