@@ -20,15 +20,19 @@ import Notification from "./notification/Notification"
 
 import FloatingConfirmation from "./popup/FloatingConfirmation"
 
+import AudioEmbed from "./post/AudioEmbed"
+import ImageEmbed from "./post/ImageEmbed"
 import Post from "./post/Post"
 
 export {
+   AudioEmbed,
    BackButton,
    FilterButton,
    FloatingConfirmation,
    FullInput,
    Header,
    HeaderWithButton,
+   ImageEmbed,
    InfiniteLoader,
    Input,
    InterestButton,
