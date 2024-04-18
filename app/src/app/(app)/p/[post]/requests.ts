@@ -12,7 +12,7 @@ export const fetchPost = async (
    type ResponseType = {
       error?: ServerError
       id: string
-      createdAt: number
+      created_at: number
       text?: string
       type?: "audio" | "image"
       content?: string
@@ -31,7 +31,7 @@ export const fetchPost = async (
 
    if (!error) return {
       id: result.id,
-      createdAt: result.createdAt,
+      createdAt: result.created_at,
       type: result.type ?? "text",
       text: result.text,
       content: result.content,

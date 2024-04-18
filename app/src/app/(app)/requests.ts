@@ -21,7 +21,7 @@ export const fetchPosts = async (
       error?: ServerError
       posts: {
          id: string
-         createdAt: number
+         created_at: number
          text?: string
          type?: "audio" | "image"
          content?: string
@@ -43,7 +43,7 @@ export const fetchPosts = async (
    if (!error) return {
       posts: result.posts.map((post) => ({
          id: post.id,
-         createdAt: post.createdAt,
+         createdAt: post.created_at,
          type: post.type ?? "text",
          text: post.text,
          content: post.content,
