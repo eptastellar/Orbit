@@ -12,10 +12,11 @@ import AudioEmbed from "./AudioEmbed"
 import ImageEmbed from "./ImageEmbed"
 
 type Props = {
+   isPostPage?: boolean
    post: PostType
 }
 
-const Post = ({ post }: Props) => {
+const Post = ({ isPostPage, post }: Props) => {
    // Context hooks
    const { userProfile } = useUserContext()
 
@@ -39,24 +40,26 @@ const Post = ({ post }: Props) => {
       }
 
       type ResponseType = {
-         success: boolean
-         message: ServerError
+         error?: ServerError
       }
 
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/l/${post.id}`, params)
          .then((response) => response.json())
-         .then(({ success, message }: ResponseType) => {
-            if (success) {
+         .then(({ error }: ResponseType) => {
+            if (!error) {
                setIsLiked((prev) => !prev)
                setLikesCount((prev) => isLiked ? prev - 1 : prev + 1)
 
                setLocked(false)
-            } else console.error(message)
+            } else console.error(error)
          })
    }
 
    return (
-      <div className="flex flex-col items-start justify-center w-full p-4 bg-gray-7/50 rounded-md">
+      <div
+         className={`flex flex-col items-start justify-center w-full p-4 bg-gray-7/50 rounded-md ${isPostPage ? "" : "cursor-pointer"}`}
+         onClick={() => { if (!isPostPage) router.push(`/p/${post.id}`) }}
+      >
          <div
             className="flex center gap-3 cursor-pointer"
             onClick={() => router.push(`/u/${post.userData.username}`)}
