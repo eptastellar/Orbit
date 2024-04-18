@@ -84,7 +84,7 @@ export default class ValidationService {
             const docRef: DocumentData = await this.db.collection("comments").doc(rootId).get() //retrieve the root comment
 
             if (docRef.exists) {
-               if (docRef.data()?.postId === postId)
+               if (docRef.data()?.post_id === postId)
                   resolve(null)
                else reject(err("validation/invalid-document-id"))
             } else reject(err("validation/invalid-document-id"))
@@ -97,11 +97,13 @@ export default class ValidationService {
          try {
             const leafRef: DocumentData = await this.db.collection("comments").doc(leafId).get() //retrieve the leaf comment
             const rootRef: DocumentData = await this.db.collection("comments").doc(rootId).get() //retrieve the root comment
+            const leafData: DocumentData[string] = rootRef.data()
+            const rootData: DocumentData[string] = leafRef.data()
 
             if (rootRef.exists) {
-               if (rootRef.data()?.postId === postId) {
-                  if (leafRef.data()?.postId === postId) {
-                     if (leafRef.data()?.root === rootId)
+               if (rootData?.post_id === postId) {
+                  if (leafData?.post_id === postId) {
+                     if (leafData?.root_id === rootId)
                         resolve(null)
                      else reject(err("validation/invalid-document-id"))
                   } else reject(err("validation/invalid-document-id"))

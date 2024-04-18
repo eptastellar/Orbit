@@ -31,7 +31,7 @@ export const POST = (req: Request, res: Response) => {
                         auth.createNewSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
                            const authResponse: AuthResponse = {
                               jwt,
-                              ...userSchema
+                              user_data: { ...userSchema }
                            }
 
                            res.status(201).json({

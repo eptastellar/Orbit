@@ -1,6 +1,6 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { CommentUploadResponse, ContentFetch, IdResponse, PostResponse, SuccessResponse, UserSchema } from "types"
+import { CommentSchema, CommentUploadResponse, ContentFetch, IdResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
 import UserService from "./UserService"
 
 export default class ContentService {
@@ -49,7 +49,7 @@ export default class ContentService {
       return new Promise(async (resolve, reject) => {
          let docRef: Query = this.db.collection("posts")
             .where("owner", "in", uids)
-            .orderBy("createdAt", "desc")
+            .orderBy("created_at", "desc")
             .limit(limit)
 
          if (lastPostId) {
@@ -59,27 +59,33 @@ export default class ContentService {
 
          const snapshot: DocumentData = await docRef.get()
 
-         const posts: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.data().owner)
-            const isLiked: boolean = await this.isLikedBy(doc.id, personalUID)
+         const content: PostResponse[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const id: string = doc.id
+            const data: DocumentData[string] = doc.data()
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(data.owner)
+            const isLiked: boolean = await this.isLikedBy(id, personalUID)
+            const likes: number = await this.getLikesNumber(id)
+            const comments: number = await this.getRootsCommentsNumber(doc.id)
 
             return {
-               id: doc.id,
-               createdAt: doc.createTime.seconds,
-               text: doc.data().text,
-               type: doc.data().type,
-               content: doc.data().content,
-               likes_number: await this.getLikesNumber(doc.id),
-               comments_number: await this.getRootsCommentsNumber(doc.id),
+               id: id,
+               created_at: data.created_at,
+               text: data.text,
+               type: data.type,
+               content: data.content,
+               likes: likes,
+               comments: comments,
                is_liked: isLiked,
                user_data: { ...userSchema }
             }
          }))
 
-         if (posts.length > 0) {
+         if (content.length > 0) {
             const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-            const content: DocumentData[] = posts
-            const contentFetch: ContentFetch = { content, last_doc_id }
+            const contentFetch: ContentFetch = {
+               content,
+               last_doc_id
+            }
             resolve(contentFetch)
          } else
             reject(err("server/no-content"))
@@ -90,7 +96,7 @@ export default class ContentService {
       return new Promise(async (resolve) => {
          const snapshot: QuerySnapshot = await this.db.collection("likes")
             .where("liker", "==", uid)
-            .where("postId", "==", postId)
+            .where("post_id", "==", postId)
             .get()
 
          resolve(!snapshot.empty)
@@ -100,7 +106,7 @@ export default class ContentService {
    public getLikesNumber = (postId: string): Promise<number> => {
       return new Promise(async (resolve) => {
          const queryRef: Query = this.db.collection("likes")
-            .where("postId", "==", postId)
+            .where("post_id", "==", postId)
 
          const snapshot = await queryRef.count().get()
          resolve(snapshot.data().count)
@@ -110,7 +116,7 @@ export default class ContentService {
    public getRootsCommentsNumber = (postId: string): Promise<number> => {
       return new Promise(async (resolve) => {
          const queryRef: Query = this.db.collection("comments")
-            .where("postId", "==", postId)
+            .where("post_id", "==", postId)
 
          const snapshot = await queryRef.count().get()
          resolve(snapshot.data().count)
@@ -120,7 +126,7 @@ export default class ContentService {
    public getLeafsCommentsNumber = (rootId: string): Promise<number> => {
       return new Promise(async (resolve) => {
          const queryRef: Query = this.db.collection("comments")
-            .where("root", "==", rootId)
+            .where("root_id", "==", rootId)
 
          const snapshot = await queryRef.count().get()
          resolve(snapshot.data().count)
@@ -132,9 +138,9 @@ export default class ContentService {
 
       return new Promise(async (resolve, reject) => {
          let docRef: Query = this.db.collection("comments")
-            .where("postId", "==", postId)
-            .where("root", "==", true)
-            .orderBy("createdAt", "desc")
+            .where("post_id", "==", postId)
+            .where("root_id", "==", true)
+            .orderBy("created_at", "desc")
             .limit(limit)
 
          if (lastRootCommentId) {
@@ -144,20 +150,26 @@ export default class ContentService {
 
          const snapshot: DocumentData = await docRef.get()
 
-         const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.data().owner)
-            return {
+         const content: RootCommentSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const data: DocumentData[string] = doc.data()
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(data.owner)
+            const leafs: number = await this.getLeafsCommentsNumber(doc.id)
+
+            const comment: CommentSchema = {
                id: doc.id,
-               creation: doc.createTime.seconds,
-               content: doc.data().content,
-               leafs_count: await this.getLeafsCommentsNumber(doc.id),
-               user_data: { ...userSchema },
+               created_at: data.created_at,
+               content: data.content,
+               user_data: { ...userSchema }
+            }
+
+            return {
+               comment: { ...comment },
+               leafs: leafs,
             }
          }))
 
-         if (comments.length > 0) {
+         if (content.length > 0) {
             const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-            const content: DocumentData[] = comments
             const contentFetch: ContentFetch = { content, last_doc_id }
             resolve(contentFetch)
          } else
@@ -170,8 +182,8 @@ export default class ContentService {
 
       return new Promise(async (resolve, reject) => {
          let docRef: Query = this.db.collection("comments")
-            .where("root", "==", rootId)
-            .orderBy("createdAt", "desc")
+            .where("root_id", "==", rootId)
+            .orderBy("created_at", "desc")
             .limit(limit)
 
          if (lastLeafCommentId) {
@@ -181,20 +193,24 @@ export default class ContentService {
 
          const snapshot: DocumentData = await docRef.get()
 
-         const comments: DocumentData[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.data().owner)
+         const content: CommentSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const data: DocumentData[string] = doc.data()
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(data.owner)
+
             return {
                id: doc.id,
-               creation: doc.createTime.seconds,
-               content: doc.data().content,
+               created_at: doc.created_at,
+               content: doc.content,
                user_data: { ...userSchema },
             }
          }))
 
-         if (comments.length > 0) {
+         if (content.length > 0) {
             const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
-            const content: DocumentData[] = comments
-            const contentFetch: ContentFetch = { content, last_doc_id }
+            const contentFetch: ContentFetch = {
+               content,
+               last_doc_id
+            }
             resolve(contentFetch)
          } else
             reject(err("server/no-content"))
@@ -208,7 +224,7 @@ export default class ContentService {
 
             await docRef.set({ //set the post information in firestore
                owner: uid,
-               createdAt: Date.now() //unix format
+               created_at: Date.now() //unix format
             })
 
             if (text) await docRef.update({ text: text })
@@ -236,12 +252,12 @@ export default class ContentService {
 
             const post: PostResponse = {
                id: doc.id,
-               createdAt: doc.createdAt,
+               created_at: doc.created_at,
                text: doc.text,
                type: doc.type,
                content: doc.content,
-               likes_number: likesNumber,
-               comments_number: commentsNumber,
+               likes: likesNumber,
+               comments: commentsNumber,
                is_liked: isLiked,
                user_data: { ...userSchema },
             }
@@ -264,10 +280,10 @@ export default class ContentService {
 
             await docRef.set({ //set the comment information in firestore
                owner: uid,
-               root: root,
+               root_id: root,
                content: content,
-               postId: postId,
-               createdAt: Date.now() //unix format
+               post_id: postId,
+               created_at: Date.now() //unix format
             })
 
             const comment_id: string = docRef.id
@@ -315,7 +331,6 @@ export default class ContentService {
    public getPostOwner = (postId: string): Promise<string> => {
       return new Promise(async (resolve) => {
          const docRef: DocumentReference = this.db.collection("posts").doc(postId)
-
          const doc: DocumentData = await docRef.get()
 
          resolve(doc.data().owner)
@@ -377,7 +392,7 @@ export default class ContentService {
 
          await docRef.set({
             liker: uid,
-            postId: postId
+            post_id: postId
          })
          resolve(docRef.id)
       })

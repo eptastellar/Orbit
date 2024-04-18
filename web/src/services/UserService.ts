@@ -17,12 +17,19 @@ export default class UserService {
          try {
             const docRef: DocumentReference = this.db.collection("users").doc(uid)
             const doc: DocumentData = await docRef.get()
+            const data: DocumentData[string] = doc.data()
 
-            const username: string = doc.data()?.username
-            const name: string = doc.data()?.name
-            const pfp: string = doc.data()?.pfp
+            const username: string = data?.username
+            const name: string = data?.name
+            const pfp: string = data?.pfp
+            const bday: number = data?.bday
 
-            const userSchema: UserSchema = { username, name, pfp }
+            const userSchema: UserSchema = {
+               username,
+               name,
+               pfp,
+               bday
+            }
             resolve(userSchema)
          } catch { reject(err("server/user-not-found")) }
       })

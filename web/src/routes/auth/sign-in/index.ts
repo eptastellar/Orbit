@@ -13,8 +13,8 @@ export const GET = (req: Request, res: Response) => {
          auth.createNewSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
             user.getUserDatafromUID(uid).then((userSchema: UserSchema) => {
                const authResponse: AuthResponse = {
+                  user_data: { ...userSchema },
                   jwt,
-                  ...userSchema
                }
 
                res.status(202).json({

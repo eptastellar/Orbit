@@ -1,9 +1,5 @@
-import { DocumentData } from "firebase-admin/firestore"
-
 export type AuthResponse = {
-   username: string,
-   name: string,
-   pfp: string,
+   user_data: UserSchema,
    jwt: string
 }
 
@@ -64,16 +60,28 @@ export type UserSchema = {
 }
 
 export type ContentFetch = {
-   content: DocumentData[],
+   content: PostResponse[] | RootCommentSchema[] | CommentSchema[],
    last_doc_id: string
+}
+
+export type RootCommentSchema = {
+   comment: CommentSchema
+   leafs: number,
+}
+
+export type CommentSchema = {
+   id: string,
+   created_at: number,
+   content: string,
+   user_data: UserSchema
 }
 
 export type PostResponse = {
    id: string,
    user_data: UserSchema,
-   createdAt: number,
-   likes_number: number,
-   comments_number: number,
+   created_at: number,
+   likes: number,
+   comments: number,
    is_liked: boolean,
    content?: string,
    text?: string,
@@ -93,7 +101,6 @@ export type IdResponse = {
 export type UserResponse = {
    personal: boolean,
    user_data: UserSchema,
-   interests: string[],
    counters: {
       posts: number,
       friends: number,

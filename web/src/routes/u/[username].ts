@@ -17,10 +17,14 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
                   user.getPostCount(uid).then((posts: number) => {
                      user.getFriendsCount(uid).then((friends: number) => {
                         user.getMeteorCount(uid).then((meteors: number) => {
+                           const user_data: UserSchema = {
+                              ...userSchema,
+                              interests
+                           }
+
                            const userResponse: UserResponse = {
                               personal: tokenUid === uid, //check if is the user personal profile
-                              user_data: { ...userSchema },
-                              interests: interests,
+                              user_data: { ...user_data },
                               counters: {
                                  posts: posts,
                                  friends: friends,
