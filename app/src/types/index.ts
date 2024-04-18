@@ -20,11 +20,7 @@ export type Post = {
       likeCount: number
       commentCount: number
    }
-   userData: {
-      displayName: string
-      username: string
-      profilePicture: string
-   }
+   userData: UserData
 }
 
 export type ServerError =
@@ -48,17 +44,22 @@ export type ServerError =
    // Server errors
    "server/not-friends" |
    "server/no-content" |
-   "server/no-friends"
+   "server/no-friends" |
+   "server/unauthorized"
 
-export type UserProfile = {
-   isPersonal: boolean
+export type UserData = {
    displayName: string
    username: string
    profilePicture: string
+}
+
+export type UserProfile = {
+   isPersonal: boolean
    interests: string[]
    counters: {
       postCount: number
       friendCount: number
       meteorCount: number
    }
+   userData: UserData
 }

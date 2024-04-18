@@ -10,37 +10,40 @@ export const fetchProfile = async (
    }
 
    type ResponseType = {
-      success: boolean
-      message: ServerError
+      error?: ServerError
       personal: boolean
-      username: string
-      name: string
-      pfp: string
       interests: string[]
       counters: {
-         post_count: number
-         friends_count: number
-         meteor_count: number
+         posts: number
+         friends: number
+         meteors: number
+      }
+      user_data: {
+         username: string
+         name: string
+         pfp: string
       }
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/${reqUsername}`, requestParams)
-   const { success, message, personal, username, name, pfp, interests, counters }: ResponseType = await response.json()
+   const { error, ...result }: ResponseType = await response.json()
 
-   if (success) return {
-      isPersonal: personal,
-      displayName: name,
-      username: username,
-      profilePicture: pfp,
-      interests: interests,
+   if (!error) return {
+      isPersonal: result.personal,
+      interests: result.interests,
       counters: {
-         postCount: counters.post_count,
-         friendCount: counters.friends_count,
-         meteorCount: counters.meteor_count
+         postCount: result.counters.posts,
+         friendCount: result.counters.friends,
+         meteorCount: result.counters.meteors
+      },
+      userData: {
+         displayName: result.user_data.name,
+         profilePicture: result.user_data.pfp,
+         username: result.user_data.username
       }
    }
 
-   throw new Error(message)
+   throw new Error(error)
 }
 
 export const fetchPosts = async (
@@ -49,7 +52,7 @@ export const fetchPosts = async (
    sessionToken: string
 ): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
    const requestBody = JSON.stringify({
-      lastPostId: reqLastPostId
+      last_post_id: reqLastPostId
    })
 
    const requestParams: RequestInit = {
@@ -62,15 +65,14 @@ export const fetchPosts = async (
    }
 
    type ResponseType = {
-      success: boolean
-      message: ServerError
-      posts: {
+      error?: ServerError
+      content: {
          id: string
-         creation: number
+         createdAt: number
          text?: string
          type?: "audio" | "image"
          content?: string
-         is_liked?: boolean
+         is_liked: boolean
          likes_number: number
          comments_number: number
          user_data: {
@@ -79,20 +81,20 @@ export const fetchPosts = async (
             pfp: string
          }
       }[]
-      lastPostId: string
+      last_doc_id: string
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/posts/${reqUsername}`, requestParams)
-   const { success, message, posts, lastPostId }: ResponseType = await response.json()
+   const { error, ...result }: ResponseType = await response.json()
 
-   if (success) return {
-      posts: posts.map((post) => ({
+   if (!error) return {
+      posts: result.content.map((post) => ({
          id: post.id,
-         createdAt: post.creation,
+         createdAt: post.createdAt,
          type: post.type ?? "text",
          text: post.text,
          content: post.content,
-         isLiked: post.is_liked ?? false,
+         isLiked: post.is_liked,
          counters: {
             likeCount: post.likes_number,
             commentCount: post.comments_number
@@ -103,14 +105,14 @@ export const fetchPosts = async (
             profilePicture: post.user_data.pfp
          }
       })),
-      lastPostId: lastPostId
+      lastPostId: result.last_doc_id
    }
 
-   if (message === "server/no-content")
+   if (error === "server/no-content")
       return {
          posts: [],
          lastPostId: undefined
       }
 
-   throw new Error(message)
+   throw new Error(error)
 }

@@ -47,12 +47,12 @@ const Settings = () => {
 
          type ResponseType = {
             success: boolean
-            message: ServerError
+            error?: ServerError
          }
 
          fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/settings`, params)
             .then((response) => response.json())
-            .then(async ({ success, message }: ResponseType) => {
+            .then(async ({ success, error }: ResponseType) => {
                if (success) {
                   await deleteUser()
                   removeUserProfile()
@@ -60,12 +60,8 @@ const Settings = () => {
                   router.push("/onboarding")
                } else {
                   setDeleting(false)
-                  console.error(message)
+                  console.error(error)
                }
-            })
-            .catch((error) => {
-               setDeleting(false)
-               console.error(error)
             })
       }
    }
