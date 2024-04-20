@@ -4,14 +4,14 @@ import { AuthService, UserService } from "services"
 const auth = new AuthService()
 const user = new UserService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (_: Request, res: Response) => {
+export const GET = [auth.sessionGuard, async (_: Request, res: Response) => {
    const randomCode: string = user.createRandomString(16) //TODO: Need changes for more combinations
    user.setRandomFriendCode(res.locals.uid, randomCode)
 
    res.status(200).json({ success: true, message: randomCode })
 }]
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const randomCode: string = req.body.friendCode
 

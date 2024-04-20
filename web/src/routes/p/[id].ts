@@ -7,7 +7,7 @@ const valid = new ValidationService()
 const user = new UserService()
 const cont = new ContentService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const post_id: string = req.params.id
 
@@ -24,7 +24,7 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
 
-export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const post_id: string = req.params.id
    const text: string = req.body.text
@@ -50,7 +50,7 @@ export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res:
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
 
-export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const post_id: string = req.params.id
 

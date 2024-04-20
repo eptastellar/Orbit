@@ -4,7 +4,7 @@ import { SuccessResponse } from "types"
 
 const auth = new AuthService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, (_: Request, res: Response) => {
+export const GET = [auth.sessionGuard, (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
    auth.logOut(uid).then((success: SuccessResponse) => {

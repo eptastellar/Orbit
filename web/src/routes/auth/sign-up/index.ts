@@ -20,7 +20,7 @@ export const POST = (req: Request, res: Response) => {
       pfp
    }
 
-   auth.checkIfAccessTokenIsValid(ereq.authorization).then((uid: string) => { //check if firebase access token is valid
+   auth.accessGuard(ereq.authorization).then((uid: string) => { //check if firebase access token is valid
       valid.usernameValidation(ereq.username).then(() => {
          valid.birthdateValidation(ereq.bday).then(() => {
             valid.interestsValidation(ereq.interests).then(async () => {

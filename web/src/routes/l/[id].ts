@@ -7,7 +7,7 @@ const valid = new ValidationService()
 const user = new UserService()
 const cont = new ContentService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const post_id: string = req.params.id
 

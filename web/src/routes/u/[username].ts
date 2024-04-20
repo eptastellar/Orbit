@@ -5,7 +5,7 @@ import { UserResponse, UserSchema } from "types"
 const auth = new AuthService()
 const user = new UserService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const username: string = req.params.username
 

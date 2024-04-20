@@ -18,7 +18,7 @@ export default class AuthService {
       this.content = new ContentContext()
    }
 
-   public checkIfSessionTokenIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
+   public sessionGuard = async (req: express.Request, res: express.Response, next: NextFunction) => {
       const authorization: string = req.headers.authorization!
       const token: string = authorization.split("Bearer ")[1]
 
@@ -37,7 +37,7 @@ export default class AuthService {
       }).catch((error) => { res.status(401).json({ error: error.message }) })
    }
 
-   public checkIfAccessTokenIsValid = async (authorization: string): Promise<string> => {
+   public accessGuard = async (authorization: string): Promise<string> => {
       return new Promise(async (resolve, reject) => {
          try {
             const jwt: string = authorization.split("Bearer ")[1] //remove bearer from the authentication param
@@ -51,7 +51,7 @@ export default class AuthService {
       })
    }
 
-   public checkIfCronSecretIsValid = async (req: express.Request, res: express.Response, next: NextFunction) => {
+   public cronGuard = async (req: express.Request, res: express.Response, next: NextFunction) => {
       try {
          const authorization: string = req.headers.authorization!
          const secret: string = authorization.split("Bearer ")[1]

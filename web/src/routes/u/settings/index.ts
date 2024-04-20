@@ -6,7 +6,7 @@ const auth = new AuthService()
 const user = new UserService()
 const valid = new ValidationService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (_: Request, res: Response) => {
+export const GET = [auth.sessionGuard, async (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
    try {
@@ -24,7 +24,7 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (_: Request, res: Res
    } catch (error: any) { res.status(400).json({ error: error.message }) }
 }]
 
-export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const interests: string[] = req.body.interests
    const username: string = req.body.username
@@ -49,7 +49,7 @@ export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res:
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
 
-export const DELETE = [auth.checkIfSessionTokenIsValid, async (_: Request, res: Response) => {
+export const DELETE = [auth.sessionGuard, async (_: Request, res: Response) => {
    const uid: string = res.locals.uid
    //TODO @TheInfernalNick delete messages and ecc...
 

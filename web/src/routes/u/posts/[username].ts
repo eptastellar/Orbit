@@ -7,7 +7,7 @@ const user = new UserService()
 const valid = new ValidationService()
 const cont = new ContentService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const username: string = req.params.username
    const last_post_id: string = req.body.last_post_id //retrieve the last fetched document

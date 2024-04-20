@@ -6,7 +6,7 @@ const auth = new AuthService()
 const cont = new ContentService()
 const valid = new ValidationService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const post_id: string = req.params.id
    const last_root_comment_id: string = req.body.last_root_comment_id
 

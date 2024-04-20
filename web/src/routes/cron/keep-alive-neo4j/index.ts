@@ -5,7 +5,7 @@ import { SuccessResponse } from "types"
 const auth = new AuthService()
 const cron = new CronJobsService()
 
-export const GET = [auth.checkIfCronSecretIsValid, async (_: Request, res: Response) => {
+export const GET = [auth.cronGuard, async (_: Request, res: Response) => {
    cron.keepAliveNeo().then((success: SuccessResponse) => {
       res.status(200).json({
          ...success
