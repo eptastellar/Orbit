@@ -6,16 +6,19 @@ import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import { JWTPayload, SignJWT, jwtVerify } from "jose"
 import { Session } from "neo4j-driver"
 import { SuccessResponse, UserSchema } from "types"
-import ContentContext from "./ContentService"
+import ContentService from "./ContentService"
+import ValidationService from "./ValidationService"
 
 export default class AuthService {
    private db: Firestore
-   private content: ContentContext
+   private cont: ContentService
+   private valid: ValidationService
 
    constructor() {
       firebase()
       this.db = firestore()
-      this.content = new ContentContext()
+      this.cont = new ContentService()
+      this.valid = new ValidationService()
    }
 
    public sessionGuard = async (req: express.Request, res: express.Response, next: NextFunction) => {
@@ -127,14 +130,15 @@ export default class AuthService {
       })
    }
 
-   public createUserDocument = (uid: string, username: string, pfp: string, bday: number): Promise<UserSchema> => {
+   public createUserDocument = (uid: string, username: string, bday: number, pfp?: string): Promise<UserSchema> => {
       return new Promise(async (resolve, reject) => {
          const docRef: DocumentReference = this.db.collection("users").doc(uid)
          const name: string = username.substring(1) //remove the "@" from the username
 
          if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
             try {
-               pfp = pfp ? pfp : await this.content.randomPicture("default/personal") //set the pfp url to the one sent from the client, or if is null, select a random one
+               if (pfp) await this.valid.mediaValidation(pfp)
+               pfp = pfp ? pfp : await this.cont.randomPicture("default/personal") //set the pfp url to the one sent from the client, or if is null, select a random one
 
                await docRef.set({ //set the user data into the doc
                   username: username,
