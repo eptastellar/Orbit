@@ -12,12 +12,14 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
    const post_id: string = req.params.id
 
    valid.postIdValidation(post_id).then(() => {
-      user.hasPermission(uid, post_id, "posts").then(() => {
-         cont.getPost(uid, post_id).then((postResponse: PostResponse) => {
-            res.status(200).json({
-               ...postResponse //return the post
-            })
-         }).catch((error) => { res.status(500).json({ error: error.message }) })
+      cont.getPostOwner(post_id).then((ownerUID: string) => {
+         user.areFriends(uid, ownerUID).then(() => {
+            cont.getPost(uid, post_id).then((postResponse: PostResponse) => {
+               res.status(200).json({
+                  ...postResponse //return the post
+               })
+            }).catch((error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
       }).catch((error) => { res.status(400).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]
