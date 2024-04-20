@@ -1,15 +1,19 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
+import { IdResponse } from "types"
+import UserService from "./UserService"
 
 export default class ValidationService {
    private db: Firestore
    private bucket
+   private user: UserService
 
    constructor() {
       firebase()
       this.db = firestore()
       this.bucket = firestorage()
+      this.user = new UserService()
    }
 
    public birthdateValidation = async (bday: number): Promise<null> => {
@@ -153,6 +157,30 @@ export default class ValidationService {
    public harmfulContentValidation = (text: string): Promise<null> => { //TODO
       return new Promise((resolve) => {
          resolve(null)
+      })
+   }
+   
+   public membersValidation = (personalUID: string, members: string[]): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            await Promise.all(members.map(async (member) => {
+               const docRef: Query = this.db.collection("users").where("username", "==", member)
+               const snapshot: QuerySnapshot = await docRef.get()
+
+               if (!snapshot.empty) {
+                  for (let i = 0; i < snapshot.docs.length; i++) {
+                     const doc: DocumentData = snapshot.docs[i]
+                     if (personalUID !== doc.id)
+                        await this.user.areFriends(personalUID, doc.id)
+
+                     if (member !== doc.data()?.username)
+                        await this.user.areFriends(member, doc.id) // if all friends are friends with everyone
+                  }
+               } else reject(err("empty"))
+            }))
+
+            resolve(null)
+         } catch (error) { reject(error) }
       })
    }
 }

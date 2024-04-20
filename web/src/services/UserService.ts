@@ -215,6 +215,12 @@ export default class UserService {
       })
    }
 
+   public sendNotification = (receivers: string[]): Promise<null> => {
+      return new Promise((resolve, reject) => { //TODO
+         resolve(null)
+      })
+   }
+
    public randomInt = (min: number, max: number) =>
       Math.floor(Math.random() * (max - min + 1)) + min
 

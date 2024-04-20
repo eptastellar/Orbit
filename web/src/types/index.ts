@@ -107,3 +107,15 @@ export type UserResponse = {
       meteors: number
    }
 }
+
+export type MessageRequest = {
+   chat_id: string,
+   text: string,
+   type: string,
+   content: string
+}
+
+export type ChatRequest = {
+   members: string[],
+   name?: string
+}
