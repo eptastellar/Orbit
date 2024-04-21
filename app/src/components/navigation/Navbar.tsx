@@ -25,8 +25,8 @@ const Navbar = () => {
             onClick={() => router.push("/new-post")}
          />
          <IconButton
-            icon={<QrCode height={24} fill={pathname === "/qr-scan"} />}
-            onClick={() => router.push("/qr-scan")}
+            icon={<QrCode height={24} fill={pathname === "/qr/scan"} />}
+            onClick={() => router.push("/qr/scan")}
          />
          <IconButton
             icon={<Notifications height={24} fill={pathname === "/notifications"} />}
