@@ -185,14 +185,14 @@ export default class UserService {
       })
    }
 
-   public setRandomFriendCode = (uid: string, friendCode: string): Promise<null> => {
+   public setRandomFriendCode = (uid: string, friendCode: string): Promise<number> => {
       return new Promise(async (resolve) => {
          const friendCodeTimer: number = Date.now() + 60000
          const neo4j: Session = neo()
          const query: string = `MATCH (u:User) where u.name = '${uid}' SET u.friendCode = '${friendCode}', u.friendCodeTime = '${friendCodeTimer}'` //sets the random number to myself in neo
          await neo4j.executeWrite(tx => tx.run(query))
 
-         resolve(null)
+         resolve(friendCodeTimer)
       })
    }
 
@@ -219,19 +219,6 @@ export default class UserService {
       return new Promise((resolve, reject) => { //TODO
          resolve(null)
       })
-   }
-
-   public randomInt = (min: number, max: number) =>
-      Math.floor(Math.random() * (max - min + 1)) + min
-
-   public createRandomString = (length: number): string => {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-      let result = ""
-
-      for (let i = 0; i < length; i++)
-         result += chars[this.randomInt(0, chars.length)]
-
-      return result
    }
 
 }

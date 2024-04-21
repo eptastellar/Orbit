@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto"
 import { Request, Response } from "express"
 import { AuthService, UserService } from "services"
 
@@ -5,10 +6,10 @@ const auth = new AuthService()
 const user = new UserService()
 
 export const GET = [auth.sessionGuard, async (_: Request, res: Response) => {
-   const randomCode: string = user.createRandomString(16) //TODO: Need changes for more combinations
-   user.setRandomFriendCode(res.locals.uid, randomCode)
+   const randomCode: string = randomBytes(16).toString("hex")
+   const expireTime = await user.setRandomFriendCode(res.locals.uid, randomCode)
 
-   res.status(200).json({ success: true, message: randomCode })
+   res.status(200).json({ success: true, message: randomCode, expireTime })
 }]
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
