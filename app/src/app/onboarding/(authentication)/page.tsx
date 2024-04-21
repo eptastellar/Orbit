@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { apple, google } from "@/assets"
 import { WelcomeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
+import { resolveFirebaseError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
 type Views = "default" | "signin" | "signup"
@@ -61,8 +63,8 @@ const Welcome = () => {
                   } else router.push("/onboarding/profile")
                })
          })
-         .catch((error: any) => {
-            console.error(error)
+         .catch((error: Error) => {
+            toast.error(resolveFirebaseError(error.message))
             setGoogleLoading(false)
          })
    }

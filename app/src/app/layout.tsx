@@ -1,5 +1,3 @@
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Metadata } from "next"
 import Image from "next/image"
 
@@ -7,6 +5,14 @@ import { rotateDevice } from "@/assets"
 import { Providers } from "@/contexts"
 
 import "./globals.css"
+
+// React-Toastify container and css classes
+import { Slide, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.min.css"
+
+// Vercel speed analytics for performance monitoring
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
    title: "Orbit",
@@ -30,6 +36,15 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => (
          <Providers>
             {children}
          </Providers>
+
+         <ToastContainer
+            position="bottom-right"
+            autoClose={3000}
+            draggable={false}
+            pauseOnHover={false}
+            theme="dark"
+            transition={Slide}
+         />
 
          <Analytics debug={false} />
          <SpeedInsights debug={false} />

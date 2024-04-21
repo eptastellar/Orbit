@@ -3,13 +3,14 @@
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
+import { toast } from "react-toastify"
 
 import { BackButton, FullInput, InterestButton, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
-import { resolveServerError } from "@/libraries/serverErrors"
+import { useLocalStorage } from "@/hooks"
+import { resolveServerError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
-import { useLocalStorage } from "@/hooks"
 import { fetchInterests } from "./requests"
 
 const Interests = () => {
@@ -22,7 +23,6 @@ const Interests = () => {
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
 
    // Interaction states
    const [selectedInterests, setSelectedInterests] = useLocalStorage<string[]>("interests", [])
@@ -71,8 +71,6 @@ const Interests = () => {
 
    const handleSubmit = async () => {
       // Preliminary checks
-      setError("")
-
       const profilePicture: string | null =
          JSON.parse(localStorage.getItem("profilePicture") ?? "null")
       const username: string | null =
@@ -137,7 +135,7 @@ const Interests = () => {
                localStorage.removeItem("interests")
                router.push(`/u/${username}`)
             } else {
-               setError(resolveServerError(error))
+               toast.error(resolveServerError(error))
                setLoading(false)
             }
          })
@@ -153,7 +151,7 @@ const Interests = () => {
    })
 
    useEffect(() => {
-      if (interestsError) console.error(interestsError)
+      if (interestsError) toast.error(resolveServerError(interestsError.message))
    }, [interestsError])
 
    return (
@@ -215,12 +213,6 @@ const Interests = () => {
                   )}
                </div>
             </div>
-
-            {error && (
-               <p className="text-center text-base font-normal text-red-5">
-                  {error}
-               </p>
-            )}
 
             <LargeButton
                text="Start to orbit!"

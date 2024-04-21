@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { resolveFirebaseError } from "@/libraries/firebaseErrors"
+import { resolveFirebaseError } from "@/libraries/errors"
 
 const Signup = () => {
    // Context hooks
@@ -16,7 +17,6 @@ const Signup = () => {
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
    const [emailError, setEmailError] = useState<string>("")
    const [passwordError, setPasswordError] = useState<string>("")
    const [confirmPasswordError, setConfirmPasswordError] = useState<string>("")
@@ -30,7 +30,6 @@ const Signup = () => {
       event.preventDefault()
 
       // Preliminary checks
-      setError("")
       setEmailError("")
       setPasswordError("")
       setConfirmPasswordError("")
@@ -45,8 +44,8 @@ const Signup = () => {
 
       emailSignup(email, password)
          .then(() => router.push("/onboarding/verification"))
-         .catch((error: any) => {
-            setError(resolveFirebaseError(error.message))
+         .catch((error: Error) => {
+            toast.error(resolveFirebaseError(error.message))
             setLoading(false)
          })
    }
@@ -91,12 +90,6 @@ const Signup = () => {
                   error={confirmPasswordError}
                   onChange={setConfirmPassword}
                />
-
-               {error && (
-                  <p className="text-center text-base font-normal text-red-5">
-                     {error}
-                  </p>
-               )}
 
                <LargeButton
                   text="Join the galaxy"

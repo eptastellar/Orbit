@@ -4,11 +4,13 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 import { notifications } from "@/assets"
 import { Cross, IconButton } from "@/assets/icons"
 import { FilterButton, HeaderWithButton, InfiniteLoader, Navbar, Notification } from "@/components"
 import { useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 import { Notification as NotificationType } from "@/types"
 
 import { fetchNotifications } from "./requests"
@@ -51,7 +53,7 @@ const Notifications = () => {
       .flatMap((page) => page.notifications.flatMap((notification) => notification))
 
    useEffect(() => {
-      if (notificationsError) console.error(notificationsError)
+      if (notificationsError) toast.error(resolveServerError(notificationsError.message))
    }, [notificationsError])
 
    return (

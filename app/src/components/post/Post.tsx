@@ -3,9 +3,11 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { Comment, IconButton, Like } from "@/assets/icons"
 import { useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 import { Post as PostType, ServerError } from "@/types"
 
 import AudioEmbed from "./AudioEmbed"
@@ -51,7 +53,7 @@ const Post = ({ isPostPage, post }: Props) => {
                setLikesCount((prev) => isLiked ? prev - 1 : prev + 1)
 
                setLocked(false)
-            } else console.error(error)
+            } else toast.error(resolveServerError(error))
          })
    }
 

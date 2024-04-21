@@ -5,13 +5,13 @@ import { StorageReference, deleteObject, getDownloadURL, ref, uploadBytesResumab
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { toast } from "react-toastify"
 
 import { Cross, IconButton, Images, Microphone, Trash } from "@/assets/icons"
 import { AudioEmbed, HeaderWithButton, ImageEmbed, SpinnerText } from "@/components"
 import { useUserContext } from "@/contexts"
+import { resolveFirebaseError, resolveServerError } from "@/libraries/errors"
 import { storage } from "@/libraries/firebase"
-import { resolveFirebaseError } from "@/libraries/firebaseErrors"
-import { resolveServerError } from "@/libraries/serverErrors"
 import { ServerError } from "@/types"
 
 type Content = {
@@ -33,10 +33,9 @@ const NewPost = () => {
 
    // Fetching and async states
    const [deleting, setDeleting] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
-   const [loading, setLoading] = useState<boolean>(false)
    const [posting, setPosting] = useState<boolean>(false)
-   const [progress, setProgress] = useState<number>(0)
+   const [uploading, setUploading] = useState<boolean>(false)
+   const [uploadProgress, setUploadProgress] = useState<number>(0)
 
    // Interaction states
    const [content, setContent] = useState<Content>({ type: undefined, data: undefined, url: undefined })
@@ -63,54 +62,55 @@ const NewPost = () => {
                setContent({ type: undefined, data: undefined, url: undefined })
                setDeleting(false)
             })
-            .catch((error: any) => console.log(resolveFirebaseError(error.message)))
+            .catch((error: Error) => toast.error(resolveFirebaseError(error.message)))
       }
    }
 
    const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>, type: "audio" | "image") => {
-      const file = event.target.files ? event.target.files[0] : null
+      if (!uploading) {
+         const file = event.target.files ? event.target.files[0] : null
 
-      if (file && (
-         (type === "audio" && ["audio/mp3", "audio/x-m4a", "audio/wav"].includes(file.type)) ||
-         (type === "image" && ["image/gif", "image/jpeg", "image/png"].includes(file.type))
-      )) {
-         setLoading(true)
+         if (file && (
+            (type === "audio" && ["audio/mp3", "audio/wav", "audio/x-m4a"].includes(file.type)) ||
+            (type === "image" && ["image/gif", "image/jpeg", "image/png"].includes(file.type))
+         )) {
+            setUploading(true)
 
-         // Create the upload task for the firebase upload
-         const uploadTask = uploadBytesResumable(dbRef, file)
+            // Create the upload task for the firebase upload
+            const uploadTask = uploadBytesResumable(dbRef, file)
 
-         uploadTask.on("state_changed",
-            (snapshot) => setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
-            (error) => console.log(resolveFirebaseError(error.message)),
-            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-               setContent((prev) => ({
-                  type: prev.type as "audio" | "image",
-                  data: prev.data as string,
-                  url: downloadURL
-               }))
-               setLoading(false)
+            uploadTask.on("state_changed",
+               (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+               (error) => toast.error(resolveFirebaseError(error.message)),
+               () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                  setContent((prev) => ({
+                     type: prev.type as "audio" | "image",
+                     data: prev.data as string,
+                     url: downloadURL
+                  }))
+                  setUploading(false)
+               })
+            )
+
+            // Read the media as a stream to avoid waiting for the upload
+            const fileReader = new FileReader()
+
+            fileReader.onload = (event) => setContent({
+               type: type,
+               data: event.target?.result as string,
+               url: ""
             })
-         )
 
-         // Read the media as a stream to avoid waiting for the upload
-         const fileReader = new FileReader()
-
-         fileReader.onload = (event) => setContent({
-            type: type,
-            data: event.target?.result as string,
-            url: ""
-         })
-
-         fileReader.readAsDataURL(file)
+            fileReader.readAsDataURL(file)
+         }
       }
    }
 
    const handlePost = async () => {
       if (!posting) {
          // Preliminary checks
-         setError("")
-
-         if (!text && !content.url) return setError("Please input some text or a media file")
+         if (!text && !content.url)
+            return toast.info("Please input some text or a media file.")
 
          // Send the post to the api endpoint
          setPosting(true)
@@ -138,9 +138,10 @@ const NewPost = () => {
          fetch(`${process.env.NEXT_PUBLIC_API_URL}/p`, params)
             .then((response) => response.json())
             .then(({ error, ...result }: ResponseType) => {
-               if (!error) { router.push(`/p/${result.id}`) }
-               else {
-                  setError(resolveServerError(error))
+               if (!error) {
+                  router.push(`/p/${result.id}`)
+               } else {
+                  toast.error(resolveServerError(error))
                   setPosting(false)
                }
             })
@@ -187,13 +188,14 @@ const NewPost = () => {
                   className="w-full px-4 py-2 text-white placeholder-gray-3 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md resize-none"
                />
 
-               {!loading && !content.data && <div className="flex flex-row gap-4 w-full mt-4">
+               {!uploading && !content.data && <div className="flex flex-row gap-4 w-full mt-4">
                   <label className="flex center w-full py-4 text-white ring-1 ring-inset ring-blue-5 rounded-md">
                      <Images height={16} />
                      <input
                         type="file"
                         accept="image/gif, image/jpeg, image/png"
                         onChange={(event) => handleMediaUpload(event, "image")}
+                        disabled={uploading}
                         hidden
                      />
                   </label>
@@ -203,20 +205,21 @@ const NewPost = () => {
                         type="file"
                         accept="audio/mp3, audio/x-m4a, audio/wav"
                         onChange={(event) => handleMediaUpload(event, "audio")}
+                        disabled={uploading}
                         hidden
                      />
                   </label>
                </div>}
 
-               {loading && <div
+               {uploading && <div
                   className="h-2 w-full mt-4 rounded-full transition-all duration-500"
-                  style={{ background: `linear-gradient(to right, #1D5C96 0%, #1D5C96 ${Math.floor(progress)}%, #585858 ${Math.floor(progress)}%)` }}
+                  style={{ background: `linear-gradient(to right, #1D5C96 0%, #1D5C96 ${Math.floor(uploadProgress)}%, #585858 ${Math.floor(uploadProgress)}%)` }}
                />}
 
-               {!loading && content.type === "audio" && <AudioEmbed src={content.data} />}
-               {!loading && content.type === "image" && <ImageEmbed src={content.data} />}
+               {!uploading && content.type === "audio" && <AudioEmbed src={content.data} />}
+               {!uploading && content.type === "image" && <ImageEmbed src={content.data} />}
 
-               {!loading && content.data &&
+               {!uploading && content.data &&
                   <div
                      className="flex flex-row center gap-2 w-full mt-4 py-2 text-white ring-1 ring-inset ring-red-5 rounded-md"
                      onClick={deleteMedia}
@@ -234,12 +237,6 @@ const NewPost = () => {
                   {currentTime}
                </p>
             </div>
-
-            {error && (
-               <p className="mt-8 text-center text-base font-normal text-red-5">
-                  {error}
-               </p>
-            )}
          </div>
 
          <div className="flex flex-row between gap-4 w-full px-8 py-4 text-white border-t border-gray-7">

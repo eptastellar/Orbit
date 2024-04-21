@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { toast } from "react-toastify"
 
 import { supernovaRejected } from "@/assets"
 import { Cross, IconButton } from "@/assets/icons"
 import { HeaderWithButton, Post } from "@/components"
 import { useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 
 import { fetchPost } from "./requests"
 
@@ -37,7 +39,7 @@ const User = ({ params }: Props) => {
    })
 
    useEffect(() => {
-      if (postError) console.error(postError)
+      if (postError) toast.error(resolveServerError(postError.message))
    }, [postError])
 
    return (

@@ -3,10 +3,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect } from "react"
+import { toast } from "react-toastify"
 
 import { homeEmpty } from "@/assets"
 import { Header, InfiniteLoader, Navbar, Post } from "@/components"
 import { useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 import { Post as PostType } from "@/types"
 
 import { fetchPosts } from "./requests"
@@ -36,7 +38,7 @@ const Homepage = () => {
       .flatMap((page) => page.posts.flatMap((post) => post))
 
    useEffect(() => {
-      if (postsError) console.error(postsError)
+      if (postsError) toast.error(resolveServerError(postsError.message))
    }, [postsError])
 
    return (

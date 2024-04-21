@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
-import { resolveFirebaseError } from "@/libraries/firebaseErrors"
-import { resolveServerError } from "@/libraries/serverErrors"
+import { resolveFirebaseError, resolveServerError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
 const Signin = () => {
@@ -19,7 +19,6 @@ const Signin = () => {
 
    // Loading and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
    const [emailError, setEmailError] = useState<string>("")
    const [passwordError, setPasswordError] = useState<string>("")
 
@@ -31,7 +30,6 @@ const Signin = () => {
       event.preventDefault()
 
       // Preliminary checks
-      setError("")
       setEmailError("")
       setPasswordError("")
 
@@ -75,13 +73,13 @@ const Signin = () => {
                   } else if (error === "auth/user-not-signed-up") {
                      router.push("/onboarding/profile")
                   } else {
-                     setError(resolveServerError(error))
+                     toast.error(resolveServerError(error))
                      setLoading(false)
                   }
                })
          })
-         .catch((error: any) => {
-            setError(resolveFirebaseError(error.message))
+         .catch((error: Error) => {
+            toast.error(resolveFirebaseError(error.message))
             setLoading(false)
          })
    }
@@ -129,12 +127,6 @@ const Signin = () => {
                      </span>
                   </p>
                </div>
-
-               {error && (
-                  <p className="text-center text-base font-normal text-red-5">
-                     {error}
-                  </p>
-               )}
 
                <LargeButton
                   text="Join the galaxy"
