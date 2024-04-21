@@ -1,7 +1,6 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { IdResponse } from "types"
 import UserService from "./UserService"
 
 export default class ValidationService {
@@ -136,20 +135,21 @@ export default class ValidationService {
       })
    }
 
-
    public mediaValidation = (media: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
-         const cleanURL: string = media.split("appspot.com/o/")[1]
-         const removeToken: string = cleanURL.split("?")[0]
+         try {
+            const cleanURL: string = media.split("appspot.com/o/")[1]
+            const removeToken: string = cleanURL.split("?")[0]
 
-         const formattedPath: string = removeToken.replace(/%2F/g, "/")
-         const fileRef = this.bucket.file(decodeURIComponent(formattedPath))
+            const formattedPath: string = removeToken.replace(/%2F/g, "/")
+            const fileRef = this.bucket.file(decodeURIComponent(formattedPath))
 
-         fileRef.exists().then((exists) => {
-            if (exists[0])
-               resolve(null)
-            else reject(err("validation/invalid-image-path"))
-         })
+            fileRef.exists().then((exists) => {
+               if (exists[0])
+                  resolve(null)
+               else reject(err("validation/invalid-image-path"))
+            })
+         } catch { reject(err("malformed url")) }
       })
    }
 
@@ -159,7 +159,7 @@ export default class ValidationService {
          resolve(null)
       })
    }
-   
+
    public membersValidation = (personalUID: string, members: string[]): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
