@@ -16,18 +16,19 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          version: 8
 
       - name: Install Dependencies web
         working-directory: web
-        run: npm install
+        run: pnpm i
       - name: Install Dependencies app
         working-directory: app
-        run: npm install
+        run: pnpm i
+      - name: Add permission to bash script
+        working-directory: .github
+        run: chmod +x updateVersions.sh
       - name: Update package.json App patch
         working-directory: app
         run: ../.github/updateVersions.sh
