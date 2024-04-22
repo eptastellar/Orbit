@@ -34,7 +34,7 @@ jobs:
         working-directory: web
         run : pnpm build
       - name: upload node_modules web
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: node_modules_web
           path: web/node_modules
@@ -53,7 +53,7 @@ jobs:
          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
       - name: upload node_modules app
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: node_modules_app
           path: app/node_modules
@@ -96,13 +96,13 @@ jobs:
         with:
           version: 8
       - name: Linting web
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: node_modules_web
           path: web/node_modules
           run: pnpm lint
       - name: Linting app
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: node_modules_app
           path: app/node_modules
@@ -127,7 +127,7 @@ jobs:
           version: 8
 
       - name: Jest Unit Testing
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: node_modules_web
           path: web/node_modules
