@@ -25,12 +25,14 @@ jobs:
         with:
           version: 8
 
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install Dependencies web
         working-directory: web
-        run: pnpm i | pnpm build
+        run: pnpm i
       - name: Install Dependencies app
         working-directory: app
-        run: pnpm i | pnpm build
+        run: pnpm i
       - name: Add permission to bash script
         working-directory: .github
         run: chmod +x updateVersions.sh
