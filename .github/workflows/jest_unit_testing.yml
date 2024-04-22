@@ -36,12 +36,12 @@ jobs:
         run : pnpm build
       - name: zip node_modules web
         working-directory: web
-        run : zip -r node_modules_web.zip node_modules
+        run : zip -rq node_modules_web.zip node_modules
       - name: upload node_modules web
         uses: actions/upload-artifact@v3
         with:
           name: node_modules_web
-          path: web/node_modules
+          path: web/node_modules.zip
 
       - name: Install Dependencies app
         working-directory: app
@@ -59,12 +59,12 @@ jobs:
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
       - name: zip node_modules app
         working-directory: app
-        run : zip -r node_modules_app.zip node_modules
+        run : zip -rq node_modules_app.zip node_modules
       - name: upload node_modules app
         uses: actions/upload-artifact@v3
         with:
           name: node_modules_app
-          path: app/node_modules
+          path: app/node_modules.zip
 
       - name: Add permission to bash script
         working-directory: .github
@@ -108,13 +108,13 @@ jobs:
         with:
           name: node_modules_web
           path: web/node_modules.zip
-          run: unzip web/node_modules.zip web/node_modules && pnpm lint
+          run: unzip -q web/node_modules.zip web/node_modules && pnpm lint
       - name: Linting app
         uses: actions/download-artifact@v3
         with:
           name: node_modules_app
           path: app/node_modules.zip
-          run: unzip app/node_modules.zip app/node_modules && pnpm lint
+          run: unzip -q app/node_modules.zip app/node_modules && pnpm lint
 
   tests:
     needs: build
@@ -139,7 +139,7 @@ jobs:
         with:
           name: node_modules_web
           path: web/node_modules
-          run: unzip web/node_modules.zip web/node_modules && pnpm test
+          run: unzip -q web/node_modules.zip web/node_modules && pnpm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
