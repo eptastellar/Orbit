@@ -38,7 +38,7 @@ jobs:
         working-directory: web
         run : zip -rq node_modules.zip node_modules
       - name: upload node_modules web
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: node_modules_web
           path: web/node_modules.zip
@@ -61,7 +61,7 @@ jobs:
         working-directory: app
         run : zip -rq node_modules.zip node_modules
       - name: upload node_modules app
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: node_modules_app
           path: app/node_modules.zip
@@ -104,13 +104,13 @@ jobs:
         with:
           version: 8
       - name: Linting web
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: node_modules_web
           path: web/node_modules.zip
           run: unzip -q web/node_modules.zip web/node_modules && pnpm lint
       - name: Linting app
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: node_modules_app
           path: app/node_modules.zip
@@ -135,7 +135,7 @@ jobs:
           version: 8
 
       - name: Jest Unit Testing
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: node_modules_web
           path: web/node_modules
