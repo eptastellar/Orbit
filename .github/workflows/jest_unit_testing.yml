@@ -27,10 +27,10 @@ jobs:
 
       - name: Install Dependencies web
         working-directory: web
-        run: pnpm i
+        run: pnpm i | pnpm build
       - name: Install Dependencies app
         working-directory: app
-        run: pnpm i
+        run: pnpm i | pnpm build
       - name: Add permission to bash script
         working-directory: .github
         run: chmod +x updateVersions.sh
