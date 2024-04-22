@@ -67,16 +67,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
 
       - name: Linting web
         working-directory : web
-        run: pnpm lint
+        run: npm lint
       - name: Linting app
         working-directory: app
-        run: pnpm lint
+        run: npm lint
 
   tests:
     needs: build
@@ -92,13 +89,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
 
       - name: Jest Unit Testing
         working-directory: web
-        run: pnpm test
+        run: npm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
