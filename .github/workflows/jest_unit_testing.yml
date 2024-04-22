@@ -29,11 +29,11 @@ jobs:
         run: npm install
       - name: Update package.json App patch
         working-directory: app
-        run: updateVersion.sh
+        run: updateVersions.sh
         if: github.event_name == 'push'
       - name: Update package.json Web patch
         working-directory: web
-        run: updateVersion.sh
+        run: updateVersions.sh
         if: github.event_name == 'push'
       - name : Update package.json App minor
         working-directory: app
@@ -67,6 +67,7 @@ jobs:
         run: npm run lint
 
   tests:
+    needs: build
     runs-on: ubuntu-latest
 
     strategy:
