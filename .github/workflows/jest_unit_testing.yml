@@ -36,9 +36,8 @@ jobs:
       - name: upload node_modules web
         uses: actions/upload-artifact@v4
         with:
-          working-directory: web
           name: node_modules
-          path: node_modules
+          path: web/node_modules
       - name: Install Dependencies app
         working-directory: app
         run: pnpm i
@@ -56,9 +55,8 @@ jobs:
       - name: upload node_modules app
         uses: actions/upload-artifact@v4
         with:
-          working-directory: app
           name: node_modules
-          path: node_modules
+          path: app/node_modules
 
       - name: Add permission to bash script
         working-directory: .github
@@ -97,18 +95,17 @@ jobs:
       - uses: pnpm/action-setup@v3
         with:
           version: 8
-
       - name: Linting web
         uses: actions/download-artifact@v4
         with:
           name: node_modules
-          working-directory : web
+          path: web/node_modules
           run: pnpm lint
       - name: Linting app
         uses: actions/download-artifact@v4
         with:
           name: node_modules
-          working-directory: app
+          path: app/node_modules
           run: pnpm lint
 
   tests:
@@ -133,7 +130,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node_modules
-          working-directory : web
+          path: web/node_modules
           run: pnpm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
