@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-
+    
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
@@ -24,6 +24,14 @@ jobs:
       - name: Install Dependencies
         working-directory: web
         run: npm install
+        
+      - name: Linting web
+        working-directory : web
+        run: npm run lint
+
+      - name: Linting app
+        working-directory: app
+        run: npm run lint
 
       - name: Jest Unit Testing
         working-directory: web
