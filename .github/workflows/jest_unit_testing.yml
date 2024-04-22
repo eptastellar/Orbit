@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
- tests:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -24,18 +24,61 @@ jobs:
       - name: Install Dependencies web
         working-directory: web
         run: npm install
-
-      - name: Install Dependencies web
+      - name: Install Dependencies app
         working-directory: app
         run: npm install
+      - name: Update package.json App patch
+        working-directory: app
+        run: updateVersion.sh
+        if: github.event_name == 'push'
+      - name: Update package.json Web patch
+        working-directory: web
+        run: updateVersion.sh
+        if: github.event_name == 'push'
+      - name : Update package.json App minor
+        working-directory: app
+        run: npm version minor | git push
+        if: github.event_name == 'pull_request'
+      - name : Update package.json Web minor
+        working-directory: Web
+        run: npm version minor | git push
+        if: github.event_name == 'pull_request'
+
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Linting web
         working-directory : web
         run: npm run lint
-
       - name: Linting app
         working-directory: app
         run: npm run lint
+
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
       - name: Jest Unit Testing
         working-directory: web
