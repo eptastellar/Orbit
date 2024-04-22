@@ -1,7 +1,7 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import UserService from "./UserService"
+import { UserService } from "services"
 
 export default class ValidationService {
    private db: Firestore
@@ -73,6 +73,18 @@ export default class ValidationService {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentData = await this.db.collection("posts").doc(postId).get()
+
+            if (docRef.exists)
+               resolve(null)
+            else reject(err("validation/invalid-document-id"))
+         } catch { reject(err("validation/invalid-document-id")) }
+      })
+   }
+
+   public chatIdValidation = (chatId: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            const docRef: DocumentData = await this.db.collection("chats").doc(chatId).get()
 
             if (docRef.exists)
                resolve(null)

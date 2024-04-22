@@ -1,7 +1,7 @@
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
+import { UserService } from "services"
 import { CommentSchema, CommentUploadResponse, ContentFetch, IdResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
-import UserService from "./UserService"
 
 export default class ContentService {
    private db: Firestore
@@ -217,49 +217,6 @@ export default class ContentService {
       })
    }
 
-   public newChat = (uid: string, members: string[], name?: string): Promise<IdResponse> => {
-      return new Promise(async (resolve, reject) => {
-         try {
-            const docRef: DocumentReference = this.db.collection("chats").doc() //set the docRef to chats
-            const uids: string[] = []
-
-            await Promise.all(members.map(async (member: string) => {
-               const uid: string = await this.user.getUIDfromUserData(member)
-               uids.push(uid)
-            }))
-
-            await docRef.set({ //set the chat information in firestore
-               created_at: Date.now(), //unix format
-            })
-
-            if (members.length > 2) {
-               if (!name)
-                  reject(err("no name"))
-
-               await docRef.update({
-                  admin: uid,
-                  name: name
-               })
-            }
-
-            const membersRef: DocumentReference = this.db.collection("users-chats").doc()
-            const id: string = docRef.id
-
-            await Promise.all(uids.map(async (uid: string) => {
-               await membersRef.set({
-                  user: uid,
-                  chat: id
-               })
-            }))
-            
-            const idResponse: IdResponse = {
-               id
-            }
-            resolve(idResponse)
-         } catch { reject(err("server/upload-failed")) }
-      })
-   }
-
    public uploadPost = (uid: string, text?: string, type?: string, content?: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
@@ -307,29 +264,6 @@ export default class ContentService {
 
             resolve(post)
          } catch { reject(err("server/post-not-found")) }
-      })
-   }
-
-   public uploadMessage = (uid: string, chat_id: string, text?: string, type?: string, content?: string): Promise<IdResponse> => {
-      return new Promise(async (resolve, reject) => {
-         try {
-            const docRef: DocumentReference = this.db.collection("messages").doc() //set the docRef to messages
-
-            await docRef.set({ //set the message information in firestore
-               owner: uid,
-               created_at: Date.now(), //unix format
-               chat_id: chat_id,
-            })
-
-            if (text) await docRef.update({ text: text })
-            if (content) await docRef.update({ content: content, type: type })
-
-            const id: string = docRef.id
-            const idResponse: IdResponse = {
-               id
-            }
-            resolve(idResponse)
-         } catch { reject(err("server/upload-failed")) }
       })
    }
 

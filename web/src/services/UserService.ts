@@ -208,12 +208,6 @@ export default class UserService {
       })
    }
 
-   public sendNotification = (receivers: string[]): Promise<null> => {
-      return new Promise((resolve, reject) => { //TODO
-         resolve(null)
-      })
-   }
-
    //Setta l'amicizia tramite la funzione di supernova, deve essere chiamata solamente dal cron job
    public setSupernovaFriendship = (username: string): Promise<string> => {
       return new Promise(async (res, rej) => {
@@ -237,7 +231,6 @@ export default class UserService {
    }
 
    //Controlla lo stato dell'amicizia supernova, se nessuno dei due ha accettato l'amicizia, se uno solo ha accettato l'amicizia o se uno dei due l'ha rifiutata
-
    public checkSupernovaFriendship = (username: string): Promise<SupernovaResponse> => {
       return new Promise(async (res, rej) => {
          const querySupernovaBinding: string = `OPTIONAL MATCH (u:User {name : "${username}"})-[r:supernovaBind]-(t:User) RETURN t.name,r UNION OPTIONAL MATCH (u:User {name : "${username}"})-[r:oneWaysupernovaBind]-(t:User) RETURN t.name,r UNION OPTIONAL MATCH (u:User {name : "${username}"})-[r:RefusedsupernovaBind]-(t:User) RETURN t.name,r`

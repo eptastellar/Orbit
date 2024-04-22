@@ -1,25 +1,26 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
-import { ChatRequest, IdResponse } from "types"
+import { AuthService, NotificationsService, ValidationService } from "services"
+import { IdResponse, NewChatRequest } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
-const cont = new ContentService()
-const user = new UserService()
+const noti = new NotificationsService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const members: string[] = req.body.members
    const name: string = req.body.name
+   const pfp: string = req.body.pfp
 
-   const ereq: ChatRequest = {
+   const ereq: NewChatRequest = {
       members,
-      name
+      name,
+      pfp
    }
 
    valid.membersValidation(uid, members).then(() => {
-      cont.newChat(uid, ereq.members, ereq.name).then((idResponse: IdResponse) => {
-         user.sendNotification(["a", "b"]).then(() => { //TODO
+      noti.newChat(uid, ereq.members, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
+         noti.sendNotification(["a", "b"]).then(() => { //TODO
             res.status(201).json({
                ...idResponse //return the chat id
             })

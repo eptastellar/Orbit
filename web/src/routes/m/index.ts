@@ -1,11 +1,10 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { AuthService, NotificationsService, ValidationService } from "services"
 import { IdResponse, MessageRequest } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
-const cont = new ContentService()
-const user = new UserService()
+const noti = new NotificationsService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
@@ -22,13 +21,14 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    }
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
-      //TODO chat id validation
-      cont.uploadMessage(uid, ereq.chat_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
-         user.sendNotification(["a", "b"]).then(() => { //TODO
-            res.status(201).json({
-               ...idResponse //return the post id
-            })
-         })
-      }).catch((error) => { res.status(500).json({ error: error.message }) })
+      valid.chatIdValidation(chat_id).then(() => {
+         noti.uploadMessage(uid, ereq.chat_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+            noti.sendNotification(["a", "b"]).then(() => { //TODO
+               res.status(201).json({
+                  ...idResponse //return the post id
+               })
+            }).catch((error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error) => { res.status(500).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]

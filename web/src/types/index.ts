@@ -115,6 +115,40 @@ export type MessageRequest = {
    content: string
 }
 
+export type NewChatRequest = {
+   members: string[],
+   name?: string,
+   pfp?: string
+}
+
+export type ChatsResponse = {
+   chats: ChatSchema[]
+}
+
+export type ChatSchema = {
+   name: string,
+   pfp: string
+   bday: boolean
+   latest_message?: string
+   unreaded_messages?: number
+}
+
+export type ChatResponse = {
+   messages: MessageSchema[],
+   name: string,
+   pfp: string
+}
+
+export type MessageSchema = {
+   personal: boolean,
+   created_at: number,
+   text?: string,
+   content?: string,
+   type?: string,
+   pfp?: string,
+   username?: string
+}
+
 export type SupernovaResponse = {
    username: string
    status: string

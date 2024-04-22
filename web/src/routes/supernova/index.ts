@@ -5,7 +5,7 @@ import { SupernovaResponse } from "types"
 const auth = new AuthService()
 const user = new UserService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    user.checkSupernovaFriendship(res.locals.uid).then((response) =>
       res.status(200).json({ success: true, message: response })
@@ -13,7 +13,7 @@ export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: R
 
 }]
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    const username: string = res.locals.uid
    const accepted: boolean = req.body.accepted

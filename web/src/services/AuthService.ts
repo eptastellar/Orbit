@@ -5,9 +5,8 @@ import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from "fi
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import { JWTPayload, SignJWT, jwtVerify } from "jose"
 import { Session } from "neo4j-driver"
+import { ContentService, ValidationService } from "services"
 import { SuccessResponse, UserSchema } from "types"
-import ContentService from "./ContentService"
-import ValidationService from "./ValidationService"
 
 export default class AuthService {
    private db: Firestore
