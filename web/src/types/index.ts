@@ -115,7 +115,8 @@ export type MessageRequest = {
    content: string
 }
 
-export type ChatRequest = {
-   members: string[],
-   name?: string
+export type SupernovaResponse = {
+   username: string
+   status: string
+   oneway: string | null
 }

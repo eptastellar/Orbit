@@ -51,7 +51,6 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
 
 export const DELETE = [auth.sessionGuard, async (_: Request, res: Response) => {
    const uid: string = res.locals.uid
-   //TODO @TheInfernalNick delete messages and ecc...
 
    user.deleteUser(uid).then(() => {
       user.removeBatch("posts", uid).then(() => {
