@@ -1,3 +1,4 @@
+#!/bin/bash
 name: Jest Unit Testing
 
 on:
@@ -29,11 +30,11 @@ jobs:
         run: npm install
       - name: Update package.json App patch
         working-directory: app
-        run: updateVersions.sh
+        run: ./updateVersions.sh
         if: github.event_name == 'push'
       - name: Update package.json Web patch
         working-directory: web
-        run: updateVersions.sh
+        run: ./updateVersions.sh
         if: github.event_name == 'push'
       - name : Update package.json App minor
         working-directory: app
