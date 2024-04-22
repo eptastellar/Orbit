@@ -36,7 +36,7 @@ jobs:
         run : pnpm build
       - name: zip node_modules web
         working-directory: web
-        run : zip -rq node_modules_web.zip node_modules
+        run : zip -rq node_modules.zip node_modules
       - name: upload node_modules web
         uses: actions/upload-artifact@v3
         with:
@@ -59,7 +59,7 @@ jobs:
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
       - name: zip node_modules app
         working-directory: app
-        run : zip -rq node_modules_app.zip node_modules
+        run : zip -rq node_modules.zip node_modules
       - name: upload node_modules app
         uses: actions/upload-artifact@v3
         with:
