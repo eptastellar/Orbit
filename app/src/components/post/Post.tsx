@@ -31,7 +31,9 @@ const Post = ({ isPostPage, post }: Props) => {
 
    const [locked, setLocked] = useState<boolean>(false)
 
-   const likePost = () => {
+   const likePost = (event: React.PointerEvent<HTMLDivElement>) => {
+      event.stopPropagation()
+
       if (locked) return
 
       setLocked(true)

@@ -139,7 +139,7 @@ const NewPost = () => {
             .then((response) => response.json())
             .then(({ error, ...result }: ResponseType) => {
                if (!error) {
-                  router.push(`/p/${result.id}`)
+                  router.push(`/p/${result.id}?new-post`)
                } else {
                   toast.error(resolveServerError(error))
                   setPosting(false)

@@ -1,6 +1,6 @@
 type Props = {
    icon: JSX.Element
-   onClick: () => void
+   onClick: (event: React.PointerEvent<HTMLDivElement>) => void
 }
 
 const IconButton = ({ icon, onClick }: Props) => (

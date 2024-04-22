@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect } from "react"
 import { toast } from "react-toastify"
 
@@ -29,6 +29,7 @@ const User = ({ params }: Props) => {
 
    // Dynamic route parameters
    const post = decodeURIComponent(params.post)
+   const fromNewPost = useSearchParams().get("new-post") !== null ? true : false
 
    // Async query loading/error states
    const { data: fetchedPost, error: postError, isLoading } = useQuery({
@@ -47,7 +48,10 @@ const User = ({ params }: Props) => {
          <HeaderWithButton icon={
             <IconButton
                icon={<Cross height={24} />}
-               onClick={() => router.back()}
+               onClick={() => fromNewPost
+                  ? router.push(`/u/${userProfile?.userData.username}`)
+                  : router.back()
+               }
             />
          } />
 
