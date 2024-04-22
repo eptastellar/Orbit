@@ -99,11 +99,17 @@ jobs:
           version: 8
 
       - name: Linting web
-        working-directory : web
-        run: pnpm lint
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+          working-directory : web
+          run: pnpm lint
       - name: Linting app
-        working-directory: app
-        run: pnpm lint
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+          working-directory: app
+          run: pnpm lint
 
   tests:
     needs: build
@@ -124,8 +130,11 @@ jobs:
           version: 8
 
       - name: Jest Unit Testing
-        working-directory: web
-        run: pnpm test
+        uses: actions/download-artifact@v4
+        with:
+          name: node_modules
+          working-directory : web
+          run: pnpm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
