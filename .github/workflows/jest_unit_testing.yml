@@ -36,7 +36,7 @@ jobs:
       - name: upload node_modules web
         uses: actions/upload-artifact@v4
         with:
-          name: node_modules
+          name: node_modules_web
           path: web/node_modules
       - name: Install Dependencies app
         working-directory: app
@@ -55,7 +55,7 @@ jobs:
       - name: upload node_modules app
         uses: actions/upload-artifact@v4
         with:
-          name: node_modules
+          name: node_modules_app
           path: app/node_modules
 
       - name: Add permission to bash script
@@ -98,13 +98,13 @@ jobs:
       - name: Linting web
         uses: actions/download-artifact@v4
         with:
-          name: node_modules
+          name: node_modules_web
           path: web/node_modules
           run: pnpm lint
       - name: Linting app
         uses: actions/download-artifact@v4
         with:
-          name: node_modules
+          name: node_modules_app
           path: app/node_modules
           run: pnpm lint
 
@@ -129,7 +129,7 @@ jobs:
       - name: Jest Unit Testing
         uses: actions/download-artifact@v4
         with:
-          name: node_modules
+          name: node_modules_web
           path: web/node_modules
           run: pnpm test
         env:
