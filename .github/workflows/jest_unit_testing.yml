@@ -110,7 +110,7 @@ jobs:
           path: web/
       - name: Linting web
         working-directory: web
-        run: unzip -q node_modules.zip node_modules && pnpm lint
+        run: unzip -q node_modules.zip && pnpm lint
 
 
       - name: Download app artifact
@@ -120,7 +120,7 @@ jobs:
           path: app/
       - name: Linting app
         working-directory: app
-        run: unzip -q node_modules.zip node_modules && pnpm lint
+        run: unzip -q node_modules.zip && pnpm lint
 
   tests:
     needs: build
@@ -147,7 +147,7 @@ jobs:
           path: web/
       - name: Jest Unit Testing
         working-directory: web
-        run: unzip -q node_modules.zip node_modules && pnpm test
+        run: unzip -q node_modules.zip && pnpm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
