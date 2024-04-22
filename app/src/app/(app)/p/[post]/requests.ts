@@ -16,8 +16,8 @@ export const fetchPost = async (
       text?: string
       type?: "audio" | "image"
       content?: string
-      likes_number: number
-      comments_number: number
+      likes: number
+      comments: number
       is_liked: boolean
       user_data: {
          name: string
@@ -37,8 +37,8 @@ export const fetchPost = async (
       content: result.content,
       isLiked: result.is_liked,
       counters: {
-         likeCount: result.likes_number,
-         commentCount: result.comments_number
+         likeCount: result.likes,
+         commentCount: result.comments
       },
       userData: {
          displayName: result.user_data.name,
