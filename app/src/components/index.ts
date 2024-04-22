@@ -1,3 +1,5 @@
+import AppDownload from "./app-download/AppDownload"
+
 import BackButton from "./button/BackButton"
 import FilterButton from "./button/FilterButton"
 import InterestButton from "./button/InterestButton"
@@ -25,6 +27,7 @@ import ImageEmbed from "./post/ImageEmbed"
 import Post from "./post/Post"
 
 export {
+   AppDownload,
    AudioEmbed,
    BackButton,
    FilterButton,

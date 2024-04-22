@@ -4,11 +4,12 @@ import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
+import { MobileView } from "react-device-detect"
 import { QRCode as UserCode } from "react-qrcode-logo"
 import { toast } from "react-toastify"
 
 import { Cross, IconButton } from "@/assets/icons"
-import { HeaderWithButton } from "@/components"
+import { AppDownload, HeaderWithButton } from "@/components"
 import { useUserContext } from "@/contexts"
 import { resolveServerError } from "@/libraries/errors"
 
@@ -66,8 +67,10 @@ const QrCode = () => {
             }
          />
 
-         <div className="flex flex-grow flex-col center w-full p-8">
-            <div className="flex flex-col center gap-8 w-full">
+         <AppDownload />
+
+         <MobileView className="flex flex-grow flex-col center gap-8 w-full p-8">
+            <div className="flex flex-grow flex-col center gap-8 w-full">
                <div className="w-full p-8 bg-gray-7/50 rounded-2xl">
                   <div ref={qrcodeContainer} className="relative w-full">
                      {fetchedQrCode
@@ -124,13 +127,13 @@ const QrCode = () => {
                   }
                </p>
             </div>
-         </div>
 
-         <div className="p-8">
-            <p className="text-sm font-semibold text-white">
-               Powered by Orbit.
-            </p>
-         </div>
+            <div className="flex flex-row center w-full">
+               <p className="text-sm font-semibold text-white">
+                  Powered by Orbit.
+               </p>
+            </div>
+         </MobileView>
       </div>
    )
 }

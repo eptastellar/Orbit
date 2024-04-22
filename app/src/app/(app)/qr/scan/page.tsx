@@ -1,9 +1,10 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { MobileView } from "react-device-detect"
 
 import { Cross, IconButton, QrCode } from "@/assets/icons"
-import { HeaderWithButton } from "@/components"
+import { AppDownload, HeaderWithButton } from "@/components"
 
 const QrScan = () => {
    // Next router for navigation
@@ -21,16 +22,20 @@ const QrScan = () => {
             }
          />
 
-         <div className="flex flex-grow flex-col">
-            {/* TODO: Actual scanning */}
-         </div>
+         <AppDownload />
 
-         <div
-            className="absolute bottom-8 right-8 flex center p-4 bg-blue-5 rounded-full"
-            onClick={() => router.push("/qr/code")}
-         >
-            <QrCode height={32} color="fill-white" />
-         </div>
+         <MobileView className="flex flex-grow flex-col center gap-8 w-full p-8">
+            <div className="flex flex-grow flex-col">
+               {/* TODO: Actual scanning */}
+            </div>
+
+            <div
+               className="absolute bottom-8 right-8 flex center p-4 bg-blue-5 rounded-full cursor-pointer"
+               onClick={() => router.push("/qr/code")}
+            >
+               <QrCode height={32} color="fill-white" />
+            </div>
+         </MobileView>
       </div>
    )
 }

@@ -4,6 +4,7 @@ import ArrowLeft from "./ArrowLeft"
 import CameraPlus from "./CameraPlus"
 import Comment from "./Comment"
 import Cross from "./Cross"
+import Download from "./Download"
 import Gear from "./Gear"
 import HandWave from "./HandWave"
 import Home from "./Home"
@@ -26,6 +27,7 @@ export {
    CameraPlus,
    Comment,
    Cross,
+   Download,
    Gear,
    HandWave,
    Home,
