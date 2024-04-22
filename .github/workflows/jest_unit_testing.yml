@@ -30,23 +30,36 @@ jobs:
       - name: Install Dependencies web
         working-directory: web
         run: pnpm i
-      - name: Install Dependencies app
-        working-directory: app
-        run: pnpm i
       - name: Build web
         working-directory: web
         run : pnpm build
+      - name: upload node_modules web
+        uses: actions/upload-artifact@v4
+        with:
+          working-directory: web
+          name: node_modules
+          path: node_modules
+      - name: Install Dependencies app
+        working-directory: app
+        run: pnpm i
       - name: Build app
         working-directory: app
         run : pnpm build
         env:
-          NEXT_PUBLIC_API_URL: ${{secrets.NEXT_PUBLIC_API_URL}}
-          NEXT_PUBLIC_FIREBASE_API_KEY: ${{secrets.NEXT_PUBLIC_FIREBASE_API_KEY}}
-          NEXT_PUBLIC_FIREBASE_APP_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_APP_ID}}
-          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}}
-          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}}
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
+         NEXT_PUBLIC_API_URL: ${{secrets.NEXT_PUBLIC_API_URL}}
+         NEXT_PUBLIC_FIREBASE_API_KEY: ${{secrets.NEXT_PUBLIC_FIREBASE_API_KEY}}
+         NEXT_PUBLIC_FIREBASE_APP_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_APP_ID}}
+         NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}}
+         NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}}
+         NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
+         NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
+      - name: upload node_modules app
+        uses: actions/upload-artifact@v4
+        with:
+          working-directory: app
+          name: node_modules
+          path: node_modules
+
       - name: Add permission to bash script
         working-directory: .github
         run: chmod +x updateVersions.sh
