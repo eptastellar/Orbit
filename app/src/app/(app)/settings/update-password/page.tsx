@@ -1,7 +1,6 @@
 "use client"
 
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "react-toastify"
 
@@ -15,9 +14,6 @@ const UpdatePassword = () => {
    // Context hooks
    const { hasRecentLogin, updateUserPassword } = useAuthContext()
 
-   // Next router for navigation
-   const router = useRouter()
-
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
    const [passwordError, setPasswordError] = useState<string>("")
@@ -28,6 +24,7 @@ const UpdatePassword = () => {
    const [password, setPassword] = useState<string>("")
    const [confirmPassword, setConfirmPassword] = useState<string>("")
 
+   // Custom functions triggered by interactions
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
@@ -60,7 +57,7 @@ const UpdatePassword = () => {
             icon={
                <IconButton
                   icon={<Cross height={24} />}
-                  onClick={() => router.back()}
+                  href="/settings"
                />
             }
          />

@@ -9,13 +9,15 @@ export const resolveFirebaseError = (error: string): string => {
       resolvedError = "The provided credentials are not valid."
    else if (error.includes("auth/invalid-email"))
       resolvedError = "Please provide a valid email address."
+   else if (error.includes("auth/invalid-password"))
+      resolvedError = "Please provide a valid password string."
    else if (error.includes("auth/requires-recent-login"))
       resolvedError = "You are using an old session. Please log back in and try again."
    else if (error.includes("auth/too-many-requests"))
       resolvedError = "Access to this account has been temporarily disabled due to many failed login attempts. \
       You can immediately restore it by resetting your password or you can try again later."
    else if (error.includes("auth/user-not-found"))
-      resolvedError = "The provided email address is not registered."
+      resolvedError = "The provided user is not registered."
    else if (error.includes("auth/weak-password"))
       resolvedError = "Please provide a password that is at least 6 characters long."
    else if (error.includes("auth/wrong-password"))
@@ -30,41 +32,41 @@ export const resolveServerError = (error: ServerError | string): string => {
 
    // Authentication errors
    if (error === "auth/expired-token")
-      resolvedError = "Session expired. Please log back in."
+      resolvedError = "Your session has expired. Please log back in."
    else if (error === "auth/invalid-token")
-      resolvedError = "Invalid session token."
+      resolvedError = "The provided session token is invalid."
    else if (error === "auth/email-unverified")
-      resolvedError = "Email address not verified. Check your inbox."
+      resolvedError = "Your email address is not verified. Please check your inbox."
    else if (error === "auth/user-not-signed-up")
-      resolvedError = "Profile not yet created."
+      resolvedError = "You don't currently have a profile associated with this account."
    else if (error === "auth/user-already-exists")
       resolvedError = "A profile has already been created with this account."
    // Validation errors
    else if (error === "validation/username-too-long")
-      resolvedError = "Username must have 24 characters at most."
+      resolvedError = "The username must have 24 characters at most."
    else if (error === "validation/username-too-short")
-      resolvedError = "Username must have at least 6 characters."
+      resolvedError = "The username must have at least 6 characters."
    else if (error === "validation/invalid-username")
-      resolvedError = "Username must only contain letters, numbers or the following symbols [. - _]."
+      resolvedError = "The username must only contain letters, numbers or the following symbols [. - _]."
    else if (error === "validation/username-already-in-use")
-      resolvedError = "Username already taken."
+      resolvedError = "The provided username is already taken. Please choose another one."
    else if (error === "validation/invalid-birthdate")
-      resolvedError = "Invalid birthdate."
+      resolvedError = "The provided birthdate is invalid."
    else if (error === "validation/too-young")
-      resolvedError = "You must be at least 14 to use Orbit."
+      resolvedError = "You must be at least 14 to use Orbit. 🤓"
    else if (error === "validation/invalid-number-of-interests")
-      resolvedError = "Interests amount must be from 1 to 5."
+      resolvedError = "Please provide 1 to 5 interests."
    else if (error === "validation/invalid-interests")
-      resolvedError = "Interests must be selected from the list."
+      resolvedError = "Please provide interests from the given list."
    else if (error === "validation/invalid-document-id")
-      resolvedError = "Provided invalid document id."
+      resolvedError = "The provided document id is invalid."
    else if (error === "validation/malformed-input")
-      resolvedError = "Invalid body, the request was aborted."
+      resolvedError = "An error occurred while processing the request's parameters."
    // Server errors
    else if (error === "server/no-content")
-      resolvedError = "No content for the requested resource."
+      resolvedError = "The requested resource has no contents."
    else if (error === "server/no-friends")
-      resolvedError = "The requested user has no friends to fetch."
+      resolvedError = "The requested user has no friends."
    else resolvedError = error
 
    return resolvedError

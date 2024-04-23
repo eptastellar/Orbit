@@ -111,7 +111,7 @@ const Signup = () => {
             </p>
          </div>
 
-         <BackButton destinationPage="/onboarding" />
+         <BackButton href="/onboarding" />
       </div>
    )
 }

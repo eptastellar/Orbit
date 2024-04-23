@@ -44,7 +44,7 @@ const Profile = () => {
       setBdayDay(birthdate[2] ?? "")
    }, [birthdate])
 
-
+   // Custom functions triggered by interactions
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!uploading) {
          const file = event.target.files ? event.target.files[0] : null

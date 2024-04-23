@@ -21,6 +21,7 @@ const ForgotPassword = () => {
    const [email, setEmail] = useState<string>("")
    const [confirmEmail, setConfirmEmail] = useState<string>("")
 
+   // Custom functions triggered by interactions
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
@@ -96,7 +97,7 @@ const ForgotPassword = () => {
             )}
          </div>
 
-         <BackButton destinationPage="/onboarding/sign-in" />
+         <BackButton href="/onboarding/sign-in" />
       </div>
    )
 }

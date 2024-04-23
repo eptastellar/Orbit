@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { MobileView } from "react-device-detect"
 import { QRCode as UserCode } from "react-qrcode-logo"
@@ -19,11 +18,17 @@ const QrCode = () => {
    // Context hooks
    const { userProfile } = useUserContext()
 
-   // Next router for navigation
-   const router = useRouter()
-
    // Interaction states
    const [timeLeft, setTimeLeft] = useState<number>()
+
+   // QrCode configuration
+   const [qrSize, setQrSize] = useState<number>(0)
+   const qrcodeContainer = useRef<HTMLDivElement>(null)
+
+   useEffect(() => {
+      if (qrcodeContainer.current)
+         setQrSize(qrcodeContainer.current.clientWidth)
+   }, [qrcodeContainer.current])
 
    // Async query loading/error states
    const { data: fetchedQrCode, error: qrCodeError, refetch } = useQuery({
@@ -46,15 +51,6 @@ const QrCode = () => {
       return () => clearInterval(interval)
    }, [fetchedQrCode])
 
-   // QrCode configuration
-   const [qrSize, setQrSize] = useState<number>(0)
-   const qrcodeContainer = useRef<HTMLDivElement>(null)
-
-   useEffect(() => {
-      if (qrcodeContainer.current)
-         setQrSize(qrcodeContainer.current.clientWidth)
-   }, [qrcodeContainer.current])
-
    return (
       <div className="flex flex-col center h-full w-full">
          <HeaderWithButton
@@ -62,7 +58,7 @@ const QrCode = () => {
             icon={
                <IconButton
                   icon={<Cross height={24} />}
-                  onClick={() => router.push("/")}
+                  href="/"
                />
             }
          />

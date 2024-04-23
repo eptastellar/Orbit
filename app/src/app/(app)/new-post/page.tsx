@@ -12,14 +12,14 @@ import { AudioEmbed, HeaderWithButton, ImageEmbed, SpinnerText } from "@/compone
 import { useUserContext } from "@/contexts"
 import { resolveFirebaseError, resolveServerError } from "@/libraries/errors"
 import { storage } from "@/libraries/firebase"
-import { ServerError } from "@/types"
+import { MediaType, ServerError } from "@/types"
 
 type Content = {
    type: undefined
    data: undefined
    url: undefined
 } | {
-   type: "audio" | "image"
+   type: MediaType
    data: string
    url: string
 }
@@ -42,6 +42,7 @@ const NewPost = () => {
    const [dbRef] = useState<StorageReference>(ref(storage, `uploads/posts/${randomBytes(16).toString("hex")}`))
    const [text, setText] = useState<string>("")
 
+   // Update the current time every second
    const [currentTime, setCurrentTime] = useState<string>(
       new Date().toLocaleString("en-US").replace(", ", " · ")
    )
@@ -54,19 +55,19 @@ const NewPost = () => {
       return () => clearInterval(interval)
    }, [])
 
+   // Custom functions triggered by interactions
    const deleteMedia = () => {
-      if (!deleting) {
+      if (!deleting && content.data) {
          setDeleting(true)
+
          deleteObject(dbRef)
-            .then(() => {
-               setContent({ type: undefined, data: undefined, url: undefined })
-               setDeleting(false)
-            })
+            .then(() => setContent({ type: undefined, data: undefined, url: undefined }))
             .catch((error: Error) => toast.error(resolveFirebaseError(error.message)))
+            .finally(() => setDeleting(false))
       }
    }
 
-   const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>, type: "audio" | "image") => {
+   const handleMediaUpload = (event: React.ChangeEvent<HTMLInputElement>, type: MediaType) => {
       if (!uploading) {
          const file = event.target.files ? event.target.files[0] : null
 
@@ -84,7 +85,7 @@ const NewPost = () => {
                (error) => toast.error(resolveFirebaseError(error.message)),
                () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                   setContent((prev) => ({
-                     type: prev.type as "audio" | "image",
+                     type: prev.type as MediaType,
                      data: prev.data as string,
                      url: downloadURL
                   }))
@@ -139,7 +140,7 @@ const NewPost = () => {
             .then((response) => response.json())
             .then(({ error, ...result }: ResponseType) => {
                if (!error) {
-                  router.push(`/p/${result.id}?new-post`)
+                  router.replace(`/p/${result.id}`)
                } else {
                   toast.error(resolveServerError(error))
                   setPosting(false)
@@ -155,10 +156,8 @@ const NewPost = () => {
             icon={
                <IconButton
                   icon={<Cross height={24} />}
-                  onClick={() => {
-                     if (content.data) deleteMedia()
-                     router.push("/")
-                  }}
+                  href="/"
+                  onClick={() => deleteMedia()}
                />
             }
          />
@@ -189,7 +188,7 @@ const NewPost = () => {
                />
 
                {!uploading && !content.data && <div className="flex flex-row gap-4 w-full mt-4">
-                  <label className="flex center w-full py-4 text-white ring-1 ring-inset ring-blue-5 rounded-md">
+                  <label className="flex center w-full py-4 text-white ring-1 ring-inset ring-blue-5 rounded-md cursor-pointer">
                      <Images height={16} />
                      <input
                         type="file"
@@ -199,7 +198,7 @@ const NewPost = () => {
                         hidden
                      />
                   </label>
-                  <label className="flex center w-full py-4 text-white ring-1 ring-inset ring-blue-5 rounded-md">
+                  <label className="flex center w-full py-4 text-white ring-1 ring-inset ring-blue-5 rounded-md cursor-pointer">
                      <Microphone height={16} />
                      <input
                         type="file"
@@ -221,15 +220,16 @@ const NewPost = () => {
 
                {!uploading && content.data &&
                   <div
-                     className="flex flex-row center gap-2 w-full mt-4 py-2 text-white ring-1 ring-inset ring-red-5 rounded-md"
+                     className="flex flex-row center gap-2 w-full mt-4 py-2 text-white ring-1 ring-inset ring-red-5 rounded-md cursor-pointer"
                      onClick={deleteMedia}
                   >
-                     {deleting ? <SpinnerText message="Deleting..." /> : (
-                        <p className="flex flex-row center gap-2 text-white">
+                     {deleting
+                        ? <SpinnerText message="Deleting..." />
+                        : <p className="flex flex-row center gap-2 text-white">
                            <Trash height={12} />
                            <span>Delete the {content.type}</span>
                         </p>
-                     )}
+                     }
                   </div>
                }
 

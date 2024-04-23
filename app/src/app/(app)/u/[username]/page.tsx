@@ -82,7 +82,7 @@ const User = ({ params }: Props) => {
             icon={fetchedUser?.isPersonal ?? userProfile!.userData.username === username
                ? <IconButton
                   icon={<Gear height={24} />}
-                  onClick={() => router.push("/settings")}
+                  href="/settings"
                />
                : <IconButton
                   icon={<ThreeDotsVertical height={24} />}
@@ -92,27 +92,27 @@ const User = ({ params }: Props) => {
          />
 
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
-            {
-               fetchedUser?.isPersonal ?? userProfile!.userData.username === username
-                  // The visited page is the user itself
+            {fetchedUser?.isPersonal ?? userProfile!.userData.username === username
+               // The visited page is the user itself
+               ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
+                  <Image
+                     src={fetchedUser?.userData.profilePicture ?? userProfile!.userData.profilePicture}
+                     alt="Profile picture"
+                     fill className="object-cover"
+                  />
+               </div>
+               : (fetchedUser
+                  // The visited page is not the user
                   ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
                      <Image
-                        src={fetchedUser?.userData.profilePicture ?? userProfile!.userData.profilePicture}
+                        src={fetchedUser?.userData.profilePicture}
                         alt="Profile picture"
                         fill className="object-cover"
                      />
                   </div>
-                  : fetchedUser
-                     // The visited page is not the user
-                     ? <div className="relative min-h-32 max-h-32 min-w-32 max-w-32 rounded-full overflow-hidden">
-                        <Image
-                           src={fetchedUser?.userData.profilePicture}
-                           alt="Profile picture"
-                           fill className="object-cover"
-                        />
-                     </div>
-                     // The image is still being fetched
-                     : <div className="min-h-32 max-h-32 min-w-32 max-w-32 loader-pulse rounded-full" />
+                  // The image is still being fetched
+                  : <div className="min-h-32 max-h-32 min-w-32 max-w-32 loader-pulse rounded-full" />
+               )
             }
 
 
@@ -129,8 +129,8 @@ const User = ({ params }: Props) => {
             <div className="flex flex-col center w-full mt-6 bg-gray-7/50 border border-gray-7 rounded-md">
                <div className="flex flex-row center w-full py-4 border-b border-gray-7">
                   <div className="flex flex-col center w-1/3">
-                     {fetchedUser?.counters.postCount !== undefined ?
-                        <p className="text-xl font-semibold text-white">
+                     {fetchedUser?.counters.postCount !== undefined
+                        ? <p className="text-xl font-semibold text-white">
                            {fetchedUser.counters.postCount}
                         </p>
                         : <div className="h-5 w-2/3 my-1 loader-pulse rounded-md" />
@@ -138,8 +138,8 @@ const User = ({ params }: Props) => {
                      <p className="text-base font-semibold text-gray-3">POSTS</p>
                   </div>
                   <div className="flex flex-col center w-1/3 border-x border-gray-7">
-                     {fetchedUser?.counters.friendCount !== undefined ?
-                        <p className="text-xl font-semibold text-white">
+                     {fetchedUser?.counters.friendCount !== undefined
+                        ? <p className="text-xl font-semibold text-white">
                            {fetchedUser.counters.friendCount}
                         </p>
                         : <div className="h-5 w-2/3 my-1 loader-pulse rounded-md" />
@@ -147,8 +147,8 @@ const User = ({ params }: Props) => {
                      <p className="text-base font-semibold text-gray-3">FRIENDS</p>
                   </div>
                   <div className="flex flex-col center w-1/3">
-                     {fetchedUser?.counters.meteorCount !== undefined ?
-                        <p className="text-xl font-semibold text-white">
+                     {fetchedUser?.counters.meteorCount !== undefined
+                        ? <p className="text-xl font-semibold text-white">
                            {fetchedUser.counters.meteorCount}
                         </p>
                         : <div className="h-5 w-2/3 my-1 loader-pulse rounded-md" />
@@ -157,8 +157,8 @@ const User = ({ params }: Props) => {
                   </div>
                </div>
                <div className="flex flex-row start gap-2 w-full p-4 overflow-x-scroll">
-                  {fetchedUser?.interests ?
-                     fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
+                  {fetchedUser?.interests
+                     ? fetchedUser.interests.map((interest) => <InterestButton key={interest} interest={interest} />)
                      : ["w-1/4", "w-1/2", "w-1/3"].map((width) =>
                         <div key={`interest-${width}`} className={`h-6 ${width} loader-pulse rounded-full`} />
                      )
@@ -166,8 +166,8 @@ const User = ({ params }: Props) => {
                </div>
             </div>
 
-            {fetchedUser && fetchedPosts ?
-               fetchedPosts.length > 0
+            {fetchedUser && fetchedPosts
+               ? fetchedPosts.length > 0
                   // The user has posted something
                   ? <div className="flex flex-col start gap-4 w-full mt-6">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}

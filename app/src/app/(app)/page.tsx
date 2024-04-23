@@ -46,8 +46,8 @@ const Homepage = () => {
          <Header />
 
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
-            {fetchedPosts ?
-               fetchedPosts.length > 0
+            {fetchedPosts
+               ? fetchedPosts.length > 0
                   // There are some posts available in the homepage
                   ? <div className="flex flex-col start gap-4 w-full">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}

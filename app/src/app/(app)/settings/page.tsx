@@ -26,6 +26,7 @@ const Settings = () => {
    const [deleting, setDeleting] = useState<boolean>(false)
    const [popupVisible, setPopupVisible] = useState<boolean>(false)
 
+   // Custom functions triggered by interactions
    const handleLogout = async () => {
       if (!loggingOut) {
          setLoggingOut(true)
@@ -78,7 +79,7 @@ const Settings = () => {
             icon={
                <IconButton
                   icon={<Cross height={24} />}
-                  onClick={() => router.back()}
+                  href={`/u/${userProfile?.userData.username!}`}
                />
             }
          />
@@ -90,9 +91,9 @@ const Settings = () => {
                      - Personal Data
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     <SettingsButton text="Personal Information" onClick={() => alert("Coming soon...")} /> {/* "/settings/personal-information" */}
-                     <SettingsButton text="Manage Interests" onClick={() => alert("Coming soon...")} /> {/* "/settings/manage-interests" */}
-                     <SettingsButton text="Terms & Conditions" onClick={() => alert("Coming soon...")} /> {/* "/terms-conditions" */}
+                     <SettingsButton text="Personal Information" onClick={() => alert("Coming soon...")} /> {/* href="/settings/personal-information" */}
+                     <SettingsButton text="Manage Interests" onClick={() => alert("Coming soon...")} /> {/* href="/settings/manage-interests" */}
+                     <SettingsButton text="Terms & Conditions" onClick={() => alert("Coming soon...")} /> {/* href="/terms-conditions" */}
                   </div>
                </div>
 
@@ -101,7 +102,7 @@ const Settings = () => {
                      - Security
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     {hasPassword && <SettingsButton text="Update Password" onClick={() => router.push("/settings/update-password")} />}
+                     {hasPassword && <SettingsButton text="Update Password" href="/settings/update-password" />}
                      <SettingsButton
                         text={loggingOut ? "Logging out..." : "Log Out"}
                         onClick={handleLogout}

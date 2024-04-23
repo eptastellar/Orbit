@@ -26,6 +26,7 @@ const Welcome = () => {
    // Interaction states
    const [activeView, setActiveView] = useState<Views>("default")
 
+   // Custom functions triggered by interactions
    const handleGoogleAuth = () => {
       setGoogleLoading(true)
 
@@ -112,7 +113,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => router.push("/onboarding/sign-in")}
+                        href="/onboarding/sign-in"
                      />
                      <WelcomeButton
                         btnType="transparent"
@@ -135,7 +136,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => router.push("/onboarding/sign-up")}
+                        href="/onboarding/sign-up"
                      />
                      <WelcomeButton
                         btnType="transparent"

@@ -148,7 +148,7 @@ const Signin = () => {
             </p>
          </div>
 
-         <BackButton destinationPage="/onboarding" />
+         <BackButton href="/onboarding" />
       </div>
    )
 }

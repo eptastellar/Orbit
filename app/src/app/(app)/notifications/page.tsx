@@ -27,6 +27,7 @@ const Notifications = () => {
    // Interaction states
    const [filter, setFilter] = useState<Filter>("all")
 
+   // Custom functions triggered by interactions
    const filterNotifications = (filter: Filter) => {
       // TODO: Implement filter logic
       setFilter(filter)

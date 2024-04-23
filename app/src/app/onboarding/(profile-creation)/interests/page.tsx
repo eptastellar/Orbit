@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "react-toastify"
@@ -31,6 +32,7 @@ const Interests = () => {
 
    const searchRef = useRef<HTMLInputElement>(null)
 
+   // Custom functions triggered by interactions
    const filterDisplayedInterests = (value: string) => {
       setSearchQuery(value)
 
@@ -198,19 +200,19 @@ const Interests = () => {
 
             <div className="flex-grow px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md overflow-y-scroll">
                <div className="flex flex-wrap gap-2">
-                  {fetchingInterests ? (
-                     <p className="text-gray-3">Fetching interests...</p>
-                  ) : !displayedInterests.length ? (
-                     <p className="text-gray-3">No matching interests</p>
-                  ) : (
-                     displayedInterests.map((interest, index) => (
-                        <InterestButton
-                           key={`list-${index}`}
-                           interest={interest}
-                           onClick={() => handleDisplayedInterestsClick(interest)}
-                        />
-                     ))
-                  )}
+                  {fetchingInterests
+                     ? <p className="text-gray-3">Fetching interests...</p>
+                     : (displayedInterests.length
+                        ? displayedInterests.map((interest, index) => (
+                           <InterestButton
+                              key={`list-${index}`}
+                              interest={interest}
+                              onClick={() => handleDisplayedInterestsClick(interest)}
+                           />
+                        ))
+                        : <p className="text-gray-3">No matching interests</p>
+                     )
+                  }
                </div>
             </div>
 
@@ -223,12 +225,12 @@ const Interests = () => {
 
             <p className="text-center text-xs text-gray-3">
                When creating an account, you accept <br />
-               <span
+               <Link
                   className="text-semibold text-white underline underline-offset-4 cursor-pointer"
-                  onClick={() => router.push("/terms-conditions")}
+                  href="/terms-conditions"
                >
                   Orbit’s Terms & Conditions
-               </span>.
+               </Link>.
             </p>
          </div>
 

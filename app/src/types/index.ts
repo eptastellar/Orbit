@@ -3,6 +3,8 @@ export type LocalUser = {
    userData: UserData
 }
 
+export type MediaType = "audio" | "image"
+
 export type Notification = {
    // TODO: Update the notification type
    id: string
@@ -11,7 +13,7 @@ export type Notification = {
 export type Post = {
    id: string
    createdAt: number
-   type: "audio" | "image" | "text"
+   type: MediaType | "text"
    text?: string
    content?: string
    isLiked: boolean
