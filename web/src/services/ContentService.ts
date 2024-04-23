@@ -244,14 +244,15 @@ export default class ContentService {
          try {
             const docRef: DocumentData = await this.db.collection("posts").doc(postId).get()
             const doc: DocumentData = await docRef.data()
+            const id: string = docRef.id
 
             const userSchema: UserSchema = await this.user.getUserDatafromUID(doc.owner)
-            const isLiked: boolean = await this.isLikedBy(docRef.id, personalUID)
-            const likesNumber: number = await this.getLikesNumber(docRef.id)
-            const commentsNumber: number = await this.getRootsCommentsNumber(docRef.id)
+            const isLiked: boolean = await this.isLikedBy(id, personalUID)
+            const likesNumber: number = await this.getLikesNumber(id)
+            const commentsNumber: number = await this.getRootsCommentsNumber(id)
 
             const post: PostResponse = {
-               id: doc.id,
+               id: id,
                created_at: doc.created_at,
                text: doc.text,
                type: doc.type,
