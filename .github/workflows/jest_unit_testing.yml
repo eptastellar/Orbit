@@ -34,14 +34,6 @@ jobs:
       - name: Build web
         working-directory: web
         run : pnpm build
-      - name: zip node_modules web
-        working-directory: web
-        run : zip -rq node_modules.zip node_modules
-      - name: upload node_modules web
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules_web
-          path: web/node_modules.zip
 
       - name: Install Dependencies app
         working-directory: app
@@ -57,97 +49,38 @@ jobs:
          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}}
          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
-      - name: zip node_modules app
-        working-directory: app
-        run : zip -rq node_modules.zip node_modules
-      - name: upload node_modules app
-        uses: actions/upload-artifact@v4
-        with:
-          name: node_modules_app
-          path: app/node_modules.zip
 
       - name: Add permission to bash script
         working-directory: .github
         run: chmod +x updateVersions.sh
       - name: Update package.json App patch
         working-directory: app
-        run: ../.github/updateVersions.sh
+        run: ../.github/updateVersions.sh && git push
         if: github.event_name == 'push'
       - name: Update package.json Web patch
         working-directory: web
-        run: ../.github/updateVersions.sh
+        run: ../.github/updateVersions.sh && git push
         if: github.event_name == 'push'
       - name : Update package.json App minor
         working-directory: app
-        run: npm version minor | git push
+        run: npm version minor && git push
         if: github.event_name == 'pull_request'
       - name : Update package.json Web minor
         working-directory: Web
-        run: npm version minor | git push
+        run: npm version minor && git push
         if: github.event_name == 'pull_request'
 
-  lint:
-    needs: build
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
-      - name: Download web artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules_web
-          path: web/
       - name: Linting web
         working-directory: web
-        run: unzip -q node_modules.zip && pnpm lint
+        run: pnpm lint
 
-
-      - name: Download app artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules_app
-          path: app/
       - name: Linting app
         working-directory: app
-        run: unzip -q node_modules.zip && pnpm lint
+        run: pnpm lint
 
-  tests:
-    needs: build
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [20.x]
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: node_modules_web
-          path: web/
       - name: Jest Unit Testing
         working-directory: web
-        run: unzip -q node_modules.zip && pnpm test
+        run: pnpm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
