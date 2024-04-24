@@ -53,7 +53,7 @@ jobs:
 
       - name: Debug TOBEREMOVED
         run : |
-            echo github.ref_name
+            echo ${{github.ref_name}}
       - name: Update package.json App patch
         working-directory: app
         run: |
