@@ -50,10 +50,6 @@ jobs:
          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
 
-
-      - name: Debug TOBEREMOVED
-        run : |
-            echo ${{github.ref_name}}
       - name: Update package.json App patch
         working-directory: app
         run: |
@@ -83,6 +79,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git push https://eptastellar:${GH_TOKEN}@github.com/eptastellar/Orbit.git ${{github.ref_name}}
+        if: github.ref_name == 'app' || github.ref_name == 'web'
 
       - name: Linting web
         working-directory: web
