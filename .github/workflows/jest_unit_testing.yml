@@ -50,25 +50,35 @@ jobs:
          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
 
-      - name: Add permission to bash script
-        working-directory: .github
-        run: chmod +x updateVersions.sh
       - name: Update package.json App patch
         working-directory: app
-        run: ../.github/updateVersions.sh && git push
-        if: github.event_name == 'push'
+        run: |
+            npm version patch
+            git add .
+            git commit -m "Update package.json"
+        if: github.event_name == 'push' && github.ref_name == 'app'
+
       - name: Update package.json Web patch
         working-directory: web
-        run: ../.github/updateVersions.sh && git push
-        if: github.event_name == 'push'
+        run: |
+            npm version patch
+            git add .
+            git commit -m "Update package.json"
+        if: github.event_name == 'push' && github.ref_name == 'web'
       - name : Update package.json App minor
         working-directory: app
-        run: npm version minor && git push
-        if: github.event_name == 'pull_request'
+        run: npm version minor
+        if: github.event_name == 'pull_request' && github.ref_name == 'app'
       - name : Update package.json Web minor
         working-directory: Web
-        run: npm version minor && git push
-        if: github.event_name == 'pull_request'
+        run: npm version minor
+        if: github.event_name == 'pull_request' && github.ref_name == 'web'
+
+      - name: Push changes
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git push https://eptastellar:${GH_TOKEN}@github.com/eptastellar/Orbit.git ${{github.ref_name}}
 
       - name: Linting web
         working-directory: web
