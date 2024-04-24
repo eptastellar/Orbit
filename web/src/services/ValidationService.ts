@@ -1,15 +1,18 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
+import { UserService } from "services"
 
 export default class ValidationService {
    private db: Firestore
    private bucket
+   private user: UserService
 
    constructor() {
       firebase()
       this.db = firestore()
       this.bucket = firestorage()
+      this.user = new UserService()
    }
 
    public birthdateValidation = async (bday: number): Promise<null> => {
@@ -78,13 +81,25 @@ export default class ValidationService {
       })
    }
 
+   public chatIdValidation = (chatId: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            const docRef: DocumentData = await this.db.collection("chats").doc(chatId).get()
+
+            if (docRef.exists)
+               resolve(null)
+            else reject(err("validation/invalid-document-id"))
+         } catch { reject(err("validation/invalid-document-id")) }
+      })
+   }
+
    public commentRootIdValidation = async (rootId: string, postId: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentData = await this.db.collection("comments").doc(rootId).get() //retrieve the root comment
 
             if (docRef.exists) {
-               if (docRef.data()?.postId === postId)
+               if (docRef.data()?.post_id === postId)
                   resolve(null)
                else reject(err("validation/invalid-document-id"))
             } else reject(err("validation/invalid-document-id"))
@@ -97,11 +112,13 @@ export default class ValidationService {
          try {
             const leafRef: DocumentData = await this.db.collection("comments").doc(leafId).get() //retrieve the leaf comment
             const rootRef: DocumentData = await this.db.collection("comments").doc(rootId).get() //retrieve the root comment
+            const leafData: DocumentData[string] = rootRef.data()
+            const rootData: DocumentData[string] = leafRef.data()
 
             if (rootRef.exists) {
-               if (rootRef.data()?.postId === postId) {
-                  if (leafRef.data()?.postId === postId) {
-                     if (leafRef.data()?.root === rootId)
+               if (rootData?.post_id === postId) {
+                  if (leafData?.post_id === postId) {
+                     if (leafData?.root_id === rootId)
                         resolve(null)
                      else reject(err("validation/invalid-document-id"))
                   } else reject(err("validation/invalid-document-id"))
@@ -130,27 +147,52 @@ export default class ValidationService {
       })
    }
 
-
    public mediaValidation = (media: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
-         const cleanURL: string = media.split("appspot.com/o/")[1]
-         const removeToken: string = cleanURL.split("?")[0]
+         try {
+            const cleanURL: string = media.split("appspot.com/o/")[1]
+            const removeToken: string = cleanURL.split("?")[0]
 
-         const formattedPath: string = removeToken.replace(/%2F/g, "/")
-         const fileRef = this.bucket.file(decodeURIComponent(formattedPath))
+            const formattedPath: string = removeToken.replace(/%2F/g, "/")
+            const fileRef = this.bucket.file(decodeURIComponent(formattedPath))
 
-         fileRef.exists().then((exists) => {
-            if (exists[0])
-               resolve(null)
-            else reject(err("validation/invalid-image-path"))
-         })
+            fileRef.exists().then((exists) => {
+               if (exists[0])
+                  resolve(null)
+               else reject(err("validation/invalid-image-path"))
+            })
+         } catch { reject(err("malformed url")) }
       })
    }
 
-   public harmfulContentValidation = (text: string): Promise<null> => {
-      return new Promise((resolve, reject) => {
-         //TODO enhance
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   public harmfulContentValidation = (text: string): Promise<null> => { //TODO
+      return new Promise((resolve) => {
          resolve(null)
+      })
+   }
+
+   public membersValidation = (personalUID: string, members: string[]): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            await Promise.all(members.map(async (member) => {
+               const docRef: Query = this.db.collection("users").where("username", "==", member)
+               const snapshot: QuerySnapshot = await docRef.get()
+
+               if (!snapshot.empty) {
+                  for (let i = 0; i < snapshot.docs.length; i++) {
+                     const doc: DocumentData = snapshot.docs[i]
+                     if (personalUID !== doc.id)
+                        await this.user.areFriends(personalUID, doc.id)
+
+                     if (member !== doc.data()?.username)
+                        await this.user.areFriends(member, doc.id) // if all friends are friends with everyone
+                  }
+               } else reject(err("empty"))
+            }))
+
+            resolve(null)
+         } catch (error) { reject(error) }
       })
    }
 }

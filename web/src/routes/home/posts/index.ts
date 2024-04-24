@@ -1,23 +1,29 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, UserService, ValidationService } from "services"
-import { ContentFetch } from "types"
+import { ContentFetch, PostsRequest } from "types"
 
 const auth = new AuthService()
 const valid = new ValidationService()
 const user = new UserService()
 const cont = new ContentService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
-   const lastPostId: string = req.body.lastPostId
+   const last_post_id: string = req.body.last_post_id
+
+   const ereq: PostsRequest = {
+      last_post_id
+   }
 
    try {
-      if (lastPostId) await valid.postIdValidation(lastPostId)
+      if (ereq.last_post_id) await valid.postIdValidation(ereq.last_post_id)
 
       user.getFriendList(uid).then((friendList: string[]) => {
-         cont.fetchPosts(friendList, lastPostId, uid).then((fetch: ContentFetch) => {
-            res.status(200).json({ success: true, posts: fetch.content, lastPostId: fetch.lastDocId })
-         }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
-   } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+         cont.fetchPosts(friendList, ereq.last_post_id, uid).then((contentFetch: ContentFetch) => {
+            res.status(200).json({
+               ...contentFetch
+            })
+         }).catch((error) => { res.status(200).json({ error: error.message }) })
+      }).catch((error) => { res.status(200).json({ error: error.message }) })
+   } catch (error: any) { res.status(400).json({ error: error.message }) }
 }]

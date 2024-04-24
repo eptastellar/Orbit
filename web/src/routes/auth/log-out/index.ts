@@ -1,12 +1,15 @@
 import { Request, Response } from "express"
 import { AuthService } from "services"
+import { SuccessResponse } from "types"
 
 const auth = new AuthService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, (req: Request, res: Response) => {
+export const GET = [auth.sessionGuard, (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
-   auth.logOut(uid).then(() => {
-      res.status(200).json({ success: true })
-   }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+   auth.logOut(uid).then((success: SuccessResponse) => {
+      res.status(200).json({
+         ...success
+      })
+   }).catch((error) => { res.status(500).json({ error: error.message }) })
 }]

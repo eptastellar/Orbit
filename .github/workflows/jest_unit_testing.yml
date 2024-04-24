@@ -1,4 +1,3 @@
-#!/bin/bash
 name: Jest Unit Testing
 
 on:

@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-const message = { success: false, message: "404 Not Found" }
+const message = { error: "server/404" } //TODO add error type
 
 export const POST = async (_: Request, res: Response) => { res.status(404).json(message) }
 export const GET = async (_: Request, res: Response) => { res.status(404).json(message) }

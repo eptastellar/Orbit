@@ -1,40 +1,40 @@
-import { close, err, neo } from "config"
-import { QueryResult, Session } from "neo4j-driver"
+import { err, neo } from "config"
+import { QueryResult } from "neo4j-driver"
 
 export const supernova = async (user: string): Promise<string> => {
-   const neo4j: Session = neo() //TODO: @TheInfernalNick add neoClose for each transaction
    let startingPoint: string | undefined = user
    const friendList: Map<string, number> = new Map()
    let arrayFriends: Array<string> = []
    const friendListSearched: Array<string | undefined> = []
    const alreadySearched: Array<string | undefined> = []
-   let friend: string = ""
    let startingPointInterests: Array<string> = []
    let arrayInterests: Array<string> = []
+   let result: QueryResult
 
    //query to retrieve the starting user node
    const queryStartingPoint: string = `OPTIONAL MATCH (u:User) WHERE u.name = "${startingPoint}" RETURN u`
    //query to find friends connected to the starting user node
-   let queryFriends: string = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
+   let queryFriends: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
 
    return new Promise<string>(async (resolve, reject) => {
       //retrieve the starting user node and its interests
-      const resultStartingPoint: QueryResult = await neo4j.executeRead(tx => tx.run(queryStartingPoint))
+      const resultStartingPoint: QueryResult = await neo().executeRead(tx => tx.run(queryStartingPoint))
       const startingNode = resultStartingPoint.records.map(row => row.get("u"))
       if (startingNode.includes(null)) {
-         close()
          return reject(err("User not found"))
       }
       startingPointInterests = stringSlicing(startingNode.at(0).properties["interests"])
 
       //retrieve friends of the starting user and calculate compatibility
-      const result = await neo4j.executeRead(tx => tx.run(queryFriends))
+      result = await neo().executeRead(tx => tx.run(queryFriends))
       let results = result.records.map(row => row.get("t"))
+      if (results.includes(null)) {
+         return reject(err("No Friends Found"))
+      }
       results.forEach(element => {
-         arrayInterests = stringSlicing(element.properties["interests"])
-         friendList.set(element.properties["name"], checkInterestsCompatibility(startingPointInterests, arrayInterests))
+         friendList.set(element.properties["name"], 0)
+         arrayFriends.push(element.properties["name"])
       })
-      arrayFriends = sortFriendsMap(friendList)
 
       //explore the network of friends until a suitable match is found
       while (friendList.size > 0) {
@@ -47,19 +47,22 @@ export const supernova = async (user: string): Promise<string> => {
          } else continue
 
          queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
-         const result1 = await neo4j.executeRead(tx => tx.run(queryFriends))
-         results = result1.records.map(row => row.get("t"))
-         //TODO : Non mi sembra ancora scalabile, è da ricontrollare
+         result = await neo().executeRead(tx => tx.run(queryFriends))
+         results = result.records.map(row => row.get("t"))
 
+         results.forEach(element => {
+            arrayInterests = stringSlicing(element.properties["interests"])
+            friendList.set(element.properties["name"], checkInterestsCompatibility(startingPointInterests, arrayInterests))
+         })
+         arrayFriends = sortFriendsMap(friendList)
          //Itera attraverso tutti gli amici che sono stati trovati per quell'utente
-         for await (const element of results) {
-            friend = element.properties["name"]
+         for await (const friend of arrayFriends) {
             //Se quell'amico è già stato cercato una volta allora salterà quell'iterazione
             if (alreadySearched.includes(friend)) continue
             //QUERY PER VEDERE SE SONO GIà AMICI ( ovviamente salta se è se stesso dato che non può essere amico di se stesso )
             if (user != friend) {
                const queryAlreadyFriend = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) WHERE u.name="${user}" AND t.name="${friend}" RETURN t`
-               const result = await neo4j?.executeRead(tx => tx.run(queryAlreadyFriend))
+               result = await neo()?.executeRead(tx => tx.run(queryAlreadyFriend))
                const testNull = result.records.map(row => row.get("t"))
                //Ritorna quando testNull[0] è null dato che l'optional match risponde con NULL solamente quando non trova il match tra le persone, ma se abbiamo controllato esattamente che quelle persone esistono e non hanno una connessione allora vuol dire che abbiamo un match
                if (testNull[0] === null) {
@@ -95,7 +98,6 @@ const sortFriendsMap = (friendsMap: Map<string, number>) => {
 
    //sort the map entries based on their associated numeric values
    const check = (value: number, key: string) => {
-      //TODO: FIXA L'ORDINE
       if (value <= Math.max(...tempNumbers)) {
          tempNumbers.push(value)
          temp.push(key)
@@ -105,7 +107,6 @@ const sortFriendsMap = (friendsMap: Map<string, number>) => {
       } else {
          if (tempNumbers.length > 0) {
             const greaterNumberIndex: number = tempNumbers.findIndex((element) => element >= value)
-            //TODO: Potrebbbe non funzionare, controllare in futuro con dei test case
             shiftArrays(tempNumbers, temp, greaterNumberIndex)
             tempNumbers[greaterNumberIndex] = value
             temp[greaterNumberIndex] = key

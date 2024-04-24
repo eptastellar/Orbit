@@ -1,48 +1,63 @@
 import { Request, Response } from "express"
 import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { CommentUploadRequest, CommentUploadResponse, DeleteCommentRequest, SuccessResponse } from "types"
 
 const auth = new AuthService()
 const cont = new ContentService()
 const user = new UserService()
 const valid = new ValidationService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
-   const postId: string = req.params.id
-   const rootId: string = req.body.rootId
-   const text: string = req.body.content
+   const post_id: string = req.params.id
+   const root_id: string = req.body.root_id
+   const content: string = req.body.content
+
+   const ereq: CommentUploadRequest = {
+      root_id,
+      content
+   }
 
    try {
-      if (rootId) await valid.commentRootIdValidation(rootId, postId)
+      if (ereq.root_id) await valid.commentRootIdValidation(ereq.root_id, post_id)
 
-      valid.postIdValidation(postId).then(() => {
-         valid.contentValidation(text).then(() => {
-            cont.uploadComment(uid, rootId, postId, text).then((comment: string) => {
-               res.status(201).json({ success: true, comment: comment })
-            }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+      valid.postIdValidation(post_id).then(() => {
+         valid.contentValidation(ereq.content).then(() => {
+            cont.uploadComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
+               res.status(201).json({
+                  ...commentUploadResponse
+               })
+            }).catch((error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error) => { res.status(400).json({ error: error.message }) })
+   } catch (error: any) { res.status(400).json({ error: error.message }) }
 }]
 
-export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
-   const commentId: string = req.body.commentId
-   const postId: string = req.params.id
-   const rootId: boolean | string = req.body.rootId
+   const post_id: string = req.params.id
+   const comment_id: string = req.body.comment_id
+   const root_id: boolean | string = req.body.root_id
 
-   valid.postIdValidation(postId).then(async () => {
+   const ereq: DeleteCommentRequest = {
+      comment_id,
+      root_id
+   }
+
+   valid.postIdValidation(post_id).then(async () => {
       try {
-         if (rootId)
-            await valid.commentRootIdValidation(commentId, postId)
+         if (ereq.root_id)
+            await valid.commentRootIdValidation(ereq.comment_id, post_id)
          else
-            await valid.commentLeafIdValidation(commentId, rootId as string, postId)
+            await valid.commentLeafIdValidation(ereq.comment_id, ereq.root_id as string, post_id)
 
-         user.hasPermission(uid, commentId, "comments").then(() => {
-            cont.deleteComment(commentId).then(() => {
-               res.status(200).json({ success: true })
-            }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+         user.hasPermission(uid, ereq.comment_id, "comments").then(() => {
+            cont.deleteComment(ereq.comment_id).then((success: SuccessResponse) => {
+               res.status(200).json({
+                  ...success
+               })
+            }).catch((error) => { res.status(400).json({ error: error.message }) })
+         }).catch((error) => { res.status(400).json({ error: error.message }) })
+      } catch (error: any) { res.status(400).json({ error: error.message }) }
    })
 }]
