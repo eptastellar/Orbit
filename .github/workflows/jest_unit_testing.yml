@@ -50,6 +50,10 @@ jobs:
          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
 
+
+      - name: Debug TOBEREMOVED
+        run : |
+            echo github.ref_name
       - name: Update package.json App patch
         working-directory: app
         run: |
