@@ -7,7 +7,7 @@ on:
       - main
 
 jobs:
- tests:
+  build:
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,14 +20,83 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
 
-      - name: Install Dependencies
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Dependencies web
         working-directory: web
-        run: npm install
+        run: pnpm i
+      - name: Build web
+        working-directory: web
+        run : pnpm build
+
+      - name: Install Dependencies app
+        working-directory: app
+        run: pnpm i
+      - name: Build app
+        working-directory: app
+        run : pnpm build
+        env:
+         NEXT_PUBLIC_API_URL: ${{secrets.NEXT_PUBLIC_API_URL}}
+         NEXT_PUBLIC_FIREBASE_API_KEY: ${{secrets.NEXT_PUBLIC_FIREBASE_API_KEY}}
+         NEXT_PUBLIC_FIREBASE_APP_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_APP_ID}}
+         NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}}
+         NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}}
+         NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID}}
+         NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}}
+
+      - name: Update package.json App patch
+        working-directory: app
+        run: |
+            npm version patch
+            git add .
+            git commit -m "Update package.json"
+        if: github.event_name == 'push' && github.ref_name == 'app'
+
+      - name: Update package.json Web patch
+        working-directory: web
+        run: |
+            npm version patch
+            git add .
+            git commit -m "Update package.json"
+        if: github.event_name == 'push' && github.ref_name == 'web'
+      - name : Update package.json App minor
+        working-directory: app
+        run: |
+          npm version minor
+          git add .
+          git commit -m "Update package.json"
+        if: github.event_name == 'pull_request' && github.ref_name == 'app'
+      - name : Update package.json Web minor
+        working-directory: Web
+        run: |
+          npm version minor
+          git add .
+          git commit -m "Update package.json"
+        if: github.event_name == 'pull_request' && github.ref_name == 'web'
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+        if: github.ref_name == 'app' || github.ref_name == 'web'
+
+      - name: Linting web
+        working-directory: web
+        run: pnpm lint
+
+      - name: Linting app
+        working-directory: app
+        run: pnpm lint
 
       - name: Jest Unit Testing
         working-directory: web
-        run: npm test
+        run: pnpm test
         env:
           NEO4J_URI: ${{ secrets.NEO4J_URI }}
           NEO4J_PASSWORD: ${{ secrets.NEO4J_PASSWORD }}
