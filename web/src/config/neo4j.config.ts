@@ -13,3 +13,4 @@ const driver: Driver = neo4j.driver(
 )
 
 export const neo = (): Session => { return driver.session() }
+export const close = (): void => { driver.close() }
