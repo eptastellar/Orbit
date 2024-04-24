@@ -67,18 +67,24 @@ jobs:
         if: github.event_name == 'push' && github.ref_name == 'web'
       - name : Update package.json App minor
         working-directory: app
-        run: npm version minor
+        run: |
+          npm version minor
+          git add .
+          git commit -m "Update package.json"
         if: github.event_name == 'pull_request' && github.ref_name == 'app'
       - name : Update package.json Web minor
         working-directory: Web
-        run: npm version minor
+        run: |
+          npm version minor
+          git add .
+          git commit -m "Update package.json"
         if: github.event_name == 'pull_request' && github.ref_name == 'web'
 
       - name: Push changes
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          git push https://eptastellar:${GH_TOKEN}@github.com/eptastellar/Orbit.git ${{github.ref_name}}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
         if: github.ref_name == 'app' || github.ref_name == 'web'
 
       - name: Linting web
