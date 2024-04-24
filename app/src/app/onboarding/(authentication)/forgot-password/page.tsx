@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { resolveFirebaseError } from "@/libraries/firebaseErrors"
+import { resolveFirebaseError } from "@/libraries/errors"
 
 const ForgotPassword = () => {
    // Context hooks
@@ -12,7 +13,6 @@ const ForgotPassword = () => {
 
    // Loading and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
    const [emailError, setEmailError] = useState<string>("")
    const [confirmEmailError, setConfirmEmailError] = useState<string>("")
    const [success, setSuccess] = useState<boolean>(false)
@@ -21,11 +21,11 @@ const ForgotPassword = () => {
    const [email, setEmail] = useState<string>("")
    const [confirmEmail, setConfirmEmail] = useState<string>("")
 
+   // Custom functions triggered by interactions
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
       // Preliminary checks
-      setError("")
       setEmailError("")
       setConfirmEmailError("")
       setSuccess(false)
@@ -39,10 +39,10 @@ const ForgotPassword = () => {
 
       resetUserPassword(email)
          .then(() => setSuccess(true))
-         .catch((error: any) => {
+         .catch((error: Error) => {
             if (error.message.includes("auth/invalid-email"))
                setEmailError("Invalid email.")
-            else setError(resolveFirebaseError(error.message))
+            else toast.error(resolveFirebaseError(error.message))
          })
          .finally(() => setLoading(false))
    }
@@ -80,12 +80,6 @@ const ForgotPassword = () => {
                   onChange={setConfirmEmail}
                />
 
-               {error && (
-                  <p className="text-center text-base font-normal text-red-5">
-                     {error}
-                  </p>
-               )}
-
                <LargeButton
                   text="Send a reset email"
                   loading={loading}
@@ -103,7 +97,7 @@ const ForgotPassword = () => {
             )}
          </div>
 
-         <BackButton destinationPage="/onboarding/sign-in" />
+         <BackButton href="/onboarding/sign-in" />
       </div>
    )
 }

@@ -2,10 +2,10 @@ import { Post, ServerError } from "@/types"
 
 export const fetchPosts = async (
    reqLastPostId: string | undefined,
-   sessionToken: string | undefined
+   sessionToken: string
 ): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
    const requestBody = JSON.stringify({
-      lastPostId: reqLastPostId
+      last_post_id: reqLastPostId
    })
 
    const requestParams: RequestInit = {
@@ -18,40 +18,39 @@ export const fetchPosts = async (
    }
 
    type ResponseType = {
-      success: boolean
-      message: ServerError
+      error?: ServerError
       posts: {
          id: string
-         creation: number
+         created_at: number
          text?: string
          type?: "audio" | "image"
          content?: string
-         is_liked?: boolean
-         likes_number: number
-         comments_number: number
+         likes: number
+         comments: number
+         is_liked: boolean
          user_data: {
-            username: string
             name: string
+            username: string
             pfp: string
          }
       }[]
-      lastPostId: string
+      last_doc_id: string
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/home/posts`, requestParams)
-   const { success, message, posts, lastPostId }: ResponseType = await response.json()
+   const { error, ...result }: ResponseType = await response.json()
 
-   if (success) return {
-      posts: posts.map((post) => ({
+   if (!error) return {
+      posts: result.posts.map((post) => ({
          id: post.id,
-         createdAt: post.creation,
+         createdAt: post.created_at,
          type: post.type ?? "text",
          text: post.text,
          content: post.content,
-         isLiked: post.is_liked ?? false,
+         isLiked: post.is_liked,
          counters: {
-            likeCount: post.likes_number,
-            commentCount: post.comments_number
+            likeCount: post.likes,
+            commentCount: post.comments
          },
          userData: {
             displayName: post.user_data.name,
@@ -59,14 +58,14 @@ export const fetchPosts = async (
             profilePicture: post.user_data.pfp
          }
       })),
-      lastPostId: lastPostId
+      lastPostId: result.last_doc_id
    }
 
-   if (message === "server/no-content" || message === "server/no-friends")
+   if (error === "server/no-content" || error === "server/no-friends")
       return {
          posts: [],
          lastPostId: undefined
       }
 
-   throw new Error(message)
+   throw new Error(error)
 }

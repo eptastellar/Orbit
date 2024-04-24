@@ -15,11 +15,12 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
 
    // Loading and async states
    const [loading, setLoading] = useState<boolean>(true)
+   const sessionToken = userProfile?.sessionToken
 
    useEffect(() => {
-      if (userProfile?.sessionToken) router.push("/")
+      if (sessionToken) router.replace("/")
       else setLoading(false)
-   }, [])
+   }, [userProfile])
 
    return loading ? <LoadingOverlay /> : (
       <div className="h-screen w-screen">

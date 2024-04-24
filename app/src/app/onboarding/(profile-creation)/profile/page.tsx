@@ -1,15 +1,17 @@
 "use client"
 
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
+import { randomBytes } from "crypto"
+import { StorageReference, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
+import { toast } from "react-toastify"
 
 import { CameraPlus } from "@/assets/icons"
 import { BackButton, FullInput, Input, LargeButton } from "@/components"
 import { useLocalStorage } from "@/hooks"
+import { resolveFirebaseError, resolveServerError } from "@/libraries/errors"
 import { storage } from "@/libraries/firebase"
-import { resolveServerError } from "@/libraries/serverErrors"
 import { ServerError } from "@/types"
 
 const Profile = () => {
@@ -18,10 +20,12 @@ const Profile = () => {
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
-   const [progress, setProgress] = useState<number>(0)
+   const [uploading, setUploading] = useState<boolean>(false)
+   const [uploadProgress, setUploadProgress] = useState<number>(0)
 
    // Interaction states
+   const [dbRef] = useState<StorageReference>(ref(storage, `uploads/pfps/${randomBytes(16).toString("hex")}`))
+
    const [pfpUrl, setPfpUrl] = useLocalStorage<string>("profilePicture", "")
    const [username, setUsername] = useLocalStorage<string>("username", "")
    const [birthdate, setBirthdate] = useLocalStorage<string[]>("birthdate", ["", "", ""])
@@ -40,20 +44,26 @@ const Profile = () => {
       setBdayDay(birthdate[2] ?? "")
    }, [birthdate])
 
-
+   // Custom functions triggered by interactions
    const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files ? event.target.files[0] : null
+      if (!uploading) {
+         const file = event.target.files ? event.target.files[0] : null
 
-      if (file && ["image/gif", "image/jpeg", "image/png"].includes(file.type)) {
-         setPfpUrl("")
+         if (file && ["image/gif", "image/jpeg", "image/png"].includes(file.type)) {
+            setPfpUrl("")
+            setUploading(true)
 
-         const uploadTask = uploadBytesResumable(ref(storage, `uploads/pfps/${crypto.randomUUID()}`), file)
+            const uploadTask = uploadBytesResumable(dbRef, file)
 
-         uploadTask.on("state_changed",
-            (snapshot) => setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
-            (error) => setError(error.message),
-            () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => setPfpUrl(downloadURL))
-         )
+            uploadTask.on("state_changed",
+               (snapshot) => setUploadProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100),
+               (error) => toast.error(resolveFirebaseError(error.message)),
+               () => getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                  setPfpUrl(downloadURL)
+                  setUploading(false)
+               })
+            )
+         }
       }
    }
 
@@ -87,14 +97,12 @@ const Profile = () => {
       event.preventDefault()
 
       // Preliminary checks
-      setError("")
-
-      if (!username) return setError("Fill in the username.")
+      if (!username) return toast.info("Please fill in the username.")
       if (!birthdate[0] || !birthdate[1] || !birthdate[2] || birthdate[0].length !== 4)
-         return setError("Fill in all birthdate fields.")
+         return toast.info("Please fill in all birthdate fields.")
 
       const unixBirthdate = Math.floor(new Date(birthdate.join("/")).getTime() / 1000)
-      if (!unixBirthdate) return setError("Invalid birthdate.")
+      if (!unixBirthdate) return toast.warn("Invalid birthdate provided.")
 
       // Check form validity with api endpoint
       setLoading(true)
@@ -110,14 +118,17 @@ const Profile = () => {
          body: requestBody
       }
 
-      type ResponseType = { success: boolean, message: ServerError }
+      type ResponseType = {
+         error?: ServerError
+      }
+
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up/validate`, params)
          .then((response) => response.json())
-         .then(({ success, message }: ResponseType) => {
-            if (success) {
+         .then(({ error }: ResponseType) => {
+            if (!error) {
                router.push("/onboarding/interests")
             } else {
-               setError(resolveServerError(message))
+               toast.error(resolveServerError(error))
                setLoading(false)
             }
          })
@@ -136,10 +147,10 @@ const Profile = () => {
 
          <form className="flex flex-col center gap-4 w-full">
             <label
-               className={`flex center min-h-32 min-w-32 ${progress === 0 && !pfpUrl ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
+               className={`flex center min-h-32 min-w-32 ${uploadProgress === 0 && !pfpUrl ? "p-[1px]" : "p-1"} rounded-full transition-all duration-500 cursor-pointer`}
                style={{
                   background: pfpUrl ? "#1D5C96" :
-                     `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(progress * 3.6)}deg, #585858 ${Math.floor(progress * 3.6)}deg)`
+                     `conic-gradient(#1D5C96 0deg, #1D5C96 ${Math.floor(uploadProgress * 3.6)}deg, #585858 ${Math.floor(uploadProgress * 3.6)}deg)`
                }}
             >
                <div className="flex center h-32 w-32 bg-gray-7 rounded-full overflow-hidden">
@@ -158,6 +169,7 @@ const Profile = () => {
                   type="file"
                   accept="image/gif, image/jpeg, image/png"
                   onChange={handleUpload}
+                  disabled={uploading}
                   hidden
                />
             </label>
@@ -207,8 +219,6 @@ const Profile = () => {
                   You won't be able to change this later.
                </p>
             </div>
-
-            <p className="text-center text-red-5">{error}</p>
 
             <LargeButton
                text="Save your profile"

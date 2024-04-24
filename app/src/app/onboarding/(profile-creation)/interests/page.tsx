@@ -1,15 +1,17 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
+import { toast } from "react-toastify"
 
 import { BackButton, FullInput, InterestButton, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
-import { resolveServerError } from "@/libraries/serverErrors"
+import { useLocalStorage } from "@/hooks"
+import { resolveServerError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
-import { useLocalStorage } from "@/hooks"
 import { fetchInterests } from "./requests"
 
 const Interests = () => {
@@ -22,7 +24,6 @@ const Interests = () => {
 
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
 
    // Interaction states
    const [selectedInterests, setSelectedInterests] = useLocalStorage<string[]>("interests", [])
@@ -31,6 +32,7 @@ const Interests = () => {
 
    const searchRef = useRef<HTMLInputElement>(null)
 
+   // Custom functions triggered by interactions
    const filterDisplayedInterests = (value: string) => {
       setSearchQuery(value)
 
@@ -71,8 +73,6 @@ const Interests = () => {
 
    const handleSubmit = async () => {
       // Preliminary checks
-      setError("")
-
       const profilePicture: string | null =
          JSON.parse(localStorage.getItem("profilePicture") ?? "null")
       const username: string | null =
@@ -108,21 +108,26 @@ const Interests = () => {
       }
 
       type ResponseType = {
-         success: boolean
-         message: ServerError
+         error?: ServerError
          jwt: string
-         pfp: string
-         username: string
+         user_data: {
+            name: string
+            username: string
+            pfp: string
+         }
       }
 
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up`, params)
          .then((response) => response.json())
-         .then(({ success, message, jwt, pfp, username }: ResponseType) => {
-            if (success) {
+         .then(({ error, ...result }: ResponseType) => {
+            if (!error) {
                setUserProfile({
-                  profilePicture: pfp,
-                  username: username,
-                  sessionToken: jwt
+                  sessionToken: result.jwt,
+                  userData: {
+                     displayName: result.user_data.name,
+                     username: result.user_data.username,
+                     profilePicture: result.user_data.pfp
+                  }
                })
 
                // Remove temporary user localStorage values
@@ -132,13 +137,13 @@ const Interests = () => {
                localStorage.removeItem("interests")
                router.push(`/u/${username}`)
             } else {
-               setError(resolveServerError(message))
+               toast.error(resolveServerError(error))
                setLoading(false)
             }
          })
    }
 
-   // Load all interests on page load
+   // Async query loading/error states
    const { isLoading: fetchingInterests, data: interestsList, error: interestsError } = useQuery({
       queryKey: ["interests"],
       queryFn: () => fetchInterests().then((interests) => {
@@ -148,7 +153,7 @@ const Interests = () => {
    })
 
    useEffect(() => {
-      if (interestsError) console.error(interestsError)
+      if (interestsError) toast.error(resolveServerError(interestsError.message))
    }, [interestsError])
 
    return (
@@ -195,27 +200,21 @@ const Interests = () => {
 
             <div className="flex-grow px-4 py-2 ring-inset ring-1 ring-gray-5 bg-gray-7 rounded-md overflow-y-scroll">
                <div className="flex flex-wrap gap-2">
-                  {fetchingInterests ? (
-                     <p className="text-gray-3">Fetching interests...</p>
-                  ) : !displayedInterests.length ? (
-                     <p className="text-gray-3">No matching interests</p>
-                  ) : (
-                     displayedInterests.map((interest, index) => (
-                        <InterestButton
-                           key={`list-${index}`}
-                           interest={interest}
-                           onClick={() => handleDisplayedInterestsClick(interest)}
-                        />
-                     ))
-                  )}
+                  {fetchingInterests
+                     ? <p className="text-gray-3">Fetching interests...</p>
+                     : (displayedInterests.length
+                        ? displayedInterests.map((interest, index) => (
+                           <InterestButton
+                              key={`list-${index}`}
+                              interest={interest}
+                              onClick={() => handleDisplayedInterestsClick(interest)}
+                           />
+                        ))
+                        : <p className="text-gray-3">No matching interests</p>
+                     )
+                  }
                </div>
             </div>
-
-            {error && (
-               <p className="text-center text-base font-normal text-red-5">
-                  {error}
-               </p>
-            )}
 
             <LargeButton
                text="Start to orbit!"
@@ -226,12 +225,12 @@ const Interests = () => {
 
             <p className="text-center text-xs text-gray-3">
                When creating an account, you accept <br />
-               <span
+               <Link
                   className="text-semibold text-white underline underline-offset-4 cursor-pointer"
-                  onClick={() => router.push("/terms-conditions")}
+                  href="/terms-conditions"
                >
                   Orbit’s Terms & Conditions
-               </span>.
+               </Link>.
             </p>
          </div>
 

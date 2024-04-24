@@ -13,6 +13,7 @@ import apple from "./logos/apple.png"
 import google from "./logos/google.png"
 
 import directChat from "./illustrations/direct-chat.svg"
+import downloadApp from "./illustrations/download-app.svg"
 import emailVerification from "./illustrations/email-verification.svg"
 import emptyChat from "./illustrations/empty-chat.svg"
 import groupChat from "./illustrations/group-chat.svg"
@@ -43,6 +44,7 @@ const logoWhite = {
 export {
    apple,
    directChat,
+   downloadApp,
    emailVerification,
    emptyChat,
    google,

@@ -1,25 +1,21 @@
 "use client"
 
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { passwordUpdate } from "@/assets"
 import { Cross, IconButton } from "@/assets/icons"
 import { FullInput, HeaderWithButton, LargeButton } from "@/components"
 import { useAuthContext } from "@/contexts"
-import { resolveFirebaseError } from "@/libraries/firebaseErrors"
+import { resolveFirebaseError } from "@/libraries/errors"
 
 const UpdatePassword = () => {
    // Context hooks
    const { hasRecentLogin, updateUserPassword } = useAuthContext()
 
-   // Next router for navigation
-   const router = useRouter()
-
    // Fetching and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
    const [passwordError, setPasswordError] = useState<string>("")
    const [confirmPasswordError, setConfirmPasswordError] = useState<string>("")
    const [success, setSuccess] = useState<boolean>(false)
@@ -28,11 +24,11 @@ const UpdatePassword = () => {
    const [password, setPassword] = useState<string>("")
    const [confirmPassword, setConfirmPassword] = useState<string>("")
 
+   // Custom functions triggered by interactions
    const handleSubmit = async (event: React.FormEvent) => {
       event.preventDefault()
 
       // Preliminary checks
-      setError("")
       setPasswordError("")
       setConfirmPasswordError("")
 
@@ -40,15 +36,15 @@ const UpdatePassword = () => {
       if (!confirmPassword) return setConfirmPasswordError("Input a password.")
       if (password !== confirmPassword) return setConfirmPasswordError("Passwords do not match.")
 
-      if (!hasRecentLogin()) return setError(resolveFirebaseError("auth/requires-recent-login"))
+      if (!hasRecentLogin()) return toast.warn(resolveFirebaseError("auth/requires-recent-login"))
 
       // Update the user's password
       setLoading(true)
 
       updateUserPassword(password)
          .then(() => setSuccess(true))
-         .catch((error: any) => {
-            setError(resolveFirebaseError(error.message))
+         .catch((error: Error) => {
+            toast.error(resolveFirebaseError(error.message))
             setSuccess(false)
          })
          .finally(() => setLoading(false))
@@ -61,7 +57,7 @@ const UpdatePassword = () => {
             icon={
                <IconButton
                   icon={<Cross height={24} />}
-                  onClick={() => router.back()}
+                  href="/settings"
                />
             }
          />
@@ -94,12 +90,6 @@ const UpdatePassword = () => {
                      error={confirmPasswordError}
                      onChange={setConfirmPassword}
                   />
-
-                  {error && (
-                     <p className="text-center text-base font-normal text-red-5">
-                        {error}
-                     </p>
-                  )}
 
                   {success && (
                      <p className="text-center text-base font-medium text-gray-3">

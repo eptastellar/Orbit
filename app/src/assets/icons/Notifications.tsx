@@ -1,7 +1,7 @@
 type Props = {
    color?: string
    height: number
-   fill: boolean
+   fill?: boolean
 }
 
 const Notifications = ({ color, height, fill }: Props) => (

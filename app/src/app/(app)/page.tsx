@@ -3,10 +3,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useEffect } from "react"
+import { toast } from "react-toastify"
 
 import { homeEmpty } from "@/assets"
 import { Header, InfiniteLoader, Navbar, Post } from "@/components"
 import { useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 import { Post as PostType } from "@/types"
 
 import { fetchPosts } from "./requests"
@@ -24,7 +26,7 @@ const Homepage = () => {
    } = useInfiniteQuery({
       queryKey: ["homepage", "posts"],
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
-         fetchPosts(pageParam, userProfile?.sessionToken),
+         fetchPosts(pageParam, userProfile?.sessionToken!),
 
       retry: false,
 
@@ -36,7 +38,7 @@ const Homepage = () => {
       .flatMap((page) => page.posts.flatMap((post) => post))
 
    useEffect(() => {
-      if (postsError) console.error(postsError)
+      if (postsError) toast.error(resolveServerError(postsError.message))
    }, [postsError])
 
    return (
@@ -44,8 +46,8 @@ const Homepage = () => {
          <Header />
 
          <div className="flex flex-grow flex-col items-center w-full p-8 overflow-scroll">
-            {fetchedPosts ?
-               fetchedPosts.length > 0
+            {fetchedPosts
+               ? fetchedPosts.length > 0
                   // There are some posts available in the homepage
                   ? <div className="flex flex-col start gap-4 w-full">
                      {fetchedPosts.map((post) => <Post key={post.id} post={post} />)}

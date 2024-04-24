@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { apple, google } from "@/assets"
 import { WelcomeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
+import { resolveFirebaseError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
 type Views = "default" | "signin" | "signup"
@@ -24,6 +26,7 @@ const Welcome = () => {
    // Interaction states
    const [activeView, setActiveView] = useState<Views>("default")
 
+   // Custom functions triggered by interactions
    const handleGoogleAuth = () => {
       setGoogleLoading(true)
 
@@ -35,33 +38,34 @@ const Welcome = () => {
             }
 
             type ResponseType = {
-               success: boolean
-               message: ServerError
+               error?: ServerError
                jwt: string
-               pfp: string
-               username: string
+               user_data: {
+                  name: string
+                  username: string
+                  pfp: string
+               }
             }
 
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ success, jwt, pfp, username }: ResponseType) => {
-                  if (success) {
+               .then(({ error, ...result }: ResponseType) => {
+                  if (!error) {
                      setUserProfile({
-                        profilePicture: pfp,
-                        username: username,
-                        sessionToken: jwt
+                        sessionToken: result.jwt,
+                        userData: {
+                           displayName: result.user_data.name,
+                           username: result.user_data.username,
+                           profilePicture: result.user_data.pfp
+                        }
                      })
 
-                     router.push(`/u/${username}`)
+                     router.push(`/u/${result.user_data.username}`)
                   } else router.push("/onboarding/profile")
                })
-               .catch((error: any) => {
-                  console.error(error)
-                  setGoogleLoading(false)
-               })
          })
-         .catch((error: any) => {
-            console.error(error)
+         .catch((error: Error) => {
+            toast.error(resolveFirebaseError(error.message))
             setGoogleLoading(false)
          })
    }
@@ -109,7 +113,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => router.push("/onboarding/sign-in")}
+                        href="/onboarding/sign-in"
                      />
                      <WelcomeButton
                         btnType="transparent"
@@ -132,7 +136,7 @@ const Welcome = () => {
                      <WelcomeButton
                         btnType="ring"
                         text="With email and password"
-                        onClick={() => router.push("/onboarding/sign-up")}
+                        href="/onboarding/sign-up"
                      />
                      <WelcomeButton
                         btnType="transparent"

@@ -3,19 +3,22 @@
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { Comment, IconButton, Like } from "@/assets/icons"
 import { useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 import { Post as PostType, ServerError } from "@/types"
 
 import AudioEmbed from "./AudioEmbed"
 import ImageEmbed from "./ImageEmbed"
 
 type Props = {
+   isPostPage?: boolean
    post: PostType
 }
 
-const Post = ({ post }: Props) => {
+const Post = ({ isPostPage, post }: Props) => {
    // Context hooks
    const { userProfile } = useUserContext()
 
@@ -28,7 +31,9 @@ const Post = ({ post }: Props) => {
 
    const [locked, setLocked] = useState<boolean>(false)
 
-   const likePost = () => {
+   const likePost = (event: React.PointerEvent<HTMLDivElement>) => {
+      event.stopPropagation()
+
       if (locked) return
 
       setLocked(true)
@@ -39,24 +44,26 @@ const Post = ({ post }: Props) => {
       }
 
       type ResponseType = {
-         success: boolean
-         message: ServerError
+         error?: ServerError
       }
 
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/l/${post.id}`, params)
          .then((response) => response.json())
-         .then(({ success, message }: ResponseType) => {
-            if (success) {
+         .then(({ error }: ResponseType) => {
+            if (!error) {
                setIsLiked((prev) => !prev)
                setLikesCount((prev) => isLiked ? prev - 1 : prev + 1)
 
                setLocked(false)
-            } else console.error(message)
+            } else toast.error(resolveServerError(error))
          })
    }
 
    return (
-      <div className="flex flex-col items-start justify-center w-full p-4 bg-gray-7/50 rounded-md">
+      <div
+         className={`flex flex-col items-start justify-center w-full p-4 bg-gray-7/50 rounded-md ${isPostPage ? "" : "cursor-pointer"}`}
+         onClick={() => { if (!isPostPage) router.push(`/p/${post.id}`) }}
+      >
          <div
             className="flex center gap-3 cursor-pointer"
             onClick={() => router.push(`/u/${post.userData.username}`)}
@@ -81,7 +88,7 @@ const Post = ({ post }: Props) => {
          {post.type === "image" && <ImageEmbed src={post.content!} />}
 
          <p className="mt-2 text-xs font-normal text-gray-3">
-            {new Date(post.createdAt * 1000).toLocaleString("en-US").replace(", ", " · ")}
+            {new Date(post.createdAt).toLocaleString("en-US").replace(", ", " · ")}
          </p>
 
          <div className="flex flex-row start gap-4 mt-2">

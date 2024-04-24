@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { BackButton, FullInput, LargeButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
-import { resolveFirebaseError } from "@/libraries/firebaseErrors"
-import { resolveServerError } from "@/libraries/serverErrors"
+import { resolveFirebaseError, resolveServerError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
 const Signin = () => {
@@ -19,7 +19,6 @@ const Signin = () => {
 
    // Loading and async states
    const [loading, setLoading] = useState<boolean>(false)
-   const [error, setError] = useState<string>("")
    const [emailError, setEmailError] = useState<string>("")
    const [passwordError, setPasswordError] = useState<string>("")
 
@@ -31,7 +30,6 @@ const Signin = () => {
       event.preventDefault()
 
       // Preliminary checks
-      setError("")
       setEmailError("")
       setPasswordError("")
 
@@ -49,34 +47,39 @@ const Signin = () => {
             }
 
             type ResponseType = {
-               success: boolean
-               message: ServerError
+               error?: ServerError
                jwt: string
-               pfp: string
-               username: string
+               user_data: {
+                  name: string
+                  username: string
+                  pfp: string
+               }
             }
 
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ success, message, jwt, pfp, username }: ResponseType) => {
-                  if (success) {
+               .then(({ error, ...result }: ResponseType) => {
+                  if (!error) {
                      setUserProfile({
-                        profilePicture: pfp,
-                        username: username,
-                        sessionToken: jwt
+                        sessionToken: result.jwt,
+                        userData: {
+                           displayName: result.user_data.name,
+                           username: result.user_data.username,
+                           profilePicture: result.user_data.pfp
+                        }
                      })
 
-                     router.push(`/u/${username}`)
-                  } else if (message === "auth/user-not-signed-up") {
+                     router.push(`/u/${result.user_data.username}`)
+                  } else if (error === "auth/user-not-signed-up") {
                      router.push("/onboarding/profile")
                   } else {
-                     setError(resolveServerError(message))
+                     toast.error(resolveServerError(error))
                      setLoading(false)
                   }
                })
          })
-         .catch((error: any) => {
-            setError(resolveFirebaseError(error.message))
+         .catch((error: Error) => {
+            toast.error(resolveFirebaseError(error.message))
             setLoading(false)
          })
    }
@@ -125,12 +128,6 @@ const Signin = () => {
                   </p>
                </div>
 
-               {error && (
-                  <p className="text-center text-base font-normal text-red-5">
-                     {error}
-                  </p>
-               )}
-
                <LargeButton
                   text="Join the galaxy"
                   loading={loading}
@@ -151,7 +148,7 @@ const Signin = () => {
             </p>
          </div>
 
-         <BackButton destinationPage="/onboarding" />
+         <BackButton href="/onboarding" />
       </div>
    )
 }

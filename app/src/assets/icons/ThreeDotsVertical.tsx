@@ -6,7 +6,7 @@ type Props = {
 const ThreeDotsVertical = ({ color, height }: Props) => (
    <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={height}
+      width={Math.ceil(height * (39 / 200))}
       height={height}
       viewBox="0 0 39 200"
       className={color ?? "fill-current"}

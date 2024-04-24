@@ -25,8 +25,8 @@ const Navbar = () => {
             onClick={() => router.push("/new-post")}
          />
          <IconButton
-            icon={<QrCode height={24} fill={pathname === "/qr-scan"} />}
-            onClick={() => router.push("/qr-scan")}
+            icon={<QrCode height={24} fill={pathname === "/qr/scan"} />}
+            onClick={() => router.push("/qr/scan")}
          />
          <IconButton
             icon={<Notifications height={24} fill={pathname === "/notifications"} />}
@@ -35,10 +35,10 @@ const Navbar = () => {
 
          <div
             className="relative min-h-6 max-h-6 min-w-6 max-w-6 rounded-full overflow-hidden cursor-pointer"
-            onClick={() => router.push(`/u/${userProfile!.username}`)}
+            onClick={() => router.push(`/u/${userProfile!.userData.username}`)}
          >
             <Image
-               src={userProfile!.profilePicture}
+               src={userProfile!.userData.profilePicture}
                alt="Profile picture"
                fill className="object-cover"
             />

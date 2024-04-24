@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { toast } from "react-toastify"
 
 import { Cross, IconButton } from "@/assets/icons"
 import { FloatingConfirmation, HeaderWithButton, SettingsButton } from "@/components"
 import { useAuthContext, useUserContext } from "@/contexts"
+import { resolveServerError } from "@/libraries/errors"
 import { ServerError } from "@/types"
 
 const Settings = () => {
@@ -17,13 +19,14 @@ const Settings = () => {
    const router = useRouter()
 
    // Fetching and async states
-   const [error, setError] = useState<boolean>(false)
+   const [needsRelog, setNeedsRelog] = useState<boolean>(false)
 
    // Interaction states
    const [loggingOut, setLoggingOut] = useState<boolean>(false)
    const [deleting, setDeleting] = useState<boolean>(false)
    const [popupVisible, setPopupVisible] = useState<boolean>(false)
 
+   // Custom functions triggered by interactions
    const handleLogout = async () => {
       if (!loggingOut) {
          setLoggingOut(true)
@@ -46,26 +49,25 @@ const Settings = () => {
          }
 
          type ResponseType = {
-            success: boolean
-            message: ServerError
+            success: true
+            error: undefined
+         } | {
+            success: undefined
+            error: ServerError
          }
 
          fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/settings`, params)
             .then((response) => response.json())
-            .then(async ({ success, message }: ResponseType) => {
+            .then(async ({ success, error }: ResponseType) => {
                if (success) {
                   await deleteUser()
                   removeUserProfile()
 
                   router.push("/onboarding")
                } else {
+                  toast.error(resolveServerError(error))
                   setDeleting(false)
-                  console.error(message)
                }
-            })
-            .catch((error) => {
-               setDeleting(false)
-               console.error(error)
             })
       }
    }
@@ -77,7 +79,7 @@ const Settings = () => {
             icon={
                <IconButton
                   icon={<Cross height={24} />}
-                  onClick={() => router.back()}
+                  href={`/u/${userProfile?.userData.username!}`}
                />
             }
          />
@@ -89,9 +91,9 @@ const Settings = () => {
                      - Personal Data
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     <SettingsButton text="Personal Information" onClick={() => router.push("/settings/personal-information")} />
-                     <SettingsButton text="Manage Interests" onClick={() => router.push("/settings/manage-interests")} />
-                     <SettingsButton text="Terms & Conditions" onClick={() => router.push("/terms-conditions")} />
+                     <SettingsButton text="Personal Information" onClick={() => alert("Coming soon...")} /> {/* href="/settings/personal-information" */}
+                     <SettingsButton text="Manage Interests" onClick={() => alert("Coming soon...")} /> {/* href="/settings/manage-interests" */}
+                     <SettingsButton text="Terms & Conditions" onClick={() => alert("Coming soon...")} /> {/* href="/terms-conditions" */}
                   </div>
                </div>
 
@@ -100,7 +102,7 @@ const Settings = () => {
                      - Security
                   </p>
                   <div className="flex flex-col gap-4 w-full mt-2">
-                     {hasPassword && <SettingsButton text="Update Password" onClick={() => router.push("/settings/update-password")} />}
+                     {hasPassword && <SettingsButton text="Update Password" href="/settings/update-password" />}
                      <SettingsButton
                         text={loggingOut ? "Logging out..." : "Log Out"}
                         onClick={handleLogout}
@@ -117,7 +119,7 @@ const Settings = () => {
                         text="Delete Account"
                         isDanger
                         onClick={() => {
-                           setError(!hasRecentLogin())
+                           setNeedsRelog(!hasRecentLogin())
                            setPopupVisible(true)
                         }}
                      />
@@ -129,8 +131,8 @@ const Settings = () => {
          {popupVisible && <FloatingConfirmation
             title="Confirm Deletion"
             text="This is a sensitive operation. If you wish to continue, make sure you have logged in recently and press confirm to complete your account's deletion."
-            actionText={error ? "Relog" : deleting ? "Deleting..." : "Confirm"}
-            actionColor={error || deleting ? undefined : "text-red-5"}
+            actionText={needsRelog ? "Relog" : deleting ? "Deleting..." : "Confirm"}
+            actionColor={needsRelog || deleting ? undefined : "text-red-5"}
             action={handleDeletion}
             closePopup={() => setPopupVisible(false)}
          />}

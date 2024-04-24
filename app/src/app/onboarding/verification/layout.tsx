@@ -18,8 +18,8 @@ const VerificationRules = ({ children }: { children: React.ReactNode }) => {
 
    useEffect(() => {
       if (currentUser && currentUser.emailVerified)
-         router.push("/onboarding/profile")
-      else if (!currentUser) router.push("/onboarding")
+         router.replace("/onboarding/profile")
+      else if (!currentUser) router.replace("/onboarding")
       else setLoading(false)
    }, [])
 

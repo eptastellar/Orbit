@@ -1,13 +1,19 @@
 export type LocalUser = {
-   username: string
-   profilePicture: string
    sessionToken: string
+   userData: UserData
+}
+
+export type MediaType = "audio" | "image"
+
+export type Notification = {
+   // TODO: Update the notification type
+   id: string
 }
 
 export type Post = {
    id: string
    createdAt: number
-   type: "audio" | "image" | "text"
+   type: MediaType | "text"
    text?: string
    content?: string
    isLiked: boolean
@@ -15,11 +21,7 @@ export type Post = {
       likeCount: number
       commentCount: number
    }
-   userData: {
-      displayName: string
-      username: string
-      profilePicture: string
-   }
+   userData: UserData
 }
 
 export type ServerError =
@@ -43,17 +45,22 @@ export type ServerError =
    // Server errors
    "server/not-friends" |
    "server/no-content" |
-   "server/no-friends"
+   "server/no-friends" |
+   "server/unauthorized"
 
-export type UserProfile = {
-   isPersonal: boolean
+export type UserData = {
    displayName: string
    username: string
    profilePicture: string
+}
+
+export type UserProfile = {
+   isPersonal: boolean
    interests: string[]
    counters: {
       postCount: number
       friendCount: number
       meteorCount: number
    }
+   userData: UserData
 }

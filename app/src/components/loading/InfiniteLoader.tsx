@@ -17,11 +17,11 @@ const InfiniteLoader = ({ onScreen }: Props) => {
    }, [isVisible])
 
    return (
-      <div ref={ref} className="flex flex-row center gap-2 w-full mt-2">
+      <div ref={ref} className="flex flex-row center gap-2 h-6 w-full mt-2">
          {[0, 1, 2].map((index) =>
             <div
                key={`bouncer-${index}`}
-               className="h-4 w-4 loader-bounce rounded-full"
+               className="h-3 w-3 loader-bounce rounded-full"
                style={{ animationDelay: `${index * 0.15}s` }}
             />
          )}
