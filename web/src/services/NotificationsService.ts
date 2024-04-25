@@ -257,4 +257,39 @@ export default class ChatsService {
          resolve(null)
       })
    }
+
+   public uploadChatMessage = (uid: string, chatId: string, text?: string, type?: string, content?: string): Promise<IdResponse> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            const docRef: DocumentReference = this.db.collection("messages").doc() //set the docRef to messages
+
+            await docRef.set({ //set the message information in firestore
+               owner: uid,
+               created_at: Date.now(), //unix format
+               chat_id: chatId,
+               opened: false
+            })
+
+            if (text) await docRef.update({ text: text })
+            if (content) await docRef.update({ content: content, type: type })
+
+            const id: string = docRef.id
+            const idResponse: IdResponse = {
+               id
+            }
+            resolve(idResponse)
+         } catch { reject(err("server/upload-failed")) }
+      })
+   }
+
+   public openedMessages = (uid: string, chatId: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         const queryRef: Query = this.db.collection("messages")
+            .where("group_id", "==", chatId)
+            .where("user_id", "==", uid)
+            .where("opened", "==", false)
+         resolve(null) //TODO
+
+      })
+   }
 }

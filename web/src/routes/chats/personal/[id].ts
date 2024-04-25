@@ -12,9 +12,11 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    valid.chatIdValidation(chatId).then(() => {
       noti.getPersonalChatInfo(uid, chatId).then((personalChatInfoResponse: PersonalChatInfoResponse) => {
-         res.status(200).json({
-            ...personalChatInfoResponse //return the chat
-         })
-      })
+         noti.openedMessages(uid, chatId).then(() => {
+            res.status(200).json({
+               ...personalChatInfoResponse //return the chat
+            })
+         }).catch((error) => { res.status(500).json({ error: error.message }) })
+      }).catch((error) => { res.status(500).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]

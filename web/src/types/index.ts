@@ -114,8 +114,13 @@ export type SupernovaResponse = {
    oneway: string | null
 }
 
-export type MessageRequest = {
-   chat_id: string,
+export type UploadMessageRequest = {
+   text: string,
+   type: string,
+   content: string
+}
+
+export type GroupChatMessageRequest = {
    text: string,
    type: string,
    content: string
@@ -153,3 +158,12 @@ export type GroupChatInfoResponse = {
    members_name: string[]
 }
 
+export type MessageSchema = {
+   personal: boolean,
+   created_at: number,
+   text?: string,
+   content?: string,
+   type?: string,
+   pfp?: string,
+   username?: string
+}
