@@ -94,6 +94,18 @@ export default class ValidationService {
       })
    }
 
+   public groupIdValidation = (groupId: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            const docRef: DocumentData = await this.db.collection("groups").doc(groupId).get()
+
+            if (docRef.exists)
+               resolve(null)
+            else reject(err("validation/invalid-document-id"))
+         } catch { reject(err("validation/invalid-document-id")) }
+      })
+   }
+
    public commentRootIdValidation = async (rootId: string, postId: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {

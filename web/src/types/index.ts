@@ -108,6 +108,12 @@ export type UserResponse = {
    }
 }
 
+export type SupernovaResponse = {
+   username: string
+   status: string
+   oneway: string | null
+}
+
 export type MessageRequest = {
    chat_id: string,
    text: string,
@@ -115,10 +121,14 @@ export type MessageRequest = {
    content: string
 }
 
-export type NewChatRequest = {
+export type NewPersonalChatRequest = {
+   receiver_username: string
+}
+
+export type NewGroupChatRequest = {
    members: string[],
-   name?: string,
-   pfp?: string
+   pfp?: string,
+   name: string
 }
 
 export type ChatsResponse = {
@@ -128,29 +138,18 @@ export type ChatsResponse = {
 export type ChatSchema = {
    name: string,
    pfp: string
-   bday: boolean
+   bday?: boolean
    latest_message?: string
    unreaded_messages?: number
 }
 
-export type ChatResponse = {
-   messages: MessageSchema[],
-   name: string,
+export type PersonalChatInfoResponse = {
+   user_data: UserSchema
+}
+
+export type GroupChatInfoResponse = {
+   name: string
    pfp: string
+   members_name: string[]
 }
 
-export type MessageSchema = {
-   personal: boolean,
-   created_at: number,
-   text?: string,
-   content?: string,
-   type?: string,
-   pfp?: string,
-   username?: string
-}
-
-export type SupernovaResponse = {
-   username: string
-   status: string
-   oneway: string | null
-}
