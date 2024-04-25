@@ -40,7 +40,12 @@ export type DeleteCommentRequest = {
 }
 
 export type PostsRequest = {
-   last_post_id: string
+   last_post_id?: string
+}
+
+export type MessagesRequest = {
+   chat_id: string
+   last_message_id?: string
 }
 
 export type InterestsResponse = {
@@ -60,7 +65,7 @@ export type UserSchema = {
 }
 
 export type ContentFetch = {
-   content: PostResponse[] | RootCommentSchema[] | CommentSchema[],
+   content: PostResponse[] | RootCommentSchema[] | CommentSchema[] | MessageSchema[],
    last_doc_id: string
 }
 
@@ -159,6 +164,7 @@ export type GroupChatInfoResponse = {
 }
 
 export type MessageSchema = {
+   id: string,
    personal: boolean,
    created_at: number,
    text?: string,

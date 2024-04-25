@@ -1,7 +1,7 @@
 import { err, firebase, firestore } from "config"
 import { DocumentData, DocumentReference, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
 import { ContentService, UserService, ValidationService } from "services"
-import { ChatSchema, ChatsResponse, GroupChatInfoResponse, IdResponse, PersonalChatInfoResponse, UserSchema } from "types"
+import { ChatSchema, ChatsResponse, ContentFetch, GroupChatInfoResponse, IdResponse, MessageSchema, PersonalChatInfoResponse, UserSchema } from "types"
 
 export default class ChatsService {
    private db: Firestore
@@ -292,4 +292,51 @@ export default class ChatsService {
 
       })
    }
+
+   public getChatMessages = (uid: string, chatId: string, lastMessageId?: string): Promise<ContentFetch> => {
+      const limit: number = 7
+
+      return new Promise(async (resolve, reject) => {
+         let docRef: Query = this.db.collection("messages")
+            .where("chat_id", "==", chatId)
+            .orderBy("created_at", "desc")
+            .limit(limit)
+
+         if (lastMessageId) {
+            const lastDoc: DocumentData = await this.db.collection("messages").doc(lastMessageId).get()
+            docRef = docRef.startAfter(lastDoc) // add the start after if is a next page request
+         }
+
+         const snapshot: DocumentData = await docRef.get()
+
+         const content: MessageSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const id: string = doc.id
+            const data: DocumentData[string] = doc.data()
+            const owner: string = data.owner
+            const userSchema: UserSchema = await this.user.getUserDatafromUID(owner)
+
+            return {
+               id: id,
+               personal: uid === owner,
+               created_at: data.created_at,
+               text: data.text,
+               type: data.type,
+               content: data.content,
+               pfp: userSchema.pfp,
+               username: userSchema.username
+            }
+         }))
+
+         if (content.length > 0) {
+            const last_doc_id: string = snapshot.docs[snapshot.docs.length - 1].ref.id
+            const contentFetch: ContentFetch = {
+               content,
+               last_doc_id
+            }
+            resolve(contentFetch)
+         } else
+            reject(err("server/no-content"))
+      })
+   }
+
 }
