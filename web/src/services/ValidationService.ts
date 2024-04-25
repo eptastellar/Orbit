@@ -43,7 +43,8 @@ export default class ValidationService {
             if (username.length < 6 + 1)
                reject(err("validation/username-too-short"))
 
-            const usersRef: Query = this.db.collection("users").where("username", "==", username) //search where the username is equal to the input username
+            const usersRef: Query = this.db.collection("users")
+               .where("username", "==", username) //search where the username is equal to the input username
 
             usersRef.get().then(async (snapshot: QuerySnapshot) => {
                if (snapshot.empty) //check if username is already used
@@ -84,7 +85,7 @@ export default class ValidationService {
    public chatIdValidation = (chatId: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const docRef: DocumentData = await this.db.collection("chats").doc(chatId).get()
+            const docRef: DocumentData = await this.db.collection("personal-chats").doc(chatId).get()
 
             if (docRef.exists)
                resolve(null)
@@ -175,8 +176,13 @@ export default class ValidationService {
    public membersValidation = (personalUID: string, members: string[]): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
+            if (members.length < 2)
+               reject(err("troppi pochi utenti, almeno 2"))
+
             await Promise.all(members.map(async (member) => {
-               const docRef: Query = this.db.collection("users").where("username", "==", member)
+               const docRef: Query = this.db.collection("users")
+                  .where("username", "==", member)
+
                const snapshot: QuerySnapshot = await docRef.get()
 
                if (!snapshot.empty) {

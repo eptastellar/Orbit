@@ -8,7 +8,7 @@ const noti = new NotificationsService()
 export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
 
-   noti.getPersonalChats(uid).then((chatsResponse: ChatsResponse) => {
+   noti.getGroupChats(uid).then((chatsResponse: ChatsResponse) => {
       res.status(200).json({
          ...chatsResponse //return the chats
       })
