@@ -1,4 +1,4 @@
-name: Jest Unit Testing
+name: Versioning & Linting & Testing
 
 on:
  push:
@@ -64,6 +64,7 @@ jobs:
             git add .
             git commit -m "Update package.json"
         if: github.event_name == 'push' && github.ref_name == 'web'
+
       - name : Update package.json App minor
         working-directory: app
         run: |
@@ -71,6 +72,7 @@ jobs:
           git add .
           git commit -m "Update package.json"
         if: github.event_name == 'pull_request' && github.ref_name == 'app'
+
       - name : Update package.json Web minor
         working-directory: Web
         run: |
