@@ -16,10 +16,10 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    }
 
    try {
-      if (ereq.last_post_id) await valid.postIdValidation(ereq.last_post_id)
+      if (ereq.last_post_id) await valid.documentIdValidation(ereq.last_post_id, "posts")
 
       user.getFriendList(uid).then((friendList: string[]) => {
-         cont.fetchPosts(friendList, ereq.last_post_id, uid).then((contentFetch: ContentFetch) => {
+         cont.fetchPosts(friendList, uid, ereq.last_post_id).then((contentFetch: ContentFetch) => {
             res.status(200).json({
                ...contentFetch
             })

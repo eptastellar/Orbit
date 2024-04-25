@@ -20,7 +20,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    }
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
-      valid.chatIdValidation(chat_id).then(() => {
+      valid.documentIdValidation(chat_id, "personal-chats").then(() => {
          noti.uploadChatMessage(uid, chat_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
             noti.sendNotification(["a", "b"]).then(() => { //TODO
                res.status(201).json({

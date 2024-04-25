@@ -117,18 +117,6 @@ export default class AuthService {
       return jwt
    }
 
-   public checkIfDocumentExists = (uid: string): Promise<null> => {
-      return new Promise((resolve, reject) => {
-         const docRef: DocumentReference = this.db.collection("users").doc(uid)
-
-         docRef.get().then((doc: DocumentData) => {
-            if (doc.exists)
-               resolve(null)
-            else reject(err("auth/user-not-signed-up")) //if the document doesn't exists in firestore
-         }).catch(() => { reject(err("auth/user-not-signed-up")) }) //if the document doesn't exists in firestore
-      })
-   }
-
    public createUserDocument = (uid: string, username: string, bday: number, pfp?: string): Promise<UserSchema> => {
       return new Promise(async (resolve, reject) => {
          const docRef: DocumentReference = this.db.collection("users").doc(uid)

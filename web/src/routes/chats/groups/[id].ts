@@ -10,7 +10,7 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const groupId: string = req.params.id
 
-   valid.groupIdValidation(groupId).then(() => {
+   valid.documentIdValidation(groupId, "groups").then(() => {
       noti.getGroupChatInfo(uid, groupId).then((groupChatInfoResponse: GroupChatInfoResponse) => {
          noti.openedMessages(uid, groupId).then(() => {
             res.status(200).json({

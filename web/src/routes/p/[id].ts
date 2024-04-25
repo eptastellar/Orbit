@@ -11,7 +11,7 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const post_id: string = req.params.id
 
-   valid.postIdValidation(post_id).then(() => {
+   valid.documentIdValidation(post_id, "posts").then(() => {
       cont.getPostOwner(post_id).then((ownerUID: string) => {
          user.areFriends(uid, ownerUID).then(() => {
             cont.getPost(uid, post_id).then((postResponse: PostResponse) => {
@@ -38,7 +38,7 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
    }
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
-      valid.postIdValidation(post_id).then(() => {
+      valid.documentIdValidation(post_id, "posts").then(() => {
          user.hasPermission(uid, post_id, "posts").then(() => {
             cont.updatePost(post_id, ereq.text, ereq.content, ereq.type).then((idResponse: IdResponse) => {
                res.status(200).json({
@@ -54,7 +54,7 @@ export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) =>
    const uid: string = res.locals.uid
    const post_id: string = req.params.id
 
-   valid.postIdValidation(post_id).then(() => {
+   valid.documentIdValidation(post_id, "posts").then(() => {
       user.hasPermission(uid, post_id, "posts").then(() => {
          cont.deletePost(post_id).then((idResponse: IdResponse) => {
             res.status(200).json({

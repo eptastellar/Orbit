@@ -70,34 +70,10 @@ export default class ValidationService {
       })
    }
 
-   public postIdValidation = (postId: string): Promise<null> => {
+   public documentIdValidation = (id: string, path: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const docRef: DocumentData = await this.db.collection("posts").doc(postId).get()
-
-            if (docRef.exists)
-               resolve(null)
-            else reject(err("validation/invalid-document-id"))
-         } catch { reject(err("validation/invalid-document-id")) }
-      })
-   }
-
-   public chatIdValidation = (chatId: string): Promise<null> => {
-      return new Promise(async (resolve, reject) => {
-         try {
-            const docRef: DocumentData = await this.db.collection("personal-chats").doc(chatId).get()
-
-            if (docRef.exists)
-               resolve(null)
-            else reject(err("validation/invalid-document-id"))
-         } catch { reject(err("validation/invalid-document-id")) }
-      })
-   }
-
-   public groupIdValidation = (groupId: string): Promise<null> => {
-      return new Promise(async (resolve, reject) => {
-         try {
-            const docRef: DocumentData = await this.db.collection("groups").doc(groupId).get()
+            const docRef: DocumentData = await this.db.collection(path).doc(id).get()
 
             if (docRef.exists)
                resolve(null)

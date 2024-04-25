@@ -17,7 +17,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
       if (ereq.last_root_comment_id) await valid.commentRootIdValidation(ereq.last_root_comment_id, post_id)
 
-      valid.postIdValidation(post_id).then(() => {
+      valid.documentIdValidation(post_id, "posts").then(() => {
          cont.fetchRootComments(post_id, ereq.last_root_comment_id).then((contentFetch: ContentFetch) => {
             res.status(200).json({
                ...contentFetch

@@ -21,7 +21,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
       if (ereq.root_id) await valid.commentRootIdValidation(ereq.root_id, post_id)
 
-      valid.postIdValidation(post_id).then(() => {
+      valid.documentIdValidation(post_id, "posts").then(() => {
          valid.contentValidation(ereq.content).then(() => {
             cont.uploadComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
                res.status(201).json({
@@ -44,7 +44,7 @@ export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) =>
       root_id
    }
 
-   valid.postIdValidation(post_id).then(async () => {
+   valid.documentIdValidation(post_id, "posts").then(async () => {
       try {
          if (ereq.root_id)
             await valid.commentRootIdValidation(ereq.comment_id, post_id)

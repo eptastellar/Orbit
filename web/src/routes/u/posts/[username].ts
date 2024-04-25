@@ -17,11 +17,11 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    }
 
    try {
-      if (ereq.last_post_id) await valid.postIdValidation(ereq.last_post_id)
+      if (ereq.last_post_id) await valid.documentIdValidation(ereq.last_post_id, "posts")
 
       user.getUIDfromUserData(username).then(async (uid: string) => { //get the uid from the username, also validate the username
          user.areFriends(tokenUid, uid).then(() => {
-            cont.fetchPosts([uid], ereq.last_post_id, uid).then((contentFetch: ContentFetch) => {
+            cont.fetchPosts([uid], uid, ereq.last_post_id).then((contentFetch: ContentFetch) => {
                res.status(200).json({
                   ...contentFetch
                })

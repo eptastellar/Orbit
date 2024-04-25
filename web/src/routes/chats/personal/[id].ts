@@ -10,7 +10,7 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
    const chatId: string = req.params.id
 
-   valid.chatIdValidation(chatId).then(() => {
+   valid.documentIdValidation(chatId, "personal-chats").then(() => {
       noti.getPersonalChatInfo(uid, chatId).then((personalChatInfoResponse: PersonalChatInfoResponse) => {
          noti.openedMessages(uid, chatId).then(() => {
             res.status(200).json({

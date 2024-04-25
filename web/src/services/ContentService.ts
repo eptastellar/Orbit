@@ -43,7 +43,7 @@ export default class ContentService {
       })
    }
 
-   public fetchPosts = (uids: string[], lastPostId: string, personalUID: string): Promise<ContentFetch> => {
+   public fetchPosts = (uids: string[], personalUID: string, lastPostId?: string,): Promise<ContentFetch> => {
       const limit: number = 5
 
       return new Promise(async (resolve, reject) => {

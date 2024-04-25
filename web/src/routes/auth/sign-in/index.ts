@@ -1,15 +1,16 @@
 import { Request, Response } from "express"
-import { AuthService, UserService } from "services"
+import { AuthService, UserService, ValidationService } from "services"
 import { AuthResponse, UserSchema } from "types"
 
 const auth = new AuthService()
 const user = new UserService()
+const valid = new ValidationService()
 
 export const GET = (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!
 
    auth.accessGuard(authorization).then(async (uid: string) => { //send the firebase access token to create a session
-      auth.checkIfDocumentExists(uid).then(() => { //check if the user is fully signed up even in firestore
+      valid.documentIdValidation(uid, "users").then(() => { //check if the user is fully signed up even in firestore
          auth.createNewSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
             user.getUserDatafromUID(uid).then((userSchema: UserSchema) => {
                const authResponse: AuthResponse = {
