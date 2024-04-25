@@ -343,7 +343,9 @@ export default class ContentService {
          try {
             const docRef: DocumentReference = this.db.collection("comments").doc(commentId)
 
-            const leafsRef: Query = this.db.collection("comments").where("root", "==", commentId)
+            const leafsRef: Query = this.db.collection("comments")
+               .where("root_id", "==", commentId)
+
             const snapshot: QuerySnapshot = await leafsRef.get()
 
             const batch = this.db.batch()

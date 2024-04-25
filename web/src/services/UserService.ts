@@ -38,7 +38,9 @@ export default class UserService {
 
    public getUIDfromUserData = async (username: string): Promise<string> => { //retrieve uid based from the username
       return new Promise((resolve, reject) => {
-         const usersRef: Query = this.db.collection("users").where("username", "==", username)
+         const usersRef: Query = this.db.collection("users")
+            .where("username", "==", username)
+
          usersRef.get().then((snapshot: QuerySnapshot) => { //retrieve documents where the username is equal to the username param
             if (!snapshot.empty) {
                snapshot.forEach((doc) => {
@@ -62,7 +64,9 @@ export default class UserService {
 
    public getPostCount = (uid: string): Promise<number> => { //get the snapshot size of all the posts where uid is equal to the owner
       return new Promise(async (resolve) => {
-         const postsRef: Query = this.db.collection("posts").where("owner", "==", uid)
+         const postsRef: Query = this.db.collection("posts")
+            .where("owner", "==", uid)
+
          const snapshot: QuerySnapshot = await postsRef.get()
          resolve(snapshot.size)
       })
@@ -165,7 +169,9 @@ export default class UserService {
 
    public removeBatch = (type: string, uid: string): Promise<null> => {
       return new Promise(async (resolve) => {
-         const postsRef: Query = this.db.collection(`${type}`).where("owner", "==", uid)
+         const postsRef: Query = this.db.collection(`${type}`)
+            .where("owner", "==", uid)
+
          const snapshot: QuerySnapshot = await postsRef.get()
 
          const batch = this.db.batch()
