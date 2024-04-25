@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { IdResponse, PostRequest } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
-const cont = new ContentService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
@@ -19,7 +19,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    }
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
-      cont.uploadPost(uid, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+      core.uploadPost(uid, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
          res.status(201).json({
             ...idResponse //return the post id
          })

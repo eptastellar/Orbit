@@ -1,22 +1,16 @@
 import { Request, Response } from "express"
-import { AuthService, UserService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { IdResponse, SuccessResponse, UserSchema } from "types"
 
-const auth = new AuthService()
-const user = new UserService()
-const valid = new ValidationService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
 export const GET = [auth.sessionGuard, async (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
    try {
-      const interests: string[] = await user.getInterestsFromUID(uid)
-      const temp: UserSchema = await user.getUserDatafromUID(uid)
-
-      const userSchema: UserSchema = {
-         interests,
-         ...temp
-      }
+      const userSchema: UserSchema = await core.getUserDataFromUid(uid)
 
       res.status(200).json({
          ...userSchema
@@ -40,7 +34,7 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
 
    valid.usernameValidation(ereq.username).then(() => {
       valid.interestsValidation(ereq.interests!).then(() => {
-         user.patchUserInfo(uid, ereq).then((idResponse: IdResponse) => {
+         core.patchUserInfo(uid, ereq).then((idResponse: IdResponse) => {
             res.status(200).json({
                ...idResponse
             })
@@ -52,9 +46,9 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
 export const DELETE = [auth.sessionGuard, async (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
-   user.deleteUser(uid).then(() => {
-      user.removeBatch("posts", uid).then(() => {
-         user.removeBatch("comments", uid).then(() => {
+   core.deleteUser(uid).then(() => {
+      core.removeBatch("posts", uid).then(() => {
+         core.removeBatch("comments", uid).then(() => {
             const successResponse: SuccessResponse = {
                success: true
             }

@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
-import { AuthService, NotificationsService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { IdResponse, UploadMessageRequest } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
-const noti = new NotificationsService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
@@ -21,8 +21,8 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
       valid.documentIdValidation(chat_id, "personal-chats").then(() => {
-         noti.uploadChatMessage(uid, chat_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
-            noti.sendNotification(["a", "b"]).then(() => { //TODO
+         core.uploadChatMessage(uid, chat_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+            core.sendNotification(["a", "b"]).then(() => { //TODO
                res.status(201).json({
                   ...idResponse //return the post id
                })

@@ -1,20 +1,19 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { IdResponse } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
-const user = new UserService()
-const cont = new ContentService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
 export const POST = [auth.sessionGuard, (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
    const post_id: string = req.params.id
 
    valid.documentIdValidation(post_id, "posts").then(async () => {
-      cont.getPostOwner(post_id).then((post_owner: string) => {
-         user.areFriends(tokenUid, post_owner).then(() => {
-            cont.updateLike(post_id, tokenUid).then((idResponse: IdResponse) => {
+      core.getPostOwner(post_id).then((post_owner: string) => {
+         auth.areFriendsGuard(tokenUid, post_owner).then(() => {
+            core.updateLike(post_id, tokenUid).then((idResponse: IdResponse) => {
                res.status(200).json({
                   ...idResponse
                })

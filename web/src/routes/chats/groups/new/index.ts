@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
-import { AuthService, NotificationsService } from "services"
+import { AuthService, CoreService } from "services"
 import { IdResponse, NewGroupChatRequest } from "types"
 
-const auth = new AuthService()
-const noti = new NotificationsService()
+const auth: AuthService = new AuthService()
+const core: CoreService = new CoreService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const uid: string = res.locals.uid
@@ -17,8 +17,8 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
       name
    }
 
-   noti.newGroupChat(uid, ereq.members, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
-      noti.sendNotification(["a", "b"]).then(() => { //TODO
+   core.newGroupChat(uid, ereq.members, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
+      core.sendNotification(["a", "b"]).then(() => { //TODO
          res.status(201).json({
             ...idResponse //return the chat id
          })

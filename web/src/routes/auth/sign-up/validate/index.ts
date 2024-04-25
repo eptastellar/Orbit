@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { ValidationService } from "services"
 import { SignUpValidateRequest, SuccessResponse } from "types"
 
-const valid = new ValidationService()
+const valid: ValidationService = new ValidationService()
 
 export const POST = (req: Request, res: Response) => {
    const username: string = req.body.username

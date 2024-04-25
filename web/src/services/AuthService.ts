@@ -4,20 +4,15 @@ import admin, { firestore } from "firebase-admin"
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from "firebase-admin/firestore"
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier"
 import { JWTPayload, SignJWT, jwtVerify } from "jose"
-import { Session } from "neo4j-driver"
-import { ContentService, ValidationService } from "services"
-import { SuccessResponse, UserSchema } from "types"
+import { QueryResult } from "neo4j-driver"
+import { SuccessResponse } from "types"
 
 export default class AuthService {
    private db: Firestore
-   private cont: ContentService
-   private valid: ValidationService
 
    constructor() {
       firebase()
       this.db = firestore()
-      this.cont = new ContentService()
-      this.valid = new ValidationService()
    }
 
    public sessionGuard = async (req: express.Request, res: express.Response, next: NextFunction) => {
@@ -117,39 +112,6 @@ export default class AuthService {
       return jwt
    }
 
-   public createUserDocument = (uid: string, username: string, bday: number, pfp?: string): Promise<UserSchema> => {
-      return new Promise(async (resolve, reject) => {
-         const docRef: DocumentReference = this.db.collection("users").doc(uid)
-         const name: string = username.substring(1) //remove the "@" from the username
-
-         if (!(await docRef.get()).exists) { //check if the user is already registered to prevent rewrites
-            try {
-               if (pfp) await this.valid.mediaValidation(pfp)
-               pfp = pfp ? pfp : await this.cont.randomPicture("default/personal") //set the pfp url to the one sent from the client, or if is null, select a random one
-
-               await docRef.set({ //set the user data into the doc
-                  username: username,
-                  name: name,
-                  pfp: pfp,
-                  bday: bday
-               })
-
-               const userSchema: UserSchema = { username, name, pfp, bday }
-               resolve(userSchema)
-            } catch (error) { reject(error) }
-         } else reject(err("auth/user-already-exists"))
-      })
-   }
-
-   public createUserNode = (uid: string, interests: string[]): Promise<null> => {
-      return new Promise(async (resolve) => {
-         const neo4j: Session = neo()
-         const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j
-         await neo4j.executeWrite(tx => tx.run(query))
-         resolve(null)
-      })
-   }
-
    public logOut = (uid: string): Promise<SuccessResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
@@ -161,6 +123,32 @@ export default class AuthService {
             }
             resolve(successResponse)
          } catch { reject("auth/log-out-failed") }
+      })
+   }
+
+   public hasPermissionGuard = (uid: string, id: string, path: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         try {
+            const docRef: DocumentReference = this.db.collection(path).doc(id)
+
+            if ((await docRef.get()).data()?.owner == uid)
+               resolve(null)
+            else reject(err("server/unauthorized"))
+         } catch { reject(err("server/unauthorized")) }
+      })
+   }
+
+   public areFriendsGuard = (personalUid: string, friendUid: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         if (personalUid != friendUid) {
+            const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
+            const resultMap: QueryResult = await neo().executeRead(tx => tx.run(query))
+            const check = resultMap.records.map((row: any) => row.get("t"))
+
+            if (check[0] !== null)
+               resolve(null)
+            else reject(err("server/not-friends"))
+         } else resolve(null)
       })
    }
 }

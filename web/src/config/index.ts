@@ -3,7 +3,8 @@ import { firebase, firestorage, firestore } from "./firebase-admin.config"
 import { close, neo } from "./neo4j.config"
 
 export {
-   close, err,
+   close,
+   err,
    firebase,
    firestorage,
    firestore,

@@ -1,9 +1,9 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { ContentFetch, RootCommentsRequest } from "types"
 
 const auth = new AuthService()
-const cont = new ContentService()
+const core = new CoreService()
 const valid = new ValidationService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
@@ -18,7 +18,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
       if (ereq.last_root_comment_id) await valid.commentRootIdValidation(ereq.last_root_comment_id, post_id)
 
       valid.documentIdValidation(post_id, "posts").then(() => {
-         cont.fetchRootComments(post_id, ereq.last_root_comment_id).then((contentFetch: ContentFetch) => {
+         core.fetchRootComments(post_id, ereq.last_root_comment_id).then((contentFetch: ContentFetch) => {
             res.status(200).json({
                ...contentFetch
             })

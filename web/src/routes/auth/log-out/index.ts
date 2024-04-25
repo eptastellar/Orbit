@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { AuthService } from "services"
 import { SuccessResponse } from "types"
 
-const auth = new AuthService()
+const auth: AuthService = new AuthService()
 
 export const GET = [auth.sessionGuard, (_: Request, res: Response) => {
    const uid: string = res.locals.uid

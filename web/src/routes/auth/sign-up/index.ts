@@ -1,9 +1,10 @@
 import { Request, Response } from "express"
-import { AuthService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { AuthResponse, SignUpRequest, UserSchema } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
+const auth: AuthService = new AuthService()
+const core: CoreService = new CoreService()
+const valid: ValidationService = new ValidationService()
 
 export const POST = (req: Request, res: Response) => {
    const authorization: string = req.headers.authorization!
@@ -24,8 +25,8 @@ export const POST = (req: Request, res: Response) => {
       valid.usernameValidation(ereq.username).then(() => {
          valid.birthdateValidation(ereq.bday).then(() => {
             valid.interestsValidation(ereq.interests).then(async () => {
-               auth.createUserDocument(uid, ereq.username, ereq.bday, ereq?.pfp).then((userSchema: UserSchema) => { //create a new doc in /users
-                  auth.createUserNode(uid, ereq.interests).then(() => { //create a new node in neo4j
+               core.createUserDocument(uid, ereq.username, ereq.bday, ereq?.pfp).then((userSchema: UserSchema) => { //create a new doc in /users
+                  core.createUserNode(uid, ereq.interests).then(() => { //create a new node in neo4j
                      auth.createNewSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
                         const authResponse: AuthResponse = {
                            jwt,

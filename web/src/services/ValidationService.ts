@@ -1,18 +1,18 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
-import { UserService } from "services"
+import { AuthService } from "services"
 
 export default class ValidationService {
    private db: Firestore
    private bucket
-   private user: UserService
+   private auth: AuthService
 
    constructor() {
       firebase()
       this.db = firestore()
       this.bucket = firestorage()
-      this.user = new UserService()
+      this.auth = new AuthService()
    }
 
    public birthdateValidation = async (bday: number): Promise<null> => {
@@ -161,7 +161,7 @@ export default class ValidationService {
       })
    }
 
-   public membersValidation = (personalUID: string, members: string[]): Promise<null> => {
+   public membersValidation = (personalUid: string, members: string[]): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
             if (members.length < 2)
@@ -176,11 +176,11 @@ export default class ValidationService {
                if (!snapshot.empty) {
                   for (let i = 0; i < snapshot.docs.length; i++) {
                      const doc: DocumentData = snapshot.docs[i]
-                     if (personalUID !== doc.id)
-                        await this.user.areFriends(personalUID, doc.id)
+                     if (personalUid !== doc.id)
+                        await this.auth.areFriendsGuard(personalUid, doc.id)
 
                      if (member !== doc.data()?.username)
-                        await this.user.areFriends(member, doc.id) // if all friends are friends with everyone
+                        await this.auth.areFriendsGuard(member, doc.id) // if all friends are friends with everyone
                   }
                } else reject(err("empty"))
             }))

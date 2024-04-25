@@ -1,10 +1,9 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { CommentUploadRequest, CommentUploadResponse, DeleteCommentRequest, SuccessResponse } from "types"
 
 const auth = new AuthService()
-const cont = new ContentService()
-const user = new UserService()
+const core = new CoreService()
 const valid = new ValidationService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
@@ -23,7 +22,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
 
       valid.documentIdValidation(post_id, "posts").then(() => {
          valid.contentValidation(ereq.content).then(() => {
-            cont.uploadComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
+            core.uploadComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
                res.status(201).json({
                   ...commentUploadResponse
                })
@@ -51,8 +50,8 @@ export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) =>
          else
             await valid.commentLeafIdValidation(ereq.comment_id, ereq.root_id as string, post_id)
 
-         user.hasPermission(uid, ereq.comment_id, "comments").then(() => {
-            cont.deleteComment(ereq.comment_id).then((success: SuccessResponse) => {
+         auth.hasPermissionGuard(uid, ereq.comment_id, "comments").then(() => {
+            core.deleteComment(ereq.comment_id).then((success: SuccessResponse) => {
                res.status(200).json({
                   ...success
                })

@@ -1,11 +1,10 @@
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { ContentFetch, PostsRequest } from "types"
 
-const auth = new AuthService()
-const user = new UserService()
-const valid = new ValidationService()
-const cont = new ContentService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    const tokenUid: string = res.locals.uid
@@ -19,9 +18,9 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
       if (ereq.last_post_id) await valid.documentIdValidation(ereq.last_post_id, "posts")
 
-      user.getUIDfromUserData(username).then(async (uid: string) => { //get the uid from the username, also validate the username
-         user.areFriends(tokenUid, uid).then(() => {
-            cont.fetchPosts([uid], uid, ereq.last_post_id).then((contentFetch: ContentFetch) => {
+      core.getUidFromUserData(username).then(async (uid: string) => { //get the uid from the username, also validate the username
+         auth.areFriendsGuard(tokenUid, uid).then(() => {
+            core.fetchPosts([uid], uid, ereq.last_post_id).then((contentFetch: ContentFetch) => {
                res.status(200).json({
                   ...contentFetch
                })
