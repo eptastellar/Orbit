@@ -1,7 +1,7 @@
-import { meteor } from "./meteor"
-import { supernova } from "./supernova"
+import { MeteorAlgorithm } from "./MeteorAlgorithm"
+import { SupernovaAlgorithm } from "./SupernovaAlgorithm"
 
 export {
-   meteor,
-   supernova
+   MeteorAlgorithm,
+   SupernovaAlgorithm
 }
