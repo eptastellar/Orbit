@@ -22,7 +22,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
 
       valid.documentIdValidation(post_id, "posts").then(() => {
          valid.contentValidation(ereq.content).then(() => {
-            core.uploadComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
+            core.newComment(uid, ereq.root_id, post_id, ereq.content!).then((commentUploadResponse: CommentUploadResponse) => {
                res.status(201).json({
                   ...commentUploadResponse
                })

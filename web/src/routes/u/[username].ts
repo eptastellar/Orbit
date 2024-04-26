@@ -12,7 +12,7 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    core.getUidFromUserData(username).then(async (uid: string) => { //also validate the username
       auth.areFriendsGuard(tokenUid, uid).then(async () => { //if they are not friends it will reject an error
          core.getUserDataFromUid(uid).then((userSchema: UserSchema) => {
-            core.getPostCount(uid).then((posts: number) => {
+            core.counter(uid, "posts", "owner").then((posts: number) => {
                core.getFriendsCount(uid).then((friends: number) => {
                   core.getMeteorCount(uid).then((meteors: number) => {
                      const userResponse: UserResponse = {

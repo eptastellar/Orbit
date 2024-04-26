@@ -21,7 +21,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
       valid.documentIdValidation(group_id, "groups").then(() => {
-         core.uploadChatMessage(uid, group_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+         core.newChatMessage(uid, group_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
             core.sendNotification(["a", "b"]).then(() => { //TODO
                res.status(201).json({
                   ...idResponse //return the post id

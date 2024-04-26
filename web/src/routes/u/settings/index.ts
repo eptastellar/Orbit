@@ -34,7 +34,7 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
 
    valid.usernameValidation(ereq.username).then(() => {
       valid.interestsValidation(ereq.interests!).then(() => {
-         core.patchUserInfo(uid, ereq).then((idResponse: IdResponse) => {
+         core.updateUserInfo(uid, ereq).then((idResponse: IdResponse) => {
             res.status(200).json({
                ...idResponse
             })

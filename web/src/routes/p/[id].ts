@@ -11,7 +11,7 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
    const post_id: string = req.params.id
 
    valid.documentIdValidation(post_id, "posts").then(() => {
-      core.getPostOwner(post_id).then((ownerUid: string) => {
+      core.getOwner(post_id, "posts").then((ownerUid: string) => {
          auth.areFriendsGuard(uid, ownerUid).then(() => {
             core.getPost(uid, post_id).then((postResponse: PostResponse) => {
                res.status(200).json({
@@ -55,7 +55,7 @@ export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) =>
 
    valid.documentIdValidation(post_id, "posts").then(() => {
       auth.hasPermissionGuard(uid, post_id, "posts").then(() => {
-         core.deletePost(post_id).then((idResponse: IdResponse) => {
+         core.delete(post_id, "posts").then((idResponse: IdResponse) => {
             res.status(200).json({
                ...idResponse
             })
