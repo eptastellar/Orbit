@@ -19,18 +19,19 @@ export default class AuthService {
       const authorization: string = req.headers.authorization!
       const token: string = authorization.split("Bearer ")[1]
 
-      this.jwtValidation(token).then((payload: JWTPayload) => { //validate if the token is signed
+      this.jwtVerification(token).then(async (payload: JWTPayload) => { //validate if the token is signed
          const uid: string = payload.uid as string
 
          const docRef: DocumentReference = this.db.collection("sessions").doc(uid)
          const jwt: string = authorization.split("Bearer ")[1]
 
-         docRef.get().then(async (snapshot: DocumentSnapshot) => {
-            if (jwt == snapshot.data()?.jwt) { //check if the token is the same saved in firestore
-               res.locals.uid = uid //save the uid of the user to manipulate only his data
-               next()
-            } else throw err("auth/invalid-token")
-         }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+         const snapshot: DocumentSnapshot = await docRef.get()
+         const data: DocumentData = snapshot.data()!
+
+         if (jwt === data.jwt) { //check if the token is the same saved in firestore
+            res.locals.uid = uid //save the uid of the user to manipulate only his data
+            next()
+         } else throw err("auth/invalid-token")
       }).catch((error) => { res.status(401).json({ error: error.message }) })
    }
 
@@ -42,9 +43,9 @@ export default class AuthService {
 
             if (decodedjwt.email_verified) { //check if the email is verified
                const uid: string = decodedjwt.uid
-               resolve(uid) //return the uid of the user
-            } else reject(err("auth/email-unverified"))
-         } catch { reject(err("auth/invalid-token")) }
+               return resolve(uid) //return the uid of the user
+            } else return reject(err("auth/email-unverified"))
+         } catch { return reject(err("auth/invalid-token")) }
       })
    }
 
@@ -72,44 +73,46 @@ export default class AuthService {
       return jwt
    }
 
-   public jwtValidation = (token: string): Promise<JWTPayload> => {
+   public jwtVerification = (token: string): Promise<JWTPayload> => {
       return new Promise(async (resolve, reject) => {
          try {
             const secret: Uint8Array = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
             const { payload } = await jwtVerify(token, secret) //validate the user token and return the user payload
 
             if (payload.exp! < (Date.now() / 1000)) //check if the token is expired
-               reject(err("auth/expired-token"))
+               return reject(err("auth/expired-token"))
 
-            resolve(payload) //return the token payload
-         } catch { reject(err("auth/invalid-token")) }
+            return resolve(payload) //return the token payload
+         } catch { return reject(err("auth/invalid-token")) }
       })
    }
 
-   public createNewSession = async (uid: string): Promise<string> => {
-      const docRef: DocumentReference = this.db.collection("sessions").doc(uid) //create a new doc in the collection /sessions
-      const doc: DocumentData = (await docRef.get()).data()! //get data inside the document
-      const token: string = doc?.jwt
-
+   public newSession = async (uid: string): Promise<string> => {
       return new Promise(async (resolve, reject) => {
+         const docRef: DocumentReference = this.db.collection("sessions").doc(uid) //create a new doc in the collection /sessions
+         const doc: DocumentData = await docRef.get()
+         const data: DocumentData = await doc.data()
+         const token: string = data?.jwt
+
          if (token) {
-            this.jwtValidation(token)
-               .then(async () => {
-                  resolve(token) //if the token is still valid return it
-               })
-               .catch(async (error) => {
-                  await docRef.set({ jwt: "" }) //clear the firestore jwt and make the user sign in again
-                  reject(error)
-               })
-         } else resolve(await this.refreshSession(docRef, uid)) //if the document is empty refresh the session
+            this.jwtVerification(token).then(() => {
+               return resolve(token) //if the token is still valid return it
+            }).catch(async (error) => {
+               await docRef.set({ jwt: "" }) //clear the firestore jwt and make the user sign in again
+               return reject(error)
+            })
+         } else return resolve(await this.refreshSession(docRef, uid)) //if the document is empty refresh the session
       })
    }
 
    public refreshSession = async (docRef: DocumentReference, uid: string): Promise<string> => {
-      const jwt: string = await this.newSessionJWT(uid) //generate a new session token
+      return new Promise(async (resolve) => {
+         const jwt: string = await this.newSessionJWT(uid) //generate a new session token
 
-      await docRef.set({ jwt }) //refresh the token in the session token:
-      return jwt
+         await docRef.set({ jwt }) //refresh the token in the session token:
+         return resolve(jwt)
+      })
+
    }
 
    public logOut = (uid: string): Promise<SuccessResponse> => {
@@ -121,8 +124,8 @@ export default class AuthService {
             const successResponse: SuccessResponse = {
                success: true
             }
-            resolve(successResponse)
-         } catch { reject("auth/log-out-failed") }
+            return resolve(successResponse)
+         } catch { return reject("auth/log-out-failed") }
       })
    }
 
@@ -130,25 +133,27 @@ export default class AuthService {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection(path).doc(id)
+            const doc: DocumentData = await docRef.get()
+            const data: DocumentData = await doc.data()
 
-            if ((await docRef.get()).data()?.owner == uid)
-               resolve(null)
-            else reject(err("server/unauthorized"))
-         } catch { reject(err("server/unauthorized")) }
+            if (data.owner === uid)
+               return resolve(null)
+            else return reject(err("server/unauthorized"))
+         } catch { return reject(err("server/unauthorized")) }
       })
    }
 
-   public areFriendsGuard = (personalUid: string, friendUid: string): Promise<null> => {
+   public areFriendsGuard = (uid: string, friendUid: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
-         if (personalUid != friendUid) {
-            const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${personalUid}" AND t.name = "${friendUid}" RETURN t`
+         if (uid !== friendUid) {
+            const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${uid}" AND t.name = "${friendUid}" RETURN t`
             const resultMap: QueryResult = await neo().executeRead(tx => tx.run(query))
             const check = resultMap.records.map((row: any) => row.get("t"))
 
             if (check[0] !== null)
-               resolve(null)
-            else reject(err("server/not-friends"))
-         } else resolve(null)
+               return resolve(null)
+            else return reject(err("server/not-friends"))
+         } else return resolve(null)
       })
    }
 }

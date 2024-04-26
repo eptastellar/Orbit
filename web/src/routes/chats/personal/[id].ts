@@ -12,7 +12,7 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    valid.documentIdValidation(chatId, "personal-chats").then(() => {
       core.getPersonalChatInfo(uid, chatId).then((personalChatInfoResponse: PersonalChatInfoResponse) => {
-         core.openedMessages(uid, chatId).then(() => {
+         core.chatOpenedMessages(uid, chatId).then(() => {
             res.status(200).json({
                ...personalChatInfoResponse //return the chat
             })

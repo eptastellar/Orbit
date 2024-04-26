@@ -17,10 +17,10 @@ export default class CronJobsService {
                const successResponse: SuccessResponse = {
                   success: true
                }
-               resolve(successResponse)
+               return resolve(successResponse)
             }
-            else reject(err("server/driver-not-found"))
-         } catch { reject(err("server/driver-not-found")) }
+            else return reject(err("server/driver-not-found"))
+         } catch { return reject(err("server/driver-not-found")) }
       })
    }
 }

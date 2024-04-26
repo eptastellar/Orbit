@@ -11,7 +11,7 @@ export const GET = (req: Request, res: Response) => {
 
    auth.accessGuard(authorization).then(async (uid: string) => { //send the firebase access token to create a session
       valid.documentIdValidation(uid, "users").then(() => { //check if the user is fully signed up even in firestore
-         auth.createNewSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
+         auth.newSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
             core.getUserDataFromUid(uid).then((userSchema: UserSchema) => {
                const authResponse: AuthResponse = {
                   user_data: { ...userSchema },

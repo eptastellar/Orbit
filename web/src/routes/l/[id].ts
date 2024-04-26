@@ -11,8 +11,8 @@ export const POST = [auth.sessionGuard, (req: Request, res: Response) => {
    const post_id: string = req.params.id
 
    valid.documentIdValidation(post_id, "posts").then(async () => {
-      core.getOwner(post_id, "posts").then((post_owner: string) => {
-         auth.areFriendsGuard(tokenUid, post_owner).then(() => {
+      core.getOwner(post_id, "posts").then((ownerUid: string) => {
+         auth.areFriendsGuard(tokenUid, ownerUid).then(() => {
             core.updateLike(post_id, tokenUid).then((idResponse: IdResponse) => {
                res.status(200).json({
                   ...idResponse

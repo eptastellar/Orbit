@@ -27,7 +27,7 @@ export const POST = (req: Request, res: Response) => {
             valid.interestsValidation(ereq.interests).then(async () => {
                core.newUserDocument(uid, ereq.username, ereq.bday, ereq?.pfp).then((userSchema: UserSchema) => { //create a new doc in /users
                   core.newUserNode(uid, ereq.interests).then(() => { //create a new node in neo4j
-                     auth.createNewSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
+                     auth.newSession(uid).then((jwt: string) => { //return the session jwt and the user for the frontend side
                         const authResponse: AuthResponse = {
                            jwt,
                            user_data: { ...userSchema }

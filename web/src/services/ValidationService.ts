@@ -1,6 +1,6 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
-import { DocumentData, Firestore, Query, QuerySnapshot } from "firebase-admin/firestore"
+import { DocumentData, Firestore, QuerySnapshot } from "firebase-admin/firestore"
 import { AuthService } from "services"
 
 export default class ValidationService {
@@ -19,39 +19,38 @@ export default class ValidationService {
       return new Promise((resolve, reject) => {
          try {
             if (!bday || bday > Date.now() / 1000 || bday < -2208988800)
-               reject(err("validation/invalid-birthdate"))
+               return reject(err("validation/invalid-birthdate"))
 
             if (((Date.now() / 1000 - 441806400) - bday) <= 0)
-               reject(err("validation/too-young"))
+               return reject(err("validation/too-young"))
 
-            resolve(null)
-         } catch { reject(err("validation/malformed-input")) }
+            return resolve(null)
+         } catch { return reject(err("validation/malformed-input")) }
       })
    }
 
    public usernameValidation = async (username: string): Promise<null> => {
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
          try {
             const regex: RegExp = /[^a-zA-Z0-9\_\-\.]/
 
             if (!username || !username.startsWith("@") || username.substring(1).match(regex)) //check if the username i approved by the regex
-               reject(err("validation/invalid-username"))
+               return reject(err("validation/invalid-username"))
 
             if (username.length > 24 + 1)
-               reject(err("validation/username-too-long"))
+               return reject(err("validation/username-too-long"))
 
             if (username.length < 6 + 1)
-               reject(err("validation/username-too-short"))
+               return reject(err("validation/username-too-short"))
 
-            const usersRef: Query = this.db.collection("users")
-               .where("username", "==", username) //search where the username is equal to the input username
+            const snapshot: QuerySnapshot = await this.db.collection("users") //search where the username is equal to the input username
+               .where("username", "==", username)
+               .get()
 
-            usersRef.get().then(async (snapshot: QuerySnapshot) => {
-               if (snapshot.empty) //check if username is already used
-                  resolve(null)
-               else reject(err("validation/username-already-in-use"))
-            })
-         } catch { reject(err("validation/malformed-input")) }
+            if (snapshot.empty) //check if username is already used
+               return resolve(null)
+            else return reject(err("validation/username-already-in-use"))
+         } catch { return reject(err("validation/malformed-input")) }
       })
    }
 
@@ -59,14 +58,14 @@ export default class ValidationService {
       return new Promise((resolve, reject) => {
          try {
             if (interestsList.length > 5 || interestsList.length < 1)
-               reject(err("validation/invalid-number-of-interests"))
+               return reject(err("validation/invalid-number-of-interests"))
 
             interestsList.forEach(element => {
                if (!interests.includes(element))
-                  reject(err("validation/invalid-interests"))
+                  return reject(err("validation/invalid-interests"))
             })
-            resolve(null)
-         } catch { reject(err("validation/malformed-input")) }
+            return resolve(null)
+         } catch { return reject(err("validation/malformed-input")) }
       })
    }
 
@@ -76,9 +75,9 @@ export default class ValidationService {
             const docRef: DocumentData = await this.db.collection(path).doc(id).get()
 
             if (docRef.exists)
-               resolve(null)
-            else reject(err("validation/invalid-document-id"))
-         } catch { reject(err("validation/invalid-document-id")) }
+               return resolve(null)
+            else return reject(err("validation/invalid-document-id"))
+         } catch { return reject(err("validation/invalid-document-id")) }
       })
    }
 
@@ -88,11 +87,12 @@ export default class ValidationService {
             const docRef: DocumentData = await this.db.collection("comments").doc(rootId).get() //retrieve the root comment
 
             if (docRef.exists) {
-               if (docRef.data()?.post_id === postId)
-                  resolve(null)
-               else reject(err("validation/invalid-document-id"))
-            } else reject(err("validation/invalid-document-id"))
-         } catch { reject(err("validation/invalid-document-id")) }
+               const data: DocumentData = await docRef.data()
+               if (data.post_id === postId)
+                  return resolve(null)
+               else return reject(err("validation/invalid-document-id"))
+            } else return reject(err("validation/invalid-document-id"))
+         } catch { return reject(err("validation/invalid-document-id")) }
       })
    }
 
@@ -105,15 +105,15 @@ export default class ValidationService {
             const rootData: DocumentData[string] = leafRef.data()
 
             if (rootRef.exists) {
-               if (rootData?.post_id === postId) {
-                  if (leafData?.post_id === postId) {
-                     if (leafData?.root_id === rootId)
-                        resolve(null)
-                     else reject(err("validation/invalid-document-id"))
-                  } else reject(err("validation/invalid-document-id"))
-               } else reject(err("validation/invalid-document-id"))
-            } else reject(err("validation/invalid-document-id"))
-         } catch { reject(err("validation/invalid-document-id")) }
+               if (rootData.post_id === postId) {
+                  if (leafData.post_id === postId) {
+                     if (leafData.root_id === rootId)
+                        return resolve(null)
+                     else return reject(err("validation/invalid-document-id"))
+                  } else return reject(err("validation/invalid-document-id"))
+               } else return reject(err("validation/invalid-document-id"))
+            } else return reject(err("validation/invalid-document-id"))
+         } catch { return reject(err("validation/invalid-document-id")) }
       })
    }
 
@@ -125,14 +125,14 @@ export default class ValidationService {
 
                if (type === "image" || type === "audio")
                   await this.mediaValidation(content)
-               else reject(err("validation/malformed-input"))
+               else return reject(err("validation/malformed-input"))
             } else {
                if (text)
                   await this.harmfulContentValidation(text)
-               else reject(err("validation/malformed-input"))
+               else return reject(err("validation/malformed-input"))
             }
-            resolve(null)
-         } catch (error) { reject(error) }
+            return resolve(null)
+         } catch (error) { return reject(error) }
       })
    }
 
@@ -147,46 +147,47 @@ export default class ValidationService {
 
             fileRef.exists().then((exists) => {
                if (exists[0])
-                  resolve(null)
-               else reject(err("validation/invalid-image-path"))
+                  return resolve(null)
+               else return reject(err("validation/invalid-image-path"))
             })
-         } catch { reject(err("malformed url")) }
+         } catch { return reject(err("malformed url")) }
       })
    }
 
    // eslint-disable-next-line @typescript-eslint/no-unused-vars
    public harmfulContentValidation = (text: string): Promise<null> => { //TODO
       return new Promise((resolve) => {
-         resolve(null)
+         return resolve(null)
       })
    }
 
-   public membersValidation = (personalUid: string, members: string[]): Promise<null> => {
+   public membersValidation = (uid: string, members: string[]): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          try {
             if (members.length < 2)
-               reject(err("troppi pochi utenti, almeno 2"))
+               return reject(err("troppi pochi utenti, almeno 2"))
 
             await Promise.all(members.map(async (member) => {
-               const docRef: Query = this.db.collection("users")
+               const snapshot: QuerySnapshot = await this.db.collection("users")
                   .where("username", "==", member)
-
-               const snapshot: QuerySnapshot = await docRef.get()
+                  .get()
 
                if (!snapshot.empty) {
                   for (let i = 0; i < snapshot.docs.length; i++) {
                      const doc: DocumentData = snapshot.docs[i]
-                     if (personalUid !== doc.id)
-                        await this.auth.areFriendsGuard(personalUid, doc.id)
+                     const data: DocumentData = await doc.data()
 
-                     if (member !== doc.data()?.username)
+                     if (uid !== doc.id)
+                        await this.auth.areFriendsGuard(uid, doc.id)
+
+                     if (member !== data.username)
                         await this.auth.areFriendsGuard(member, doc.id) // if all friends are friends with everyone
                   }
-               } else reject(err("empty"))
+               } else return reject(err("empty"))
             }))
 
-            resolve(null)
-         } catch (error) { reject(error) }
+            return resolve(null)
+         } catch (error) { return reject(error) }
       })
    }
 }

@@ -252,10 +252,8 @@ export default class CoreService {
 
    public counter = (id: string, path: string, reference: string): Promise<number> => {
       return new Promise(async (resolve) => {
-         const query: Query = this.db.collection(path)
+         const snapshot = await this.db.collection(path)
             .where(reference, "==", id)
-
-         const snapshot = await query
             .count()
             .get()
 
@@ -523,10 +521,9 @@ export default class CoreService {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("comments").doc(commentId)
-            const leafsRef: Query = this.db.collection("comments")
+            const snapshot: QuerySnapshot = await this.db.collection("comments")
                .where("root_id", "==", commentId)
-
-            const snapshot: QuerySnapshot = await leafsRef.get()
+               .get()
 
             const batch: WriteBatch = this.db.batch()
             snapshot.docs.forEach((doc: DocumentData) => {
@@ -654,10 +651,9 @@ export default class CoreService {
    public getPersonalChats = (uid: string): Promise<ChatsResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const query: Query = this.db.collection("users-chats")
+            const snapshot: QuerySnapshot = await this.db.collection("users-chats")
                .where("user_id", "==", uid)
-
-            const snapshot: QuerySnapshot = await query.get()
+               .get()
 
             const chats: ChatSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
                const data: DocumentData[string] = doc.data()
@@ -709,10 +705,9 @@ export default class CoreService {
    public getGroupChats = (uid: string): Promise<ChatsResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const query: Query = this.db.collection("group-member")
+            const snapshot: QuerySnapshot = await this.db.collection("group-member")
                .where("user_id", "==", uid)
-
-            const snapshot: QuerySnapshot = await query.get()
+               .get()
 
             const chats: ChatSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
                const data: DocumentData[string] = await doc.data()
@@ -751,12 +746,12 @@ export default class CoreService {
    public getPersonalChatInfo = (uid: string, chatId: string): Promise<PersonalChatInfoResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const query: Query = this.db.collection("users-chats")
+            const snapshot: DocumentData = await this.db.collection("users-chats")
                .where("chat_id", "==", chatId)
                .where("user_id", "!=", uid)
                .limit(1)
+               .get()
 
-            const snapshot: DocumentData = await query.get()
             if (!snapshot.empty) {
                const userSchema: UserSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
                   const data: DocumentData[string] = doc.data()
@@ -776,19 +771,19 @@ export default class CoreService {
    public getGroupChatInfo = (uid: string, groupId: string): Promise<GroupChatInfoResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const query: Query = this.db.collection("group-member")
+            const snapshot: QuerySnapshot = await this.db.collection("group-member")
                .where("group_id", "==", groupId)
                .where("user_id", "==", uid)
+               .get()
 
-            const snapshot: QuerySnapshot = await query.get()
             if (!snapshot.empty) {
                const docRef: DocumentData = await this.db.collection("groups").doc(groupId).get()
                const data: DocumentData[string] = await docRef.data()
 
-               const query: Query = this.db.collection("group-member")
+               const snapshot: QuerySnapshot = await this.db.collection("group-member")
                   .where("group_id", "==", docRef.id)
+                  .get()
 
-               const snapshot: QuerySnapshot = await query.get()
                const membersName: string[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
                   const data: DocumentData[string] = await doc.data()
                   const uid: string = data.user_id
@@ -814,22 +809,30 @@ export default class CoreService {
       })
    }
 
+   public getChatMembers = (chatId: string): Promise<string[]> => {
+      return new Promise(async (resolve, reject) => {
+         const query: Query = this.db.collection("users-chats")
+            .where("chat_id", "==", chatId)
+
+         //TODO
+      })
+   }
+
    public newChatMessage = (uid: string, chatId: string, text?: string, type?: string, content?: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("messages").doc() //set the docRef to messages
+            const id: string = docRef.id
 
             await docRef.set({ //set the message information in firestore
                owner: uid,
                created_at: Date.now(), //unix format
-               chat_id: chatId,
-               opened: false
+               chat_id: chatId
             })
 
             if (text) await docRef.update({ text: text })
             if (content) await docRef.update({ content: content, type: type })
 
-            const id: string = docRef.id
             const idResponse: IdResponse = {
                id
             }
@@ -838,10 +841,26 @@ export default class CoreService {
       })
    }
 
-   public openedMessages = (uid: string, chatId: string): Promise<null> => {
+   public chatOpenedMessages = (uid: string, chatId: string): Promise<null> => {
+      return new Promise(async (resolve, reject) => {
+         const query: Query = this.db.collection("messages-opened")
+            .where("owner", "==", uid)
+            .where("chat_id", "==", chatId)
+            .where("opened", "==", false)
+
+         const snapshot: QuerySnapshot = await query.get()
+         await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+
+         }))
+
+         resolve(null) //TODO
+      })
+   }
+
+   public groupOpenedMessages = (uid: string, chatId: string): Promise<null> => {
       return new Promise(async (resolve, reject) => {
          const queryRef: Query = this.db.collection("messages")
-            .where("group_id", "==", chatId)
+            .where("chat_id", "==", chatId)
             .where("user_id", "==", uid)
             .where("opened", "==", false)
          resolve(null) //TODO
