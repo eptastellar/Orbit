@@ -34,13 +34,15 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
 
    valid.usernameValidation(ereq.username).then(() => {
       valid.interestsValidation(ereq.interests!).then(() => {
-         core.updateUserInfo(uid, ereq).then((idResponse: IdResponse) => {
-            res.status(200).json({
-               ...idResponse
-            })
-         }).catch((error) => res.status(500).json({ error: error.message }))
-      }).catch((error) => res.status(400).json({ error: error.message }))
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+         valid.mediaValidation(pfp).then(() => {
+            core.updateUserInfo(uid, ereq).then((idResponse: IdResponse) => {
+               res.status(200).json({
+                  ...idResponse
+               })
+            }).catch((error: Error) => res.status(500).json({ error: error.message }))
+         }).catch((error: Error) => res.status(400).json({ error: error.message }))
+      }).catch((error: Error) => res.status(400).json({ error: error.message }))
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }]
 
 export const DELETE = [auth.sessionGuard, async (_: Request, res: Response) => {
@@ -56,7 +58,7 @@ export const DELETE = [auth.sessionGuard, async (_: Request, res: Response) => {
             res.status(200).json({
                ...successResponse
             })
-         }).catch((error) => res.status(500).json({ error: error.message }))
-      }).catch((error) => res.status(500).json({ error: error.message }))
-   }).catch((error) => res.status(500).json({ error: error.message }))
+         }).catch((error: Error) => res.status(500).json({ error: error.message }))
+      }).catch((error: Error) => res.status(500).json({ error: error.message }))
+   }).catch((error: Error) => res.status(500).json({ error: error.message }))
 }]

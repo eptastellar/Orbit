@@ -21,6 +21,6 @@ export const POST = (req: Request, res: Response) => {
          res.status(200).json({
             ...success
          })
-      }).catch((error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }

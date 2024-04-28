@@ -1,5 +1,5 @@
 import { err, neo } from "config"
-import { QueryResult } from "neo4j-driver"
+import { ManagedTransaction, QueryResult, RecordShape } from "neo4j-driver"
 import { SupernovaResponse } from "types"
 
 export class SupernovaAlgorithm {
@@ -22,7 +22,7 @@ export class SupernovaAlgorithm {
 
       return new Promise<string>(async (resolve, reject) => {
          //retrieve the starting user node and its interests
-         const resultStartingPoint: QueryResult = await neo().executeRead(tx => tx.run(queryStartingPoint))
+         const resultStartingPoint: QueryResult = await neo().executeRead((tx: ManagedTransaction) => tx.run(queryStartingPoint))
          const startingNode = resultStartingPoint.records.map(row => row.get("u"))
          if (startingNode.includes(null)) {
             return reject(err("User not found"))
@@ -30,12 +30,12 @@ export class SupernovaAlgorithm {
          startingPointInterests = this.stringSlicing(startingNode.at(0).properties["interests"])
 
          //retrieve friends of the starting user and calculate compatibility
-         result = await neo().executeRead(tx => tx.run(queryFriends))
-         let results = result.records.map(row => row.get("t"))
+         result = await neo().executeRead((tx: ManagedTransaction) => tx.run(queryFriends))
+         let results: RecordShape = result.records.map(row => row.get("t"))
          if (results.includes(null)) {
             return reject(err("No Friends Found"))
          }
-         results.forEach(element => {
+         results.forEach((element: RecordShape) => {
             friendList.set(element.properties["name"], 0)
             arrayFriends.push(element.properties["name"])
          })
@@ -51,10 +51,10 @@ export class SupernovaAlgorithm {
             } else continue
 
             queryFriends = `MATCH (u:User)-[:Friend]-(t:User) WHERE u.name = "${startingPoint}" RETURN t`
-            result = await neo().executeRead(tx => tx.run(queryFriends))
+            result = await neo().executeRead((tx: ManagedTransaction) => tx.run(queryFriends))
             results = result.records.map(row => row.get("t"))
 
-            results.forEach(element => {
+            results.forEach((element: RecordShape) => {
                arrayInterests = this.stringSlicing(element.properties["interests"])
                friendList.set(element.properties["name"], this.checkInterestsCompatibility(startingPointInterests, arrayInterests))
             })
@@ -65,9 +65,9 @@ export class SupernovaAlgorithm {
                if (alreadySearched.includes(friend)) continue
                //QUERY PER VEDERE SE SONO GIà AMICI ( ovviamente salta se è se stesso dato che non può essere amico di se stesso )
                if (user != friend) {
-                  const queryAlreadyFriend = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) WHERE u.name="${user}" AND t.name="${friend}" RETURN t`
+                  const queryAlreadyFriend: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) WHERE u.name="${user}" AND t.name="${friend}" RETURN t`
                   result = await neo()?.executeRead(tx => tx.run(queryAlreadyFriend))
-                  const testNull = result.records.map(row => row.get("t"))
+                  const testNull: RecordShape = result.records.map(row => row.get("t"))
                   //Ritorna quando testNull[0] è null dato che l'optional match risponde con NULL solamente quando non trova il match tra le persone, ma se abbiamo controllato esattamente che quelle persone esistono e non hanno una connessione allora vuol dire che abbiamo un match
                   if (testNull[0] === null) {
                      return resolve(friend)
@@ -85,7 +85,7 @@ export class SupernovaAlgorithm {
    public checkInterestsCompatibility = (startingNode: Array<string>, friendToBeChecked: Array<string>) => {
       let compatibility: number = 0
       if (friendToBeChecked == undefined) friendToBeChecked = [""]
-      startingNode.forEach(element => {
+      startingNode.forEach((element: string) => {
          if (typeof (friendToBeChecked) === "string") {
             if (element === friendToBeChecked) compatibility++
          } else {

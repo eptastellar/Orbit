@@ -21,8 +21,8 @@ export const GET = (req: Request, res: Response) => {
                res.status(202).json({
                   ...authResponse
                })
-            }).catch((error) => { res.status(400).json({ error: error.message }) })
-         }).catch((error) => { res.status(400).json({ error: error.message }) })
-      }).catch((error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error) => { res.status(401).json({ error: error.message }) })
+            }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+         }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(401).json({ error: error.message }) })
 }

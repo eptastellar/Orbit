@@ -17,10 +17,10 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
                res.status(200).json({
                   ...postResponse //return the post
                })
-            }).catch((error) => { res.status(500).json({ error: error.message }) })
-         }).catch((error) => { res.status(400).json({ error: error.message }) })
-      }).catch((error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+            }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }]
 
 export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => {
@@ -43,10 +43,10 @@ export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => 
                res.status(200).json({
                   ...idResponse //return the updated post id
                })
-            }).catch((error) => { res.status(500).json({ error: error.message }) })
-         }).catch((error) => { res.status(400).json({ error: error.message }) })
-      }).catch((error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+            }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }]
 
 export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) => {
@@ -59,7 +59,7 @@ export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) =>
             res.status(200).json({
                ...idResponse
             })
-         }).catch((error) => { res.status(500).json({ error: error.message }) })
-      }).catch((error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+         }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }]

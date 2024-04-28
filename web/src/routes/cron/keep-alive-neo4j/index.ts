@@ -10,5 +10,5 @@ export const GET = [auth.cronGuard, async (_: Request, res: Response) => {
       res.status(200).json({
          ...success
       })
-   }).catch((error) => { res.status(500).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
 }]

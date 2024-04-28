@@ -23,6 +23,6 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
          res.status(201).json({
             ...idResponse //return the post id
          })
-      }).catch((error) => { res.status(500).json({ error: error.message }) })
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }]
