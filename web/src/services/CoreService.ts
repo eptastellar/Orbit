@@ -2,7 +2,7 @@ import { err, firebase, firestorage, firestore, neo } from "config"
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Query, QuerySnapshot, WriteBatch } from "firebase-admin/firestore"
 import { QueryResult, Session } from "neo4j-driver"
 import { ValidationService } from "services"
-import { ChatSchema, ChatsResponse, CommentSchema, CommentUploadResponse, ContentFetch, GroupChatInfoResponse, IdResponse, MessageSchema, PersonalChatInfoResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
+import { ChatSchema, ChatsResponse, CommentSchema, CommentUploadResponse, ContentFetch, GroupChatInfoResponse, IdResponse, LatestMessageSchema, MessageSchema, PersonalChatInfoResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
 
 export default class CoreService {
    private db: Firestore
@@ -47,16 +47,19 @@ export default class CoreService {
 
    public getUidFromUserData = async (username: string): Promise<string> => { //retrieve uid based from the username
       return new Promise(async (resolve, reject) => {
-         const snapshot: QuerySnapshot = await this.db.collection("users")
-            .where("username", "==", username)
-            .get()
+         try {
+            const snapshot: QuerySnapshot = await this.db.collection("users")
+               .where("username", "==", username)
+               .limit(1)
+               .get()
 
-         if (!snapshot.empty) { //retrieve documents where the username is equal to the username param
-            snapshot.forEach((doc) => {
-               const uid = doc.id
-               return resolve(uid) //return the uid of the username
-            })
-         } else return reject(err("server/user-not-found"))
+            if (!snapshot.empty) { //retrieve documents where the username is equal to the username param
+               const uid: string[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+                  return doc.ref.id
+               }))
+               return resolve(uid[0]) //return the uid of the username
+            }
+         } catch { return reject(err("server/user-not-found")) }
       })
    }
 
@@ -627,16 +630,15 @@ export default class CoreService {
                admin: true
             })
 
-            members.forEach(async (member: string) => {
+            await Promise.all(members.map(async (member: string) => {
                const memberRef: DocumentReference = this.db.collection("group-member").doc()
-               const userId: string = await this.getUidFromUserData(member)
 
                await memberRef.set({ //set the group information in firestore
-                  user_id: userId,
+                  user_id: member,
                   group_id: id,
                   admin: false
                })
-            })
+            }))
 
             const idResponse: IdResponse = {
                id
@@ -655,6 +657,7 @@ export default class CoreService {
 
             const chats: ChatSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
                const data: DocumentData[string] = doc.data()
+               const chat_id: string = data.chat_id
                const docRef: DocumentData = this.db.collection("users-chats")
                   .where("chat_id", "==", data.chat_id)
                   .where("user_id", "!=", uid)
@@ -678,15 +681,25 @@ export default class CoreService {
 
                const name: string = userSchema.name
                const pfp: string = userSchema.pfp
-               const latest_message: string = await this.getLatestMessage(data.chat_id)
-               const unreaded_messages: number = await this.getUnreadedMessages(data.chat_id)
+               const unreaded_messages: number = await this.getChatUnreadedMessages(uid, data.chat_id)
 
-               return {
-                  name,
-                  pfp,
-                  bday,
-                  latest_message,
-                  unreaded_messages
+               if (unreaded_messages > 0) {
+                  return {
+                     chat_id,
+                     name,
+                     pfp,
+                     bday,
+                     unreaded_messages
+                  }
+               } else {
+                  const latest_message: LatestMessageSchema = await this.getLatestMessage(data.chat_id)
+                  return {
+                     chat_id,
+                     name,
+                     pfp,
+                     bday,
+                     latest_message
+                  }
                }
             }))
 
@@ -712,16 +725,26 @@ export default class CoreService {
                const docRef: DocumentData = await this.db.collection("groups").doc(data.group_id).get()
                const dData: DocumentData = await docRef.data()
 
+               const chat_id: string = docRef.id
                const pfp: string = dData.pfp
                const name: string = dData.name
-               const latest_message: string = await this.getLatestMessage(data.group_id)
-               const unreaded_messages: number = await this.getUnreadedMessages(data.group_id)
+               const unreaded_messages: number = await this.getGroupUnreadedMessages(uid, data.group_id)
 
-               return {
-                  name,
-                  pfp,
-                  latest_message,
-                  unreaded_messages
+               if (unreaded_messages > 0) {
+                  return {
+                     chat_id,
+                     name,
+                     pfp,
+                     unreaded_messages
+                  }
+               } else {
+                  const latest_message: LatestMessageSchema = await this.getLatestMessage(data.group_id)
+                  return {
+                     chat_id,
+                     name,
+                     pfp,
+                     latest_message
+                  }
                }
             }))
 
@@ -731,19 +754,7 @@ export default class CoreService {
                }
                return resolve(chatsResponse)
             } else return reject(err("server/no-content"))
-         } catch { return reject(err("failato")) }
-      })
-   }
-
-   public getLatestMessage = (chatId: string): Promise<string> => {
-      return new Promise((resolve, reject) => { //TODO
-         return resolve("")
-      })
-   }
-
-   public getUnreadedMessages = (chatId: string): Promise<number> => {
-      return new Promise((resolve, reject) => { //TODO
-         return resolve(0)
+         } catch (error) { return reject(error) }
       })
    }
 
@@ -772,6 +783,69 @@ export default class CoreService {
                return resolve(personalChatInfoResponse)
             } else return reject(err("no buono"))
          } catch (error) { return reject(error) }
+      })
+   }
+
+   public getLatestMessage = (chatId: string): Promise<LatestMessageSchema> => {
+      return new Promise(async (resolve) => { 
+         const snapshot = await this.db.collection("messages")
+            .where("chat_id", "==", chatId)
+            .orderBy("created_at", "desc")
+            .limit(1)
+            .get()
+
+         const latest_message: LatestMessageSchema[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const data: DocumentData[string] = await doc.data()
+            const text: string = data.text
+            const content: string = data.content
+            const type: string = data.type
+
+            if (text) {
+               const content: string = text
+               const type: string = "text"
+               return {
+                  content,
+                  type
+               }
+            }
+
+            return {
+               content,
+               type
+            }
+         }))
+
+         return resolve(latest_message[0])
+      })
+   }
+
+   public getGroupUnreadedMessages = (uid: string, chatId: string): Promise<number> => {
+      return new Promise(async (resolve) => {
+         const snapshot = await this.db.collection("opened-messages")
+            .where("user_id", "!=", uid)
+            .where("chat_id", "==", chatId)
+            .where("opened", "==", false)
+            .count()
+            .get()
+
+         const data = snapshot.data()
+
+         return resolve(data.count)
+      })
+   }
+
+   public getChatUnreadedMessages = (uid: string, chatId: string): Promise<number> => {
+      return new Promise(async (resolve) => {
+         const snapshot = await this.db.collection("opened-messages")
+            .where("user_id", "!=", uid)
+            .where("chat_id", "==", chatId)
+            .where("opened", "==", false)
+            .count()
+            .get()
+
+         const data = snapshot.data()
+
+         return resolve(data.count)
       })
    }
 
@@ -830,12 +904,11 @@ export default class CoreService {
    }
 
    public getMembersUidsFromUsernames = (members: string[]): Promise<string[]> => {
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
          try {
-            const membersUids: string[] = []
-            members.forEach(async (member: string) => {
-               membersUids.push(await this.getUidFromUserData(member))
-            })
+            const membersUids: string[] = await Promise.all(members.map(async (member: string) => {
+               return await this.getUidFromUserData(member)
+            }))
             return resolve(membersUids)
          } catch (error) { return reject(error) }
       })
@@ -877,6 +950,7 @@ export default class CoreService {
 
                await docRef.set({
                   user_id: memberId,
+                  chat_id: chatId,
                   message_id: id,
                   opened: false
                })

@@ -146,10 +146,11 @@ export type ChatsResponse = {
 }
 
 export type ChatSchema = {
+   chat_id: string,
    name: string,
    pfp: string
    bday?: boolean
-   latest_message?: string
+   latest_message?: LatestMessageSchema
    unreaded_messages?: number
 }
 
@@ -173,4 +174,9 @@ export type MessageSchema = {
    type?: string,
    pfp?: string,
    username?: string
+}
+
+export type LatestMessageSchema = {
+   content: string
+   type: string
 }
