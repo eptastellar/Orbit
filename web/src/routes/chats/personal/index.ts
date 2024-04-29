@@ -5,7 +5,7 @@ import { ChatsResponse } from "types"
 const auth: AuthService = new AuthService()
 const core: CoreService = new CoreService()
 
-export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
+export const GET = [auth.sessionGuard, async (_: Request, res: Response) => {
    const uid: string = res.locals.uid
 
    core.getPersonalChats(uid).then((chatsResponse: ChatsResponse) => {

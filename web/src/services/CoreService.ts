@@ -572,10 +572,9 @@ export default class CoreService {
       })
    }
 
-   public newPersonalChat = (uid: string, receiverUsername: string): Promise<IdResponse> => {
+   public newPersonalChat = (uid: string, receiverUid: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const receiverUid: string = await this.getUidFromUserData(receiverUsername)
             const docRef: DocumentReference = this.db.collection("personal-chats").doc() //set the docRef to chats
 
             await docRef.set({ //set the chat information in firestore
@@ -610,7 +609,6 @@ export default class CoreService {
             pfp = pfp ? pfp : await this.randomPicture("default/groups")
 
             if (!name) return reject(err("no name"))
-            await this.valid.membersValidation(uid, members)
 
             const docRef: DocumentReference = this.db.collection("groups").doc() //set the docRef to groups
 
@@ -680,8 +678,8 @@ export default class CoreService {
 
                const name: string = userSchema.name
                const pfp: string = userSchema.pfp
-               const latest_message: string = await this.getLatestMessage()
-               const unreaded_messages: number = 0 //TODO
+               const latest_message: string = await this.getLatestMessage(data.chat_id)
+               const unreaded_messages: number = await this.getUnreadedMessages(data.chat_id)
 
                return {
                   name,
@@ -698,7 +696,7 @@ export default class CoreService {
                }
                return resolve(chatsResponse)
             } else return reject(err("server/no-content"))
-         } catch { return reject(err("failed to fetch")) }
+         } catch (error) { return reject(error) }
       })
    }
 
@@ -716,8 +714,8 @@ export default class CoreService {
 
                const pfp: string = dData.pfp
                const name: string = dData.name
-               const latest_message: string = await this.getLatestMessage()
-               const unreaded_messages: number = 0 //TODO
+               const latest_message: string = await this.getLatestMessage(data.group_id)
+               const unreaded_messages: number = await this.getUnreadedMessages(data.group_id)
 
                return {
                   name,
@@ -737,9 +735,15 @@ export default class CoreService {
       })
    }
 
-   public getLatestMessage = (): Promise<string> => {
+   public getLatestMessage = (chatId: string): Promise<string> => {
       return new Promise((resolve, reject) => { //TODO
          return resolve("")
+      })
+   }
+
+   public getUnreadedMessages = (chatId: string): Promise<number> => {
+      return new Promise((resolve, reject) => { //TODO
+         return resolve(0)
       })
    }
 
@@ -759,12 +763,15 @@ export default class CoreService {
 
                   return userSchema
                }))
+
+               await this.setVisualizationOfMessages(uid, chatId)
+
                const personalChatInfoResponse: PersonalChatInfoResponse = {
                   user_data: { ...userSchema[0] }
                }
                return resolve(personalChatInfoResponse)
             } else return reject(err("no buono"))
-         } catch { return reject(err("no buono")) }
+         } catch (error) { return reject(error) }
       })
    }
 
@@ -792,6 +799,8 @@ export default class CoreService {
                   return userSchema.name
                }))
 
+               await this.setVisualizationOfMessages(uid, groupId)
+
                const groupChatInfoResponse: GroupChatInfoResponse = {
                   pfp: data.pfp,
                   name: data.name,
@@ -803,25 +812,55 @@ export default class CoreService {
       })
    }
 
-   public sendNotification = (receivers: string[]): Promise<null> => {
-      return new Promise((resolve, reject) => { //TODO
-         return resolve(null)
-      })
-   }
-
-   public getChatMembers = (chatId: string): Promise<string[]> => {
-      return new Promise(async (resolve, reject) => {
-         const query: Query = this.db.collection("users-chats")
+   public setVisualizationOfMessages = (uid: string, chatId: string): Promise<null> => {
+      return new Promise(async (resolve) => {
+         const snapshot: DocumentData = await this.db.collection("opened-messages")
             .where("chat_id", "==", chatId)
+            .where("user_id", "==", uid)
+            .where("opened", "==", false)
+            .get()
 
-         //TODO
+         await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            return doc.ref.update({
+               opened: true
+            })
+         }))
+         resolve(null)
       })
    }
 
-   public newChatMessage = (uid: string, chatId: string, text?: string, type?: string, content?: string): Promise<IdResponse> => {
+   public getMembersUidsFromUsernames = (members: string[]): Promise<string[]> => {
+      return new Promise((resolve, reject) => {
+         try {
+            const membersUids: string[] = []
+            members.forEach(async (member: string) => {
+               membersUids.push(await this.getUidFromUserData(member))
+            })
+            return resolve(membersUids)
+         } catch (error) { return reject(error) }
+      })
+   }
+
+   public getMembersFromChatId = (uid: string, chatId: string): Promise<string[]> => {
+      return new Promise(async (resolve) => {
+         const snapshot: QuerySnapshot = await this.db.collection("users-chats")
+            .where("chat_id", "==", chatId)
+            .where("user_id", "!=", uid)
+            .get()
+
+         const members: string[] = await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const data: DocumentData[string] = await doc.data()
+            return data.user_id
+         }))
+
+         return resolve(members)
+      })
+   }
+
+   public newChatMessage = (uid: string, chatId: string, members: string[], text?: string, type?: string, content?: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
-            const docRef: DocumentReference = this.db.collection("messages").doc() //set the docRef to messages
+            let docRef: DocumentReference = this.db.collection("messages").doc() //set the docRef to messages
             const id: string = docRef.id
 
             await docRef.set({ //set the message information in firestore
@@ -833,6 +872,16 @@ export default class CoreService {
             if (text) await docRef.update({ text: text })
             if (content) await docRef.update({ content: content, type: type })
 
+            members.forEach(async (memberId: string) => { //set if the message is opened
+               docRef = this.db.collection("opened-messages").doc()
+
+               await docRef.set({
+                  user_id: memberId,
+                  message_id: id,
+                  opened: false
+               })
+            })
+
             const idResponse: IdResponse = {
                id
             }
@@ -841,39 +890,13 @@ export default class CoreService {
       })
    }
 
-   public chatOpenedMessages = (uid: string, chatId: string): Promise<null> => {
-      return new Promise(async (resolve, reject) => {
-         const query: Query = this.db.collection("messages-opened")
-            .where("owner", "==", uid)
-            .where("chat_id", "==", chatId)
-            .where("opened", "==", false)
-
-         const snapshot: QuerySnapshot = await query.get()
-         await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-
-         }))
-
-         resolve(null) //TODO
-      })
-   }
-
-   public groupOpenedMessages = (uid: string, chatId: string): Promise<null> => {
-      return new Promise(async (resolve, reject) => {
-         const queryRef: Query = this.db.collection("messages")
-            .where("chat_id", "==", chatId)
-            .where("user_id", "==", uid)
-            .where("opened", "==", false)
-         resolve(null) //TODO
-
-      })
-   }
-
-   public fetchChatMessages = (uid: string, chatId: string, lastMessageId?: string): Promise<ContentFetch> => {
+   public fetchChatMessages = (uid: string, chatId: string, isGroup: boolean, lastMessageId?: string): Promise<ContentFetch> => {
       const limit: number = 7
 
       return new Promise(async (resolve, reject) => {
          let query: Query = this.db.collection("messages")
             .where("chat_id", "==", chatId)
+            .where("created_at", ">=", Date.now() - 24 * 60 * 60 * 1000) // 24h before
             .orderBy("created_at", "desc")
             .limit(limit)
 
@@ -889,6 +912,7 @@ export default class CoreService {
             const data: DocumentData[string] = doc.data()
             const owner: string = data.owner
             const userSchema: UserSchema = await this.getUserDataFromUid(owner)
+            const isOpened: boolean = isGroup ? await this.getIfAllHaveSeenTheMessage() : await this.getIfMessageIsSeen()
 
             return {
                id: id,
@@ -898,7 +922,8 @@ export default class CoreService {
                type: data.type,
                content: data.content,
                pfp: userSchema.pfp,
-               username: userSchema.username
+               username: userSchema.username,
+               opened: isOpened
             }
          }))
 
@@ -910,6 +935,26 @@ export default class CoreService {
             }
             return resolve(contentFetch)
          } else return reject(err("server/no-content"))
+      })
+   }
+
+   public getIfAllHaveSeenTheMessage = (): Promise<boolean> => {
+      return new Promise(async (resolve, reject) => {
+         //TODO
+         resolve(false)
+      })
+   }
+
+   public getIfMessageIsSeen = (): Promise<boolean> => {
+      return new Promise(async (resolve, reject) => {
+         //TODO
+         resolve(false)
+      })
+   }
+
+   public sendNotification = (sender: string, receivers: string[], type: number): Promise<null> => {
+      return new Promise((resolve, reject) => { //TODO
+         return resolve(null)
       })
    }
 }

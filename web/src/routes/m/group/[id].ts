@@ -20,9 +20,9 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    }
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
-      valid.documentIdValidation(group_id, "groups").then(() => {
-         core.newChatMessage(uid, group_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
-            core.sendNotification(["a", "b"]).then(() => { //TODO
+      valid.documentIdValidation(group_id, "groups").then(async () => {
+         core.getMembersFromChatId(uid, group_id).then((members: string[]) => {
+            core.newChatMessage(uid, group_id, members, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
                res.status(201).json({
                   ...idResponse //return the post id
                })

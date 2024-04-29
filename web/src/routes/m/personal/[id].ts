@@ -21,13 +21,13 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    valid.contentValidation(ereq.text, ereq.content, ereq.type).then(() => {
       valid.documentIdValidation(chat_id, "personal-chats").then(() => {
-         core.newChatMessage(uid, chat_id, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
-            core.sendNotification(["a", "b"]).then(() => { //TODO
+         core.getMembersFromChatId(uid, chat_id).then((members: string[]) => {
+            core.newChatMessage(uid, chat_id, members, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
                res.status(201).json({
                   ...idResponse //return the post id
                })
-            }).catch((error) => { res.status(500).json({ error: error.message }) })
-         }).catch((error) => { res.status(500).json({ error: error.message }) })
-      }).catch((error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error) => { res.status(400).json({ error: error.message }) })
+            }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+         }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
+   }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
 }]

@@ -16,12 +16,11 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
       pfp,
       name
    }
-
-   core.newGroupChat(uid, ereq.members, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
-      core.sendNotification(["a", "b"]).then(() => { //TODO
-         res.status(201).json({
-            ...idResponse //return the chat id
-         })
-      }).catch((error) => { res.status(500).json({ error: error.message }) })
+   //TODO members validation
+   const membersUids: string[] = await core.getMembersUidsFromUsernames(ereq.members)
+   core.newGroupChat(uid, membersUids, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
+      res.status(201).json({
+         ...idResponse //return the chat id
+      })
    }).catch((error) => { res.status(500).json({ error: error.message }) })
 }]

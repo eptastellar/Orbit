@@ -1,18 +1,15 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
 import { DocumentData, Firestore, QuerySnapshot } from "firebase-admin/firestore"
-import { AuthService } from "services"
 
 export default class ValidationService {
    private db: Firestore
    private bucket
-   private auth: AuthService
 
    constructor() {
       firebase()
       this.db = firestore()
       this.bucket = firestorage()
-      this.auth = new AuthService()
    }
 
    public birthdateValidation = async (bday: number): Promise<null> => {
@@ -167,25 +164,7 @@ export default class ValidationService {
             if (members.length < 2)
                return reject(err("troppi pochi utenti, almeno 2"))
 
-            await Promise.all(members.map(async (member) => {
-               const snapshot: QuerySnapshot = await this.db.collection("users")
-                  .where("username", "==", member)
-                  .get()
-
-               if (!snapshot.empty) {
-                  for (let i = 0; i < snapshot.docs.length; i++) {
-                     const doc: DocumentData = snapshot.docs[i]
-                     const data: DocumentData = await doc.data()
-
-                     if (uid !== doc.id)
-                        await this.auth.areFriendsGuard(uid, doc.id)
-
-                     if (member !== data.username)
-                        await this.auth.areFriendsGuard(member, doc.id) // if all friends are friends with everyone
-                  }
-               } else return reject(err("empty"))
-            }))
-
+            //TODO @TheInfernalNick query controllo amicizia
             return resolve(null)
          } catch (error) { return reject(error) }
       })

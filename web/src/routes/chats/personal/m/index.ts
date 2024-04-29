@@ -19,7 +19,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
       if (ereq.last_message_id) await valid.documentIdValidation(ereq.last_message_id, "messages")
       valid.documentIdValidation(ereq.chat_id, "personal-chats").then(() => {
-         core.fetchChatMessages(uid, ereq.chat_id, ereq.last_message_id).then((contentFetch: ContentFetch) => {
+         core.fetchChatMessages(uid, ereq.chat_id, false, ereq.last_message_id).then((contentFetch: ContentFetch) => {
             res.status(200).json({
                ...contentFetch
             })

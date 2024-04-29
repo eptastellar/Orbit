@@ -12,11 +12,9 @@ export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
 
    valid.documentIdValidation(groupId, "groups").then(() => {
       core.getGroupChatInfo(uid, groupId).then((groupChatInfoResponse: GroupChatInfoResponse) => {
-         core.groupOpenedMessages(uid, groupId).then(() => {
-            res.status(200).json({
-               ...groupChatInfoResponse //return the chat
-            })
-         }).catch((error) => { res.status(500).json({ error: error.message }) })
+         res.status(200).json({
+            ...groupChatInfoResponse //return the chat
+         })
       }).catch((error) => { res.status(500).json({ error: error.message }) })
    }).catch((error) => { res.status(400).json({ error: error.message }) })
 }]

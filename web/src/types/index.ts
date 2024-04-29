@@ -167,6 +167,7 @@ export type MessageSchema = {
    id: string,
    personal: boolean,
    created_at: number,
+   opened?: boolean,
    text?: string,
    content?: string,
    type?: string,
