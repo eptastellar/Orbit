@@ -1,4 +1,4 @@
-import { err } from "./error"
+import { err, resError } from "./error"
 import { firebase, firestorage, firestore } from "./firebase-admin.config"
 import { close, neo } from "./neo4j.config"
 
@@ -8,5 +8,6 @@ export {
    firebase,
    firestorage,
    firestore,
-   neo
+   neo,
+   resError
 }

@@ -30,10 +30,6 @@ export type CommentUploadRequest = {
    content: string
 }
 
-export type CommentUploadResponse = {
-   comment_id: string
-}
-
 export type DeleteCommentRequest = {
    comment_id: string,
    root_id: boolean | string
@@ -116,7 +112,7 @@ export type UserResponse = {
 export type SupernovaResponse = {
    username: string
    status: string
-   oneway: string | null
+   oneway: string | null //TODO NON DEVI MAI FARE IL RETURN DI NULL
 }
 
 export type UploadMessageRequest = {

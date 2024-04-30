@@ -2,7 +2,7 @@ import { err, firebase, firestorage, firestore, neo } from "config"
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Query, QuerySnapshot, WriteBatch } from "firebase-admin/firestore"
 import { QueryResult, Session } from "neo4j-driver"
 import { ValidationService } from "services"
-import { ChatSchema, ChatsResponse, CommentSchema, CommentUploadResponse, ContentFetch, GroupChatInfoResponse, IdResponse, LatestMessageSchema, MessageSchema, PersonalChatInfoResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
+import { ChatSchema, ChatsResponse, CommentSchema, ContentFetch, GroupChatInfoResponse, IdResponse, LatestMessageSchema, MessageSchema, PersonalChatInfoResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
 
 export default class CoreService {
    private db: Firestore
@@ -197,9 +197,9 @@ export default class CoreService {
       })
    }
 
-   public findRandomFriendCode = (uid: string, friendCode: string): Promise<string | null> => {
-      return new Promise(async (resolve) => {
-         const friendCodeRequest: number = Date.now()
+   public findRandomFriendCode = (uid: string, friendCode: string): Promise<UserSchema> => {
+      return new Promise(async (resolve) => { //TODO AL POSTO DI TORNARE NULL USA IL REJECT ERR
+         const friendCodeRequest: number = Date.now() //TODO RITORNA UN TIPO USERSCHEMA
          const queryXFriend: string = `MATCH (u:User{friendCode : '${friendCode}'}), (t:User{name : "${uid}"}) WHERE u.friendCodeTime >=  "${friendCodeRequest}" MERGE (u)-[:Friend]-(t)` //sets the friend connection
          await neo().executeWrite(tx => tx.run(queryXFriend))
 
@@ -210,8 +210,8 @@ export default class CoreService {
          const queryXConfirm: string = `OPTIONAL MATCH p = (u:User {name : "${uid}"}) - [:Friend] - (t:User {name:"${name}"}) RETURN p` //Checks if it created the connection, if it doesnt returns null
          const confirmResult: QueryResult = await neo().executeRead(tx => tx.run(queryXConfirm))
          const confirm: string[] = confirmResult.records.map((row: any) => row.get("p"))
-         if (confirm[0] === null) return resolve(null)
-         else return resolve(name[0])
+         // if (confirm[0] === null) return resolve(null)
+         // else return resolve(name[0])
       })
    }
 
@@ -454,7 +454,7 @@ export default class CoreService {
       })
    }
 
-   public newComment = (uid: string, rootId: string, postId: string, content: string): Promise<CommentUploadResponse> => {
+   public newComment = (uid: string, rootId: string, postId: string, content: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection("comments").doc() //set the docRef to comments
@@ -468,12 +468,11 @@ export default class CoreService {
                created_at: Date.now() //unix format
             })
 
-            const comment_id: string = docRef.id
-            const commentUploadResponse: CommentUploadResponse = {
-               comment_id
+            const id: string = docRef.id
+            const idResponse: IdResponse = {
+               id
             }
-
-            return resolve(commentUploadResponse)
+            return resolve(idResponse)
          } catch { return reject(err("server/new-failed")) }
       })
    }
@@ -787,7 +786,7 @@ export default class CoreService {
    }
 
    public getLatestMessage = (chatId: string): Promise<LatestMessageSchema> => {
-      return new Promise(async (resolve) => { 
+      return new Promise(async (resolve) => {
          const snapshot = await this.db.collection("messages")
             .where("chat_id", "==", chatId)
             .orderBy("created_at", "desc")

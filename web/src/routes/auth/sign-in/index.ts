@@ -1,3 +1,4 @@
+import { resError } from "config"
 import { Request, Response } from "express"
 import { AuthService, CoreService, ValidationService } from "services"
 import { AuthResponse, UserSchema } from "types"
@@ -7,10 +8,10 @@ const core: CoreService = new CoreService()
 const valid: ValidationService = new ValidationService()
 
 export const GET = (req: Request, res: Response) => {
-   const authorization: string = req.headers.authorization!
-
-   auth.accessGuard(authorization).then(async (uid: string) => { //send the firebase access token to create a session
-      valid.documentIdValidation(uid, "users").then(() => { //check if the user is fully signed up even in firestore
+   try {
+      const authorization: string = req.headers.authorization!
+      auth.accessGuard(authorization).then(async (uid: string) => { //send the firebase access token to create a session
+         await valid.documentIdValidation(uid, "users") //check if the user is fully signed up even in firestore
          auth.newSession(uid).then((jwt: string) => { //create a multiaccess session using jwt
             core.getUserDataFromUid(uid).then((userSchema: UserSchema) => {
                const authResponse: AuthResponse = {
@@ -21,8 +22,8 @@ export const GET = (req: Request, res: Response) => {
                res.status(202).json({
                   ...authResponse
                })
-            }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
-         }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
-      }).catch((error: Error) => { res.status(400).json({ error: error.message }) })
-   }).catch((error: Error) => { res.status(401).json({ error: error.message }) })
+            })
+         })
+      })
+   } catch (error) { resError(res, error) }
 }

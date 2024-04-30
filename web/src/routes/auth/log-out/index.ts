@@ -1,3 +1,4 @@
+import { resError } from "config"
 import { Request, Response } from "express"
 import { AuthService } from "services"
 import { SuccessResponse } from "types"
@@ -5,11 +6,12 @@ import { SuccessResponse } from "types"
 const auth: AuthService = new AuthService()
 
 export const GET = [auth.sessionGuard, (_: Request, res: Response) => {
-   const uid: string = res.locals.uid
-
-   auth.logOut(uid).then((success: SuccessResponse) => {
-      res.status(200).json({
-         ...success
+   try {
+      const uid: string = res.locals.uid
+      auth.logOut(uid).then((successResponse: SuccessResponse) => {
+         res.status(200).json({
+            ...successResponse
+         })
       })
-   }).catch((error: Error) => { res.status(500).json({ error: error.message }) })
+   } catch (error) { resError(res, error) }
 }]
