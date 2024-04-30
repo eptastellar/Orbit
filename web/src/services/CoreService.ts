@@ -2,7 +2,7 @@ import { err, firebase, firestorage, firestore, neo } from "config"
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore, Query, QuerySnapshot, WriteBatch } from "firebase-admin/firestore"
 import { QueryResult, Session } from "neo4j-driver"
 import { ValidationService } from "services"
-import { ChatSchema, ChatsResponse, CommentSchema, ContentFetch, GroupChatInfoResponse, IdResponse, LatestMessageSchema, MessageSchema, PersonalChatInfoResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
+import { ChatSchema, ChatsResponse, CommentSchema, ContentFetch, GroupChatInfoResponse, IdResponse, LatestMessageSchema, MessageSchema, NumberResponse, PersonalChatInfoResponse, PostResponse, RootCommentSchema, SuccessResponse, UserSchema } from "types"
 
 export default class CoreService {
    private db: Firestore
@@ -727,23 +727,13 @@ export default class CoreService {
                const chat_id: string = docRef.id
                const pfp: string = dData.pfp
                const name: string = dData.name
-               const unreaded_messages: number = await this.getGroupUnreadedMessages(uid, data.group_id)
 
-               if (unreaded_messages > 0) {
-                  return {
-                     chat_id,
-                     name,
-                     pfp,
-                     unreaded_messages
-                  }
-               } else {
-                  const latest_message: LatestMessageSchema = await this.getLatestMessage(data.group_id)
-                  return {
-                     chat_id,
-                     name,
-                     pfp,
-                     latest_message
-                  }
+               const latest_message: LatestMessageSchema = await this.getLatestMessage(data.group_id)
+               return {
+                  chat_id,
+                  name,
+                  pfp,
+                  latest_message
                }
             }))
 
@@ -774,7 +764,7 @@ export default class CoreService {
                   return userSchema
                }))
 
-               await this.setVisualizationOfMessages(uid, chatId)
+               await this.setChatVisualizationOfMessages(uid, chatId)
 
                const personalChatInfoResponse: PersonalChatInfoResponse = {
                   user_data: { ...userSchema[0] }
@@ -818,25 +808,10 @@ export default class CoreService {
       })
    }
 
-   public getGroupUnreadedMessages = (uid: string, chatId: string): Promise<number> => {
-      return new Promise(async (resolve) => {
-         const snapshot = await this.db.collection("opened-messages")
-            .where("user_id", "!=", uid)
-            .where("chat_id", "==", chatId)
-            .where("opened", "==", false)
-            .count()
-            .get()
-
-         const data = snapshot.data()
-
-         return resolve(data.count)
-      })
-   }
-
    public getChatUnreadedMessages = (uid: string, chatId: string): Promise<number> => {
       return new Promise(async (resolve) => {
          const snapshot = await this.db.collection("opened-messages")
-            .where("user_id", "!=", uid)
+            .where("user_id", "==", uid)
             .where("chat_id", "==", chatId)
             .where("opened", "==", false)
             .count()
@@ -872,8 +847,6 @@ export default class CoreService {
                   return userSchema.name
                }))
 
-               await this.setVisualizationOfMessages(uid, groupId)
-
                const groupChatInfoResponse: GroupChatInfoResponse = {
                   pfp: data.pfp,
                   name: data.name,
@@ -885,18 +858,21 @@ export default class CoreService {
       })
    }
 
-   public setVisualizationOfMessages = (uid: string, chatId: string): Promise<void> => {
+   public setChatVisualizationOfMessages = (uid: string, chatId: string): Promise<void> => {
       return new Promise(async (resolve) => {
          const snapshot: DocumentData = await this.db.collection("opened-messages")
             .where("chat_id", "==", chatId)
-            .where("user_id", "==", uid)
+            .where("user_id", "!=", uid)
             .where("opened", "==", false)
             .get()
 
          await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
-            return doc.ref.update({
+            const docRef: DocumentReference = doc.ref
+
+            await docRef.update({
                opened: true
             })
+            console.log(docRef.id);
          }))
          resolve()
       })
@@ -929,7 +905,7 @@ export default class CoreService {
       })
    }
 
-   public newChatMessage = (uid: string, chatId: string, members: string[], text?: string, type?: string, content?: string): Promise<IdResponse> => {
+   public newChatMessage = (uid: string, chatId: string, members: string[], isGroup: boolean, text?: string, type?: string, content?: string): Promise<IdResponse> => {
       return new Promise(async (resolve, reject) => {
          try {
             let docRef: DocumentReference = this.db.collection("messages").doc() //set the docRef to messages
@@ -944,16 +920,18 @@ export default class CoreService {
             if (text) await docRef.update({ text: text })
             if (content) await docRef.update({ content: content, type: type })
 
-            members.forEach(async (memberId: string) => { //set if the message is opened
-               docRef = this.db.collection("opened-messages").doc()
+            if (!isGroup) {
+               members.forEach(async (memberId: string) => { //set if the message is opened
+                  docRef = this.db.collection("opened-messages").doc()
 
-               await docRef.set({
-                  user_id: memberId,
-                  chat_id: chatId,
-                  message_id: id,
-                  opened: false
+                  await docRef.set({
+                     user_id: memberId,
+                     chat_id: chatId,
+                     message_id: id,
+                     opened: false
+                  })
                })
-            })
+            }
 
             const idResponse: IdResponse = {
                id
@@ -985,7 +963,7 @@ export default class CoreService {
             const data: DocumentData[string] = doc.data()
             const owner: string = data.owner
             const userSchema: UserSchema = await this.getUserDataFromUid(owner)
-            const isOpened: boolean = isGroup ? await this.getIfAllHaveSeenTheMessage() : await this.getIfMessageIsSeen()
+            const isOpened: boolean = isGroup ? false : await this.getIfMessageIsSeen(id, chatId, uid)
 
             return {
                id: id,
@@ -1011,17 +989,37 @@ export default class CoreService {
       })
    }
 
-   public getIfAllHaveSeenTheMessage = (): Promise<boolean> => {
-      return new Promise(async (resolve, reject) => {
-         //TODO
-         resolve(false)
+   public getIfMessageIsSeen = (messageId: string, chatId: string, uid: string): Promise<boolean> => {
+      return new Promise(async (resolve) => {
+         const snapshot = await this.db.collection("opened-messages")
+            .where("user_id", "==", uid)
+            .where("chat_id", "==", chatId)
+            .where("message_id", "==", messageId)
+            .limit(1)
+            .get()
+
+         await Promise.all(snapshot.docs.map(async (doc: DocumentData) => {
+            const data: DocumentData[string] = await doc.data()
+
+            return resolve(data.opened)
+         }))
       })
    }
 
-   public getIfMessageIsSeen = (): Promise<boolean> => {
-      return new Promise(async (resolve, reject) => {
-         //TODO
-         resolve(false)
+   public getUnreadedMessagesCount = (uid: string): Promise<NumberResponse> => {
+      return new Promise(async (resolve) => {
+         const snapshot = await this.db.collection("opened-messages")
+            .where("opened", "==", false)
+            .where("user_id", "==", uid)
+            .count()
+            .get()
+
+         const data = snapshot.data()
+         const number: number = data.count
+         const numberResponse: NumberResponse = {
+            number
+         }
+         return resolve(numberResponse)
       })
    }
 

@@ -24,7 +24,7 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
       await valid.contentValidation(ereq.text, ereq.content, ereq.type)
       await valid.documentIdValidation(group_id, "groups")
       core.getMembersFromChatId(uid, group_id).then((members: string[]) => {
-         core.newChatMessage(uid, group_id, members, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+         core.newChatMessage(uid, group_id, members, true, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
             res.status(201).json({
                ...idResponse //return the post id
             })

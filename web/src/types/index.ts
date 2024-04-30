@@ -52,6 +52,10 @@ export type SuccessResponse = {
    success: boolean
 }
 
+export type NumberResponse = {
+   number: number
+}
+
 export type UserSchema = {
    username: string,
    name: string,
