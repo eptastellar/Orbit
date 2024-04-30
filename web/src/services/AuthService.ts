@@ -1,4 +1,4 @@
-import { err, firebase, neo } from "config"
+import { err, firebase, neo, resError } from "config"
 import express, { NextFunction } from "express"
 import admin, { firestore } from "firebase-admin"
 import { DocumentData, DocumentReference, DocumentSnapshot, Firestore } from "firebase-admin/firestore"
@@ -32,7 +32,7 @@ export default class AuthService {
             res.locals.uid = uid //save the uid of the user to manipulate only his data
             next()
          } else throw err("auth/invalid-token")
-      }).catch((error) => { res.status(401).json({ error: error.message }) })
+      }).catch((error: Error) => { resError(res, error) })
    }
 
    public accessGuard = async (authorization: string): Promise<string> => {
@@ -56,8 +56,8 @@ export default class AuthService {
 
          if (secret === process.env.CRON_SECRET)
             next()
-         else res.status(400).json({ error: "auth/invalid-token" })
-      } catch { res.status(400).json({ error: "auth/invalid-token" }) }
+         else throw err("auth/invalid-token")
+      } catch (error) { resError(res, error) }
    }
 
    public newSessionJWT = async (uid: string) => {
@@ -129,7 +129,7 @@ export default class AuthService {
       })
    }
 
-   public hasPermissionGuard = (uid: string, id: string, path: string): Promise<null> => {
+   public hasPermissionGuard = (uid: string, id: string, path: string): Promise<void> => {
       return new Promise(async (resolve, reject) => {
          try {
             const docRef: DocumentReference = this.db.collection(path).doc(id)
@@ -137,13 +137,13 @@ export default class AuthService {
             const data: DocumentData = await doc.data()
 
             if (data.owner === uid)
-               return resolve(null)
+               return resolve()
             else return reject(err("server/unauthorized"))
          } catch { return reject(err("server/unauthorized")) }
       })
    }
 
-   public areFriendsGuard = (uid: string, friendUid: string): Promise<null> => {
+   public areFriendsGuard = (uid: string, friendUid: string): Promise<void> => {
       return new Promise(async (resolve, reject) => {
          if (uid !== friendUid) {
             const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${uid}" AND t.name = "${friendUid}" RETURN t`
@@ -151,9 +151,9 @@ export default class AuthService {
             const check = resultMap.records.map((row: any) => row.get("t"))
 
             if (check[0] !== null)
-               return resolve(null)
+               return resolve()
             else return reject(err("server/not-friends"))
-         } else return resolve(null)
+         } else return resolve()
       })
    }
 }

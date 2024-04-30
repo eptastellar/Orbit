@@ -88,12 +88,12 @@ export default class CoreService {
       })
    }
 
-   public newUserNode = (uid: string, interests: string[]): Promise<null> => {
+   public newUserNode = (uid: string, interests: string[]): Promise<void> => {
       return new Promise(async (resolve) => {
          const neo4j: Session = neo()
          const query = `MERGE (:User {name:'${uid}', interests:'${interests}'})` //create a new node in neo4j
          await neo4j.executeWrite(tx => tx.run(query))
-         resolve(null)
+         resolve()
       })
    }
 
@@ -165,7 +165,7 @@ export default class CoreService {
       })
    }
 
-   public removeBatch = (type: string, uid: string): Promise<null> => {
+   public removeBatch = (type: string, uid: string): Promise<void> => {
       return new Promise(async (resolve) => {
          const snapshot: QuerySnapshot = await this.db.collection(type)
             .where("owner", "==", uid)
@@ -179,7 +179,7 @@ export default class CoreService {
          await batch.commit()
 
          if (snapshot.size === 0)
-            return resolve(null)
+            return resolve()
 
          process.nextTick(() => {
             this.removeBatch(type, uid)
@@ -885,7 +885,7 @@ export default class CoreService {
       })
    }
 
-   public setVisualizationOfMessages = (uid: string, chatId: string): Promise<null> => {
+   public setVisualizationOfMessages = (uid: string, chatId: string): Promise<void> => {
       return new Promise(async (resolve) => {
          const snapshot: DocumentData = await this.db.collection("opened-messages")
             .where("chat_id", "==", chatId)
@@ -898,7 +898,7 @@ export default class CoreService {
                opened: true
             })
          }))
-         resolve(null)
+         resolve()
       })
    }
 
@@ -1025,9 +1025,9 @@ export default class CoreService {
       })
    }
 
-   public sendNotification = (sender: string, receivers: string[], type: number): Promise<null> => {
+   public sendNotification = (sender: string, receivers: string[], type: number): Promise<void> => {
       return new Promise((resolve, reject) => { //TODO
-         return resolve(null)
+         return resolve()
       })
    }
 }
