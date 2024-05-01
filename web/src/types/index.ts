@@ -116,7 +116,7 @@ export type UserResponse = {
 export type SupernovaResponse = {
    username: string
    status: string
-   oneway: string | null //TODO NON DEVI MAI FARE IL RETURN DI NULL
+   oneway: string
 }
 
 export type UploadMessageRequest = {

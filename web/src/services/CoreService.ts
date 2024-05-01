@@ -198,8 +198,8 @@ export default class CoreService {
    }
 
    public findRandomFriendCode = (uid: string, friendCode: string): Promise<UserSchema> => {
-      return new Promise(async (resolve) => { //TODO AL POSTO DI TORNARE NULL USA IL REJECT ERR
-         const friendCodeRequest: number = Date.now() //TODO RITORNA UN TIPO USERSCHEMA
+      return new Promise(async (resolve, reject) => {
+         const friendCodeRequest: number = Date.now()
          const queryXFriend: string = `MATCH (u:User{friendCode : '${friendCode}'}), (t:User{name : "${uid}"}) WHERE u.friendCodeTime >=  "${friendCodeRequest}" MERGE (u)-[:Friend]-(t)` //sets the friend connection
          await neo().executeWrite(tx => tx.run(queryXFriend))
 
@@ -210,8 +210,12 @@ export default class CoreService {
          const queryXConfirm: string = `OPTIONAL MATCH p = (u:User {name : "${uid}"}) - [:Friend] - (t:User {name:"${name}"}) RETURN p` //Checks if it created the connection, if it doesnt returns null
          const confirmResult: QueryResult = await neo().executeRead(tx => tx.run(queryXConfirm))
          const confirm: string[] = confirmResult.records.map((row: any) => row.get("p"))
-         // if (confirm[0] === null) return resolve(null)
-         // else return resolve(name[0])
+         if (confirm[0] === null)
+            return reject(err("No Friend Found"))
+         else {
+            const User: UserSchema = await this.getUserDataFromUid(name[0])
+            return resolve(User)
+         }
       })
    }
 

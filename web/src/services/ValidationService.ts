@@ -164,7 +164,14 @@ export default class ValidationService {
             if (members.length < 2)
                return reject(err("troppi pochi utenti, almeno 2"))
 
-            //TODO @TheInfernalNick query controllo amicizia
+            /*
+
+            To add this algorithm we need to search for all the friends in the friend list of the starting node
+            After this point we need to make a query in the friends of all the friends of the starting node
+            and keep the friends in the starting array that are matching with the query of the friends
+            if a node is not matched in the previous searches it's removed and is not even going to be searched through
+
+            */
             return resolve()
          } catch (error) { return reject(error) }
       })
