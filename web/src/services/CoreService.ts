@@ -876,7 +876,6 @@ export default class CoreService {
             await docRef.update({
                opened: true
             })
-            console.log(docRef.id);
          }))
          resolve()
       })

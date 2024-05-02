@@ -1,6 +1,8 @@
 import { interests } from "assets"
 import { err, firebase, firestorage, firestore } from "config"
+import { neo } from "config/neo4j.config"
 import { DocumentData, Firestore, QuerySnapshot } from "firebase-admin/firestore"
+import { QueryResult } from "neo4j-driver"
 
 export default class ValidationService {
    private db: Firestore
@@ -155,6 +157,14 @@ export default class ValidationService {
    public harmfulContentValidation = (text: string): Promise<void> => { //TODO
       return new Promise((resolve) => {
          return resolve()
+      })
+   }
+
+   public userFriends = (uid: string): Promise<string[]> => {
+      return new Promise(async (resolve) => {
+         const friendsQuery: string = `MATCH (u:User {name: ${uid}})-[:Friend]->(f:User) RETURN f.name AS names`
+         const friendsResult: QueryResult = await neo().executeRead(tx => tx.run(friendsQuery))
+         return resolve(friendsResult.records.map(record => record.get("names")))
       })
    }
 
