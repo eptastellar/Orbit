@@ -1,7 +1,3 @@
-# GitHub documentation about code owners here:
-# https://help.github.com/en/articles/about-code-owners
-
-* @mzyxnuel
-/web/ @TheInfernalNick
-/app/ @74C17N3P7UN3
-/docs/ @MarcoMattei04
+- @mzyxnuel
+  /web/ @TheInfernalNick
+  /app/ @74C17N3P7UN3
