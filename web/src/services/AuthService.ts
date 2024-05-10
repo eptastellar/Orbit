@@ -138,8 +138,8 @@ export default class AuthService {
 
             if (data.owner === uid)
                return resolve()
-            else return reject(err("server/unauthorized"))
-         } catch { return reject(err("server/unauthorized")) }
+            else return reject(err("auth/unauthorized"))
+         } catch { return reject(err("auth/unauthorized")) }
       })
    }
 
@@ -152,7 +152,7 @@ export default class AuthService {
 
             if (check[0] !== null)
                return resolve()
-            else return reject(err("server/not-friends"))
+            else return reject(err("auth/not-friends"))
          } else return resolve()
       })
    }

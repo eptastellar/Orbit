@@ -84,7 +84,7 @@ export default class CoreService {
                const userSchema: UserSchema = { username, name, pfp, bday }
                return resolve(userSchema)
             } catch (error) { return reject(error) }
-         } else return reject(err("auth/user-already-exists"))
+         } else return reject(err("server/user-already-exists"))
       })
    }
 
@@ -161,7 +161,7 @@ export default class CoreService {
             await neo().executeWrite(tx => tx.run(query))
 
             return resolve(uid)
-         } catch { return reject(err("server/unauthorized")) }
+         } catch { return reject(err("server/delete-failed")) }
       })
    }
 
@@ -211,7 +211,7 @@ export default class CoreService {
          const confirmResult: QueryResult = await neo().executeRead(tx => tx.run(queryXConfirm))
          const confirm: string[] = confirmResult.records.map((row: any) => row.get("p"))
          if (confirm[0] === null)
-            return reject(err("No Friend Found"))
+            return reject(err("server/friend-code-failed"))
          else {
             const User: UserSchema = await this.getUserDataFromUid(name[0])
             return resolve(User)
@@ -240,7 +240,7 @@ export default class CoreService {
                      })
                      return resolve(urls[Math.floor(Math.random() * urls.length)]) // resolve the promise with a random URL from the urls array
                   })
-               } else return reject(err("no files error"))
+               } else return reject(err("server/no-content"))
             })
          } catch { return reject(err("server/no-content")) }
       })
@@ -424,7 +424,7 @@ export default class CoreService {
                id
             }
             return resolve(idResponse)
-         } catch { return reject(err("server/new-failed")) }
+         } catch { return reject(err("server/upload-failed")) }
       })
    }
 
@@ -477,7 +477,7 @@ export default class CoreService {
                id
             }
             return resolve(idResponse)
-         } catch { return reject(err("server/new-failed")) }
+         } catch { return reject(err("server/upload-failed")) }
       })
    }
 
@@ -604,7 +604,7 @@ export default class CoreService {
                id
             }
             return resolve(idResponse)
-         } catch { return reject(err("server/new-failed")) }
+         } catch { return reject(err("server/upload-failed")) }
       })
    }
 
@@ -614,7 +614,7 @@ export default class CoreService {
             if (pfp) await this.valid.mediaValidation(pfp)
             pfp = pfp ? pfp : await this.randomPicture("default/groups")
 
-            if (!name) return reject(err("no name"))
+            if (!name) return reject(err("server/missing-parameters"))
 
             const docRef: DocumentReference = this.db.collection("groups").doc() //set the docRef to groups
 
@@ -647,7 +647,7 @@ export default class CoreService {
                id
             }
             return resolve(idResponse)
-         } catch { return reject(err(" failed")) }
+         } catch { return reject(err("server/new-group-chat-failed")) }
       })
    }
 
@@ -774,7 +774,7 @@ export default class CoreService {
                   user_data: { ...userSchema[0] }
                }
                return resolve(personalChatInfoResponse)
-            } else return reject(err("no buono"))
+            } else return reject(err("server/failed-fetch"))
          } catch (error) { return reject(error) }
       })
    }
@@ -857,8 +857,8 @@ export default class CoreService {
                   members_name: membersName
                }
                return resolve(groupChatInfoResponse)
-            } else return reject(err("non hai accesso"))
-         } catch { return reject(err("no buono")) }
+            } else return reject(err("server/unauthorized-group-chat-access"))
+         } catch { return reject(err("server/failed-fetch")) }
       })
    }
 
@@ -940,7 +940,7 @@ export default class CoreService {
                id
             }
             return resolve(idResponse)
-         } catch { return reject(err("server/new-failed")) }
+         } catch { return reject(err("server/upload-failed")) }
       })
    }
 

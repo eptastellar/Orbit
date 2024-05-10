@@ -149,7 +149,7 @@ export default class ValidationService {
                   return resolve()
                else return reject(err("validation/invalid-image-path"))
             })
-         } catch { return reject(err("malformed url")) }
+         } catch { return reject(err("validation/malformed-url")) }
       })
    }
 
@@ -160,7 +160,7 @@ export default class ValidationService {
       })
    }
 
-   public userFriends = (uid: string): Promise<string[]> => {
+   public userFriends = (uid: string): Promise<string[]> => { // TODO non va messo su validation
       return new Promise(async (resolve) => {
          const friendsQuery: string = `MATCH (u:User {name: ${uid}})-[:Friend]->(f:User) RETURN f.name AS names`
          const friendsResult: QueryResult = await neo().executeRead(tx => tx.run(friendsQuery))
@@ -172,7 +172,7 @@ export default class ValidationService {
       return new Promise(async (resolve, reject) => {
          try {
             if (members.length < 2)
-               return reject(err("troppi pochi utenti, almeno 2"))
+               return reject(err("validation/invalid-number-of-members"))
 
             /*
 

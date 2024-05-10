@@ -20,8 +20,8 @@ export default class CronJobsService {
                }
                return resolve(successResponse)
             }
-            else return reject(err("server/driver-not-found"))
-         } catch { return reject(err("server/driver-not-found")) }
+            else return reject(err("cron/driver-not-found"))
+         } catch { return reject(err("cron/driver-not-found")) }
       })
    }
 
@@ -37,7 +37,7 @@ export default class CronJobsService {
                   return resolve({ success: true })
                })
             })
-         } catch { return reject(err("server/meteor-algorithm-failed")) }
+         } catch { return reject(err("cron/meteor-algorithm-failed")) }
       })
    }
 }
