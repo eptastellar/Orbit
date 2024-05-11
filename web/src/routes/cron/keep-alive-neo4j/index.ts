@@ -1,11 +1,17 @@
+import { resError } from "config"
 import { Request, Response } from "express"
-import { AuthService, CronJobsService } from "services"
+import { AuthService, CronService } from "services"
+import { SuccessResponse } from "types"
 
 const auth = new AuthService()
-const cron = new CronJobsService()
+const cron = new CronService()
 
-export const GET = [auth.checkIfCronSecretIsValid, async (_: Request, res: Response) => {
-   cron.keepAliveNeo().then(() => {
-      res.status(200).json({ success: true })
-   }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+export const GET = [auth.cronGuard, async (_: Request, res: Response) => {
+   try {
+      cron.keepAliveNeo().then((successResponse: SuccessResponse) => {
+         res.status(200).json({
+            ...successResponse
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

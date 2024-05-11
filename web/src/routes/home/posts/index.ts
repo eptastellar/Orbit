@@ -1,23 +1,30 @@
+import { resError } from "config"
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
-import { ContentFetch } from "types"
+import { AuthService, CoreService, ValidationService } from "services"
+import { ContentFetch, PostsRequest } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
-const user = new UserService()
-const cont = new ContentService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   const uid: string = res.locals.uid
-   const lastPostId: string = req.body.lastPostId
-
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
-      if (lastPostId) await valid.postIdValidation(lastPostId)
+      const uid: string = res.locals.uid
+      const last_post_id: string = req.body.last_post_id
 
-      user.getFriendList(uid).then((friendList: string[]) => {
-         cont.fetchPosts(friendList, lastPostId, uid).then((fetch: ContentFetch) => {
-            res.status(200).json({ success: true, posts: fetch.content, lastPostId: fetch.lastDocId })
-         }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(200).json({ success: false, message: error.message }) })
-   } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+      const ereq: PostsRequest = {
+         last_post_id
+      }
+
+      if (ereq.last_post_id)
+         await valid.documentIdValidation(ereq.last_post_id, "posts")
+
+      core.getFriendList(uid).then((friendList: string[]) => {
+         core.fetchPosts(friendList, uid, ereq.last_post_id).then((contentFetch: ContentFetch) => {
+            res.status(200).json({
+               ...contentFetch
+            })
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

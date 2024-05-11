@@ -1,38 +1,65 @@
+import { resError } from "config"
 import { Request, Response } from "express"
-import { AuthService, ContentService, UserService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
+import { IdResponse, PostRequest, PostResponse } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
-const user = new UserService()
-const cont = new ContentService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
-export const PATCH = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   const uid: string = res.locals.uid
-   const postId: string = req.params.id
-   const text: string = req.body.text
-   const type: string = req.body.type
-   const content: string = req.body.content
+export const GET = [auth.sessionGuard, async (req: Request, res: Response) => {
+   try {
+      const uid: string = res.locals.uid
+      const post_id: string = req.params.id
 
-   valid.contentValidation(text, content, type).then(() => {
-      valid.postIdValidation(postId).then(() => {
-         user.hasPermission(uid, postId, "posts").then(() => {
-            cont.updatePost(postId, text, content, type).then((updatedPostId: string) => {
-               res.status(200).json({ success: true, post: updatedPostId }) //return the updated post id
-            }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+      await valid.documentIdValidation(post_id, "posts")
+      core.getOwner(post_id, "posts").then(async (ownerUid: string) => {
+         await auth.areFriendsGuard(uid, ownerUid)
+         core.getPost(uid, post_id).then((postResponse: PostResponse) => {
+            res.status(200).json({
+               ...postResponse //return the post
+            })
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]
 
-export const DELETE = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   const uid: string = res.locals.uid
-   const postId: string = req.params.id
+export const PATCH = [auth.sessionGuard, async (req: Request, res: Response) => {
+   try {
+      const uid: string = res.locals.uid
+      const post_id: string = req.params.id
+      const text: string = req.body.text
+      const type: string = req.body.type
+      const content: string = req.body.content
 
-   valid.postIdValidation(postId).then(() => {
-      user.hasPermission(uid, postId, "posts").then(() => {
-         cont.deletePost(postId).then(() => {
-            res.status(200).json({ success: true }) //return a success message
-         }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+      const ereq: PostRequest = {
+         text,
+         type,
+         content
+      }
+
+      await valid.contentValidation(ereq.text, ereq.content, ereq.type)
+      await valid.documentIdValidation(post_id, "posts")
+      await auth.hasPermissionGuard(uid, post_id, "posts")
+      core.updatePost(post_id, ereq.text, ereq.content, ereq.type).then((idResponse: IdResponse) => {
+         res.status(200).json({
+            ...idResponse //return the updated post id
+         })
+      })
+   } catch (error) { resError(res, error) }
+}]
+
+export const DELETE = [auth.sessionGuard, async (req: Request, res: Response) => {
+   try {
+      const uid: string = res.locals.uid
+      const post_id: string = req.params.id
+
+      await valid.documentIdValidation(post_id, "posts")
+      await auth.hasPermissionGuard(uid, post_id, "posts")
+      core.delete(post_id, "posts").then((idResponse: IdResponse) => {
+         res.status(200).json({
+            ...idResponse
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

@@ -1,13 +1,11 @@
 import AuthService from "./AuthService"
-import ContentService from "./ContentService"
-import CronJobsService from "./CronJobsService"
-import UserService from "./UserService"
+import CoreService from "./CoreService"
+import CronService from "./CronService"
 import ValidationService from "./ValidationService"
 
 export {
    AuthService,
-   ContentService,
-   CronJobsService,
-   UserService,
+   CoreService,
+   CronService,
    ValidationService
 }

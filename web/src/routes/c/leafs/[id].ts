@@ -1,25 +1,32 @@
+import { resError } from "config"
 import { Request, Response } from "express"
-import { AuthService, ContentService, ValidationService } from "services"
-import { ContentFetch } from "types"
+import { AuthService, CoreService, ValidationService } from "services"
+import { ContentFetch, LeafCommentsRequest } from "types"
 
-const auth = new AuthService()
-const cont = new ContentService()
-const valid = new ValidationService()
+const auth: AuthService = new AuthService()
+const core: CoreService = new CoreService()
+const valid: ValidationService = new ValidationService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   const rootId: string = req.params.id
-   const lastLeafCommentId: string = req.body.lastLeafCommentId
-   const postId: string = req.body.postId
-
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
-      if (lastLeafCommentId) await valid.commentLeafIdValidation(lastLeafCommentId, rootId, postId)
+      const root_id: string = req.params.id
+      const last_leaf_comment_id: string = req.body.last_leaf_comment_id
+      const post_id: string = req.body.post_id
 
-      valid.postIdValidation(postId).then(async () => {
-         valid.commentRootIdValidation(rootId, postId).then(() => {
-            cont.fetchLeafsComments(rootId, lastLeafCommentId).then((fetch: ContentFetch) => {
-               res.status(200).json({ success: true, comments: fetch.content, lastLeafCommentId: fetch.lastDocId })
-            }).catch((error) => { res.status(404).json({ success: false, message: error.message }) })
-         }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-      }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
-   } catch (error: any) { res.status(400).json({ success: false, message: error.message }) }
+      const ereq: LeafCommentsRequest = {
+         last_leaf_comment_id,
+         post_id
+      }
+
+      if (ereq.last_leaf_comment_id)
+         await valid.commentLeafIdValidation(ereq.last_leaf_comment_id, root_id, ereq.post_id)
+
+      await valid.documentIdValidation(ereq.post_id, "posts")
+      await valid.commentRootIdValidation(root_id, ereq.post_id)
+      core.fetchLeafsComments(root_id, ereq.last_leaf_comment_id).then((contentFetch: ContentFetch) => {
+         res.status(200).json({
+            ...contentFetch
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

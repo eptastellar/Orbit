@@ -1,12 +1,17 @@
+import { resError } from "config"
 import { Request, Response } from "express"
 import { AuthService } from "services"
+import { SuccessResponse } from "types"
 
-const auth = new AuthService()
+const auth: AuthService = new AuthService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, (req: Request, res: Response) => {
-   const uid: string = res.locals.uid
-
-   auth.logOut(uid).then(() => {
-      res.status(200).json({ success: true })
-   }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
+export const GET = [auth.sessionGuard, (_: Request, res: Response) => {
+   try {
+      const uid: string = res.locals.uid
+      auth.logOut(uid).then((successResponse: SuccessResponse) => {
+         res.status(200).json({
+            ...successResponse
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

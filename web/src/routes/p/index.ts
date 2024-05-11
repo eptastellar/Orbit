@@ -1,19 +1,30 @@
+import { resError } from "config"
 import { Request, Response } from "express"
-import { AuthService, ContentService, ValidationService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
+import { IdResponse, PostRequest } from "types"
 
-const auth = new AuthService()
-const valid = new ValidationService()
-const cont = new ContentService()
+const auth: AuthService = new AuthService()
+const valid: ValidationService = new ValidationService()
+const core: CoreService = new CoreService()
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-   const uid: string = res.locals.uid
-   const text: string = req.body.text
-   const type: string = req.body.type
-   const content: string = req.body.content
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
+   try {
+      const uid: string = res.locals.uid
+      const text: string = req.body.text
+      const type: string = req.body.type
+      const content: string = req.body.content
 
-   valid.contentValidation(text, content, type).then(() => {
-      cont.uploadPost(uid, text, type, content).then((postId: string) => {
-         res.status(201).json({ success: true, post: postId }) //return the post id
-      }).catch((error) => { res.status(500).json({ success: false, message: error.message }) })
-   }).catch((error) => { res.status(400).json({ success: false, message: error.message }) })
+      const ereq: PostRequest = {
+         text,
+         content,
+         type
+      }
+
+      await valid.contentValidation(ereq.text, ereq.content, ereq.type)
+      core.newPost(uid, ereq.text, ereq.type, ereq.content).then((idResponse: IdResponse) => {
+         res.status(201).json({
+            ...idResponse //return the post id
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

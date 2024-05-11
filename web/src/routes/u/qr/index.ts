@@ -1,25 +1,32 @@
+import { resError } from "config"
+import { randomBytes } from "crypto"
 import { Request, Response } from "express"
-import { AuthService, UserService, ValidationService } from "services"
+import { AuthService, CoreService } from "services"
+import { UserSchema } from "types"
 
-const auth = new AuthService()
-const user = new UserService()
-const valid = new ValidationService()
+const auth: AuthService = new AuthService()
+const core: CoreService = new CoreService()
 
-export const GET = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
-
-   const randomNumber: string = user.createRandomString(16) //TODO: Need changes for more combinations
-   user.setRandomFriendCode(res.locals.uid, randomNumber)
-
-   res.status(200).json({ success: true, message: randomNumber })
+export const GET = [auth.sessionGuard, async (_: Request, res: Response) => {
+   try {
+      const randomCode: string = randomBytes(16).toString("hex")
+      core.setRandomFriendCode(res.locals.uid, randomCode).then((expireTime: number) => {
+         res.status(200).json({ //TODO serve un tipo
+            expireTime
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]
 
-export const POST = [auth.checkIfSessionTokenIsValid, async (req: Request, res: Response) => {
+export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
+   try {
+      const uid: string = res.locals.uid
+      const randomCode: string = req.body.friendCode
 
-   const uid: string = res.locals.uid
-   const randomNumber: string = req.body.friendCode
-
-   const friendName: string | null = await user.findRandomFriendCode(uid, randomNumber) // Returns null if the connection is not created
-
-   if (friendName === null) res.status(408).json({ success: false, message: "Request Time Out" })
-   else res.status(200).json({ success: true, name: friendName })
+      core.findRandomFriendCode(uid, randomCode).then((userSchema: UserSchema) => { // Returns null if the connection is not created
+         res.status(200).json({
+            ...userSchema
+         })
+      })
+   } catch (error) { resError(res, error) }
 }]

@@ -7,7 +7,8 @@
       "dev": "next dev",
       "lint": "next lint",
       "start": "next start",
-      "turbo": "next dev --turbo"
+      "turbo": "next dev --turbo",
+      "tauri": "tauri"
    },
    "dependencies": {
       "@tanstack/react-query": "^5.32.0",
@@ -36,6 +37,7 @@
       "internal-ip": "^7.0.0",
       "postcss": "^8.4.38",
       "tailwindcss": "^3.4.3",
+      "internal-ip": "^7.0.0",
       "typescript": "^5.4.5"
    }
 }
