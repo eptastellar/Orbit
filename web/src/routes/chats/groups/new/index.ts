@@ -1,10 +1,11 @@
 import { resError } from "config"
 import { Request, Response } from "express"
-import { AuthService, CoreService } from "services"
+import { AuthService, CoreService, ValidationService } from "services"
 import { IdResponse, NewGroupChatRequest } from "types"
 
 const auth: AuthService = new AuthService()
 const core: CoreService = new CoreService()
+const validation: ValidationService = new ValidationService()
 
 export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
    try {
@@ -18,11 +19,13 @@ export const POST = [auth.sessionGuard, async (req: Request, res: Response) => {
          pfp,
          name
       }
-      //TODO members validation
+
       core.getMembersUidsFromUsernames(ereq.members).then((membersUids: string[]) => {
-         core.newGroupChat(uid, membersUids, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
-            res.status(201).json({
-               ...idResponse //return the chat id
+         validation.membersValidation(uid, membersUids).then(() => {
+            core.newGroupChat(uid, membersUids, ereq.name, ereq.pfp).then((idResponse: IdResponse) => {
+               res.status(201).json({
+                  ...idResponse //return the chat id
+               })
             })
          })
       })

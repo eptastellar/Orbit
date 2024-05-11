@@ -168,7 +168,7 @@ export default class ValidationService {
       })
    }
 
-   public membersValidation = (uid: string, members: string[]): Promise<void> => {
+   public membersValidation = (uid: string, members: string[]): Promise<string[]> => {
       return new Promise(async (resolve, reject) => {
          try {
             if (members.length < 2)
@@ -182,7 +182,12 @@ export default class ValidationService {
             if a node is not matched in the previous searches it's removed and is not even going to be searched through
 
             */
-            return resolve()
+            const friends: string[] = await this.userFriends(uid)
+            friends.forEach(async friend => {
+               const friendsOfFriends: string[] = await this.userFriends(friend)
+               members = members.filter(member => friendsOfFriends.includes(member))
+            })
+            return resolve(members)
          } catch (error) { return reject(error) }
       })
    }
