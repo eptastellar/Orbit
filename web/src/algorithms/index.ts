@@ -1,7 +1,4 @@
-import { MeteorAlgorithm } from "./MeteorAlgorithm"
-import { SupernovaAlgorithm } from "./SupernovaAlgorithm"
+import { MeteorAlgorithm } from './MeteorAlgorithm';
+import { SupernovaAlgorithm } from './SupernovaAlgorithm';
 
-export {
-   MeteorAlgorithm,
-   SupernovaAlgorithm
-}
+export { MeteorAlgorithm, SupernovaAlgorithm };
