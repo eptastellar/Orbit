@@ -1,4 +1,3 @@
-import { err, neo } from '../config';
 import { ManagedTransaction, QueryResult, RecordShape } from 'neo4j-driver';
 import { SupernovaResponse } from '../types';
 

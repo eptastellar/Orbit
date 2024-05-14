@@ -3,7 +3,7 @@
    "editor.linkedEditing": true,
    "editor.links": true,
    "editor.detectIndentation": false,
-   "editor.tabSize": 3,
+   "editor.tabSize": 2,
 
    // Formatting properties
    "editor.formatOnPaste": true,
