@@ -4,7 +4,6 @@ export type AuthResponse = {
 };
 
 export type SignUpRequest = {
-  authorization: string;
   username: string;
   interests: string[];
   bday: number;

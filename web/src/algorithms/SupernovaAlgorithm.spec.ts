@@ -1,5 +1,5 @@
+import { Neo4jModule } from '@/config';
 import { SupernovaAlgorithm } from './SupernovaAlgorithm';
-import { close } from '../config';
 
 describe('supernova test suite', () => {
   it('should find a suitable match', async () => {
@@ -9,6 +9,7 @@ describe('supernova test suite', () => {
     const result: string = await new SupernovaAlgorithm().supernova(user);
     expect(result).toBe(expectedFriend);
   });
+
   it('should return an error because it cant find the user', async () => {
     const user: string = 'EasterEgg';
 
@@ -36,5 +37,5 @@ describe('supernova test suite', () => {
 });
 
 afterAll(() => {
-  close();
+  new Neo4jModule().close();
 });

@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ErrorsService {
   constructor() {}
 
-  public err = (message: string): Error => {
-    return new Error(message);
+  public e = (message: string): HttpException => {
+    return new HttpException(message, HttpStatus.BAD_REQUEST);
   };
 }

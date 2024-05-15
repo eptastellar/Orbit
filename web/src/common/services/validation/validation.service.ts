@@ -30,14 +30,14 @@ export class ValidationService {
     return new Promise((resolve, reject) => {
       try {
         if (!bday || bday > Date.now() / 1000 || bday < -2208988800)
-          return reject(this.error.err('validation/invalid-birthdate'));
+          return reject(this.error.e('validation/invalid-birthdate'));
 
         if (Date.now() / 1000 - 441806400 - bday <= 0)
-          return reject(this.error.err('validation/too-young'));
+          return reject(this.error.e('validation/too-young'));
 
         return resolve();
       } catch {
-        return reject(this.error.err('validation/malformed-input'));
+        return reject(this.error.e('validation/malformed-input'));
       }
     });
   };
@@ -52,14 +52,13 @@ export class ValidationService {
           !username.startsWith('@') ||
           username.substring(1).match(regex)
         )
-          //check if the username i approved by the regex
-          return reject(this.error.err('validation/invalid-username'));
+          return reject(this.error.e('validation/invalid-username')); //check if the username i approved by the regex
 
         if (username.length > 24 + 1)
-          return reject(this.error.err('validation/username-too-long'));
+          return reject(this.error.e('validation/username-too-long'));
 
         if (username.length < 6 + 1)
-          return reject(this.error.err('validation/username-too-short'));
+          return reject(this.error.e('validation/username-too-short'));
 
         const snapshot: QuerySnapshot = await this.db
           .collection('users') //search where the username is equal to the input username
@@ -68,10 +67,9 @@ export class ValidationService {
 
         if (snapshot.empty)
           return resolve(); //check if username is already used
-        else
-          return reject(this.error.err('validation/username-already-in-use'));
+        else return reject(this.error.e('validation/username-already-in-use'));
       } catch {
-        return reject(this.error.err('validation/malformed-input'));
+        return reject(this.error.e('validation/malformed-input'));
       }
     });
   };
@@ -82,17 +80,15 @@ export class ValidationService {
     return new Promise((resolve, reject) => {
       try {
         if (interestsList.length > 5 || interestsList.length < 1)
-          return reject(
-            this.error.err('validation/invalid-number-of-interests'),
-          );
+          return reject(this.error.e('validation/invalid-number-of-interests'));
 
         interestsList.forEach((element) => {
           if (!interests.includes(element))
-            return reject(this.error.err('validation/invalid-interests'));
+            return reject(this.error.e('validation/invalid-interests'));
         });
         return resolve();
       } catch {
-        return reject(this.error.err('validation/malformed-input'));
+        return reject(this.error.e('validation/malformed-input'));
       }
     });
   };
@@ -106,9 +102,9 @@ export class ValidationService {
           .get();
 
         if (docRef.exists) return resolve();
-        else return reject(this.error.err('validation/invalid-document-id'));
+        else return reject(this.error.e('validation/invalid-document-id'));
       } catch {
-        return reject(this.error.err('validation/invalid-document-id'));
+        return reject(this.error.e('validation/invalid-document-id'));
       }
     });
   };
@@ -127,10 +123,10 @@ export class ValidationService {
         if (docRef.exists) {
           const data: DocumentData = await docRef.data();
           if (data.post_id === postId) return resolve();
-          else return reject(this.error.err('validation/invalid-document-id'));
-        } else return reject(this.error.err('validation/invalid-document-id'));
+          else return reject(this.error.e('validation/invalid-document-id'));
+        } else return reject(this.error.e('validation/invalid-document-id'));
       } catch {
-        return reject(this.error.err('validation/invalid-document-id'));
+        return reject(this.error.e('validation/invalid-document-id'));
       }
     });
   };
@@ -158,14 +154,13 @@ export class ValidationService {
             if (leafData.post_id === postId) {
               if (leafData.root_id === rootId) return resolve();
               else
-                return reject(this.error.err('validation/invalid-document-id'));
+                return reject(this.error.e('validation/invalid-document-id'));
             } else
-              return reject(this.error.err('validation/invalid-document-id'));
-          } else
-            return reject(this.error.err('validation/invalid-document-id'));
-        } else return reject(this.error.err('validation/invalid-document-id'));
+              return reject(this.error.e('validation/invalid-document-id'));
+          } else return reject(this.error.e('validation/invalid-document-id'));
+        } else return reject(this.error.e('validation/invalid-document-id'));
       } catch {
-        return reject(this.error.err('validation/invalid-document-id'));
+        return reject(this.error.e('validation/invalid-document-id'));
       }
     });
   };
@@ -182,10 +177,10 @@ export class ValidationService {
 
           if (type === 'image' || type === 'audio')
             await this.mediaValidation(content);
-          else return reject(this.error.err('validation/malformed-input'));
+          else return reject(this.error.e('validation/malformed-input'));
         } else {
           if (text) await this.harmfulContentValidation(text);
-          else return reject(this.error.err('validation/malformed-input'));
+          else return reject(this.error.e('validation/malformed-input'));
         }
         return resolve();
       } catch (error) {
@@ -205,10 +200,10 @@ export class ValidationService {
 
         fileRef.exists().then((exists) => {
           if (exists[0]) return resolve();
-          else return reject(this.error.err('validation/invalid-image-path'));
+          else return reject(this.error.e('validation/invalid-image-path'));
         });
       } catch {
-        return reject(this.error.err('validation/malformed-url'));
+        return reject(this.error.e('validation/malformed-url'));
       }
     });
   };
@@ -241,7 +236,7 @@ export class ValidationService {
     return new Promise(async (resolve, reject) => {
       try {
         if (members.length < 2)
-          return reject(this.error.err('validation/invalid-number-of-members'));
+          return reject(this.error.e('validation/invalid-number-of-members'));
 
         /*
 

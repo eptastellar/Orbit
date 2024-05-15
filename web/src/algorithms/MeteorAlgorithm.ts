@@ -1,12 +1,18 @@
-import { neo } from '../config';
+import { Neo4jModule } from '@/config/neo4j/neo4j.module';
 import { randomInt } from 'crypto';
 import { QueryResult } from 'neo4j-driver';
 
 export class MeteorAlgorithm {
-  constructor() {}
+  private neo4j: Neo4jModule;
+
+  constructor() {
+    this.neo4j = new Neo4jModule();
+  }
+
   public Meteor = async (uid: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
-      await neo()
+      await this.neo4j
+        .neo()
         .executeRead((tx) =>
           tx.run(
             'MATCH (u:User{name : $uid})-[:Friend]-(t:User) return t.name as names',
