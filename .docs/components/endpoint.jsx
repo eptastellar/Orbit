@@ -12,13 +12,17 @@ const Endpoint = ({
    // TODO rendere leggibile il testo
    return (
       <>
-         <p className={styles.method}>{method}</p>
+         <br />
+         <b><p className={styles.method}>{method}</p></b>
+
          <code>
             <b>{path}</b>
          </code>
 
-         <h5>Request</h5>
-         <h6>Body</h6>
+
+
+         <h5 color='red'>Request</h5>
+         <b><h6>Body</h6></b>
          <table>
             <th>
                <code>TypeScript Type</code>
@@ -28,7 +32,7 @@ const Endpoint = ({
             </tr>
          </table>
 
-         <h6>Parameters</h6>
+         <b><h6>Parameters</h6></b>
          {parameters ? (
             parameters.map((el) => (
                <code>{el}</code>
@@ -37,10 +41,10 @@ const Endpoint = ({
             <code>None</code>
          )}
 
-         <h6>Headers</h6>
+         <b><h6>Headers</h6></b>
          <code>Content-Type: {contentType}</code>
 
-         <h6>Authorization</h6>
+         <b><h6>Authorization</h6></b >
          <table>
             <th><code>Type</code></th>
             <th><code>Description</code></th>
@@ -57,6 +61,7 @@ const Endpoint = ({
                <td>{resType}</td>
             </tr>
          </table>
+         <br />
       </>
    );
 };

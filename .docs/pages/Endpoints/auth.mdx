@@ -7,23 +7,23 @@ Authentication is used to create, validate, and log users into the app
 #### Endpoints
 {/* TODO da eliminare l'esempio qui sotto */}
 <Endpoint
-   method="POST"
-   path="/auth/register"
-   reqType="RegisterRequest"
-   resType="RegisterResponse"
+   method="GET"
+   path="/auth/log-out/"
+   reqType=""
+   resType="SuccessResponse"
    contentType="application/json"
-   params={
-      [
-         {
-            name: "Esempio",
-            description: "es"
-         }
-      ]
-      [
-         {
-            name: "Esempio2",
-            description: "es"
-         }
-      ]
-   }
+/>
+<Endpoint
+   method="GET"
+   path="/auth/sign-in/"
+   reqType="SuccessRequest"
+   resType="SuccessResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/auth/sign-up/"
+   reqType="SignUpValidateRequest"
+   resType="SuccessResponse"
+   contentType="application/json"
 />
