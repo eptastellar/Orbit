@@ -49,7 +49,7 @@ Orbit is a social media application that allows users to maintain and develop th
 ## ✍ Authors
 <a href="https://github.com/mzyxnuel"><img src="https://i.ibb.co/CzXXgbZ/MANUEL-DEF.png" height="256"/><a/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/74C17N3P7UN3"><img src="https://i.ibb.co/RDKyY6v/LEONARDO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/TheInfernalNick"><img src="https://i.ibb.co/wWc3k5g/NICOLO-DEF.png" height="256"/></a>
 
-<a href="https://github.com/MarcoMattei04"><img src="https://i.ibb.co/J3YFF3G/MARCO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/Tommybordi"><img src="https://i.ibb.co/hV0vS4r/TOMMASO-DEF.png" height="256"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/itspomo"><img src="https://i.ibb.co/SQCkRFv/DAMIANO-DEF.png" height="256"/></a>
+<a href="https://github.com/MarcoMattei04"><img src="https://i.ibb.co/J3YFF3G/MARCO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/Tommybordi"><img src="https://i.ibb.co/hV0vS4r/TOMMASO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/itspomo"><img src="https://i.ibb.co/SQCkRFv/DAMIANO-DEF.png" height="256"/></a>
 
 
 ## 💸 Donations
