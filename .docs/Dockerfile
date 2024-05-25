@@ -14,7 +14,7 @@ RUN pnpm install
 COPY . .
 
 # Expose a port for the app to listen on
-EXPOSE 3000:3000
+EXPOSE 4000:4000
 
 # Define the command to run the app
 CMD [ "pnpm", "dev" ]

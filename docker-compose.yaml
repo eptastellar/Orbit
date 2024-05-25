@@ -1,0 +1,13 @@
+services:
+  app:
+    build: ./app
+    ports:
+      - "3000:3000"
+  # web:
+  #   build: ./web
+  #   ports:
+  #     - "5000:5000"
+  docs:
+    build: ./.docs
+    ports:
+      - "4000:4000"
