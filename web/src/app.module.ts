@@ -51,6 +51,7 @@ export class AppModule {
         { path: 'auth/sign-*', method: RequestMethod.ALL },
         { path: 'cron/(.*)', method: RequestMethod.ALL },
         { path: 'interests', method: RequestMethod.ALL },
+        { path: 'c', method: RequestMethod.ALL },
         { path: '/', method: RequestMethod.ALL },
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL }); //TODO

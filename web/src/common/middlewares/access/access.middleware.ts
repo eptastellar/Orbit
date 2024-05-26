@@ -19,14 +19,17 @@ export class AccessMiddleware implements NestMiddleware {
       console.log('access middleware');
 
       const authorization: string = req.headers.authorization; //get the authorization header
-      const jwt: string = authorization.split('Bearer ')[1]; //remove bearer from the authentication param
 
-      const decodedJwt: DecodedIdToken = await this.auth.verifyIdToken(jwt); //verify token using firebase, it also check if the token is expired
+      if (authorization) {
+        const jwt: string = authorization.split('Bearer ')[1]; //remove bearer from the authentication param
 
-      if (decodedJwt.email_verified) {
-        req.body.uid = decodedJwt.uid; //save the user id in the request body
+        const decodedJwt: DecodedIdToken = await this.auth.verifyIdToken(jwt); //verify token using firebase, it also check if the token is expired
 
-        next();
+        if (decodedJwt.email_verified) {
+          req.body.uid = decodedJwt.uid; //save the user id in the request body
+
+          next();
+        } else return res.send(this.error.e('auth/email-not-verified'));
       } else return res.send(this.error.e('auth/email-not-verified'));
     } catch {
       return res.send(this.error.e('auth/invalid-token'));

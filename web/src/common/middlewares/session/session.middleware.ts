@@ -24,24 +24,27 @@ export class SessionMiddleware implements NestMiddleware {
 
   async use(req: any, res: any, next: () => void) {
     console.log('session middleware');
-
+    
     const authorization: string = req.headers.authorization;
-    const token: string = authorization.split('Bearer ')[1];
 
-    const payload: JWTPayload = await this.authService.jwtVerification(token);
-    //validate if the token is signed
-    const uid: string = payload.uid as string;
+    if (authorization) {
+      const token: string = authorization.split('Bearer ')[1];
 
-    const docRef: DocumentReference = this.db.collection('sessions').doc(uid);
-    const jwt: string = authorization.split('Bearer ')[1];
+      const payload: JWTPayload = await this.authService.jwtVerification(token);
+      //validate if the token is signed
+      const uid: string = payload.uid as string;
 
-    const snapshot: DocumentSnapshot = await docRef.get();
-    const data: DocumentData = snapshot.data()!;
+      const docRef: DocumentReference = this.db.collection('sessions').doc(uid);
+      const jwt: string = authorization.split('Bearer ')[1];
 
-    if (jwt === data.jwt) {
-      //check if the token is the same saved in firestore
-      req.body.uid = uid; //save the uid of the user to manipulate only his data
-      next();
+      const snapshot: DocumentSnapshot = await docRef.get();
+      const data: DocumentData = snapshot.data()!;
+
+      if (jwt === data.jwt) {
+        //check if the token is the same saved in firestore
+        req.body.uid = uid; //save the uid of the user to manipulate only his data
+        next();
+      } else res.send(this.error.e('auth/invalid-token'));
     } else res.send(this.error.e('auth/invalid-token'));
   }
 }
