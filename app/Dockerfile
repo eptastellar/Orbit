@@ -14,7 +14,7 @@ RUN pnpm install
 COPY . .
 
 # Expose the port that the app will listen on
-EXPOSE 5000:5000
+EXPOSE 3000:3000
 
 # Start the app
 RUN pnpm build

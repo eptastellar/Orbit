@@ -1,7 +1,6 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    target-branch: "app"
     directory: "/app"
     assignees:
       - "74C17N3P7UN3"
