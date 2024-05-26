@@ -15,10 +15,8 @@ export class AuthController {
   }
 
   @Get('sign-in')
-  async signIn(@Headers() headers: Headers): Promise<AuthResponse> {
-    const uid: string = await this.authService.accessGuard(
-      headers['authorization'],
-    ); //send the firebase access token to create a session
+  async signIn(@Body() body: Body): Promise<AuthResponse> {
+    const uid: string = body['uid'];
     await this.validationService.documentIdValidation(uid, 'users'); //check if the user is fully signed up even in firestore
     const jwt: string = await this.authService.newSession(uid); //create a multiaccess session using jwt
     const userSchema: UserSchema =
@@ -33,7 +31,8 @@ export class AuthController {
   }
 
   @Post('sign-up')
-  async signUp(@Body() body: Body, @Headers() headers): Promise<AuthResponse> {
+  async signUp(@Body() body: Body): Promise<AuthResponse> {
+    const uid: string = body['uid'];
     const username: string = body['username'];
     const interests: string[] = body['interests'];
     const bday: number = body['bday'];
@@ -46,9 +45,6 @@ export class AuthController {
       pfp,
     };
 
-    const uid: string = await this.authService.accessGuard(
-      headers['authorization'],
-    ); //check if firebase access token is valid
     await this.validationService.usernameValidation(ereq.username);
     await this.validationService.birthdateValidation(ereq.bday);
     await this.validationService.interestsValidation(ereq.interests);

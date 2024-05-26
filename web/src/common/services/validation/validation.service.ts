@@ -20,10 +20,10 @@ export class ValidationService {
 
   constructor() {
     this.firebase = new FirebaseModule();
-    this.db = this.firebase.firestore();
+    this.db = this.firebase.getFirestore();
     this.neo4j = new Neo4jModule();
     this.error = new ErrorsService();
-    this.bucket = this.firebase.firestorage();
+    this.bucket = this.firebase.getBucket();
   }
 
   public birthdateValidation = async (bday: number): Promise<void> => {

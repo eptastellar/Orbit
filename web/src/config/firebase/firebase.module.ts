@@ -7,6 +7,7 @@ import {
   initializeApp,
 } from 'firebase-admin/app';
 import { Firestore } from 'firebase-admin/firestore';
+import { Auth } from 'firebase-admin/lib/auth/auth';
 
 @Module({})
 export class FirebaseModule {
@@ -29,11 +30,15 @@ export class FirebaseModule {
     }
   }
 
-  public firestore = (): Firestore => {
+  public getAuth = (): Auth => {
+    return admin.auth();
+  }
+
+  public getFirestore = (): Firestore => {
     return admin.firestore();
   };
 
-  public firestorage = (): any => {
+  public getBucket = (): any => {
     return admin.storage().bucket();
   };
 }

@@ -17,10 +17,10 @@ export class CoreService {
   private bucket: any;
 
   constructor() {
-    this.db = new FirebaseModule().firestore();
+    this.db = new FirebaseModule().getFirestore();
     this.error = new ErrorsService();
     this.neo4j = new Neo4jModule();
-    this.bucket = new FirebaseModule().firestorage();
+    this.bucket = new FirebaseModule().getBucket();
   }
 
   public getUserDataFromUid = async (uid: string): Promise<UserSchema> => {

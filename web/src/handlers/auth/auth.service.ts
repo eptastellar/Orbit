@@ -3,14 +3,12 @@ import { CoreService } from '@/common/services/core/core.service';
 import { FirebaseModule, Neo4jModule } from '@/config';
 import { SuccessResponse, UserSchema } from '@/types';
 import { Injectable } from '@nestjs/common';
-import * as admin from 'firebase-admin';
 import {
   DocumentData,
   DocumentReference,
   DocumentSnapshot,
   Firestore,
 } from 'firebase-admin/firestore';
-import { DecodedIdToken } from 'firebase-admin/lib/auth/token-verifier';
 import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { Session } from 'neo4j-driver';
 
@@ -24,31 +22,11 @@ export class AuthService {
 
   constructor() {
     this.neo4j = new Neo4jModule();
-    this.db = new FirebaseModule().firestore();
+    this.db = new FirebaseModule().getFirestore();
     this.error = new ErrorsService();
     this.coreService = new CoreService();
     this.validationService = new ValidationService();
   }
-
-  public accessGuard = async (authorization: string): Promise<string> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const jwt: string = authorization.split('Bearer ')[1]; //remove bearer from the authentication param
-
-        const decodedjwt: DecodedIdToken = await admin
-          .auth()
-          .verifyIdToken(jwt); //verify token using firebase, it also check if the token is expired
-
-        if (decodedjwt.email_verified) {
-          //check if the email is verified
-          const uid: string = decodedjwt.uid;
-          return resolve(uid); //return the uid of the user
-        } else return reject(this.error.e('auth/email-unverified'));
-      } catch {
-        return reject(this.error.e('auth/invalid-token'));
-      }
-    });
-  };
 
   public newSessionJWT = async (uid: string) => {
     const payload = { uid: uid };
