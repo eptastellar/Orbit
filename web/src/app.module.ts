@@ -22,6 +22,7 @@ import { ChatsModule } from './handlers/chats/chats.module';
 import { MessagesModule } from './handlers/messages/messages.module';
 import { CronModule } from './handlers/cron/cron.module';
 import { UserModule } from './handlers/user/user.module';
+import { LikesModule } from './handlers/likes/likes.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { UserModule } from './handlers/user/user.module';
     MessagesModule,
     CronModule,
     UserModule,
+    LikesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],
