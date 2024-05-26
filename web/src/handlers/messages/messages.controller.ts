@@ -15,7 +15,7 @@ export class MessagesController {
   }
 
   @Get('personal/:id')
-  async setQrCode(
+  async getPersonalChatMessages(
     @Body() body: Body,
     @Param() params: any,
   ): Promise<IdResponse> {

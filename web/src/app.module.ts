@@ -20,6 +20,7 @@ import { PostsModule } from './handlers/posts/posts.module';
 import { QrModule } from './handlers/qr/qr.module';
 import { ChatsModule } from './handlers/chats/chats.module';
 import { MessagesModule } from './handlers/messages/messages.module';
+import { CronModule } from './handlers/cron/cron.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { MessagesModule } from './handlers/messages/messages.module';
     HomeModule,
     ChatsModule,
     MessagesModule,
+    CronModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],
