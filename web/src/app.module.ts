@@ -15,6 +15,8 @@ import { AuthService } from '@/handlers/auth/auth.service';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CommentsModule } from './handlers/comments/comments.module';
+import { InterestsModule } from './handlers/interests/interests.module';
+import { QrModule } from './handlers/qr/qr.module';
 
 @Module({
   imports: [
@@ -25,6 +27,8 @@ import { CommentsModule } from './handlers/comments/comments.module';
     FirebaseModule,
     Neo4jModule,
     CommentsModule,
+    QrModule,
+    InterestsModule,
   ],
   controllers: [AppController, AuthController],
   providers: [
@@ -43,6 +47,12 @@ export class AppModule {
       .apply(CronMiddleware)
       .forRoutes({ path: 'cron/*', method: RequestMethod.ALL })
       .apply(SessionMiddleware)
-      .forRoutes({ path: 'test', method: RequestMethod.ALL }); //TODO
+      .exclude(
+        { path: 'auth/sign-*', method: RequestMethod.ALL },
+        { path: 'cron/(.*)', method: RequestMethod.ALL },
+        { path: 'interests', method: RequestMethod.ALL },
+        { path: '/', method: RequestMethod.ALL },
+      )
+      .forRoutes({ path: '*', method: RequestMethod.ALL }); //TODO
   }
 }

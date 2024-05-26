@@ -43,6 +43,11 @@ export type MessagesRequest = {
   last_message_id?: string;
 };
 
+export type QrCodeRequest = {
+  random_code: string;
+  expire_time: number;
+};
+
 export type InterestsResponse = {
   interests: string[];
 };

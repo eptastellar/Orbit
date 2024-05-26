@@ -49,15 +49,12 @@ export class AuthService {
         const secret: Uint8Array = new TextEncoder().encode(
           process.env.JWT_SECRET_KEY,
         );
-        const { payload } = await jwtVerify(token, secret); //validate the user token and return the user payload
 
-        if (payload.exp! < Date.now() / 1000)
-          //check if the token is expired
-          return reject(this.error.e('auth/expired-token'));
+        const { payload } = await jwtVerify(token, secret); //validate the user token and return the user payload
 
         return resolve(payload); //return the token payload
       } catch {
-        return reject(this.error.e('auth/invalid-token'));
+        return reject(this.error.e('auth/expired-token'));
       }
     });
   };
