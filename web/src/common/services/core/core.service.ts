@@ -1,10 +1,11 @@
 import { ErrorsService } from '@/common';
 import { FirebaseModule, Neo4jModule } from '@/config';
-import { IdResponse, UserSchema } from '@/types';
+import { ContentFetch, IdResponse, PostResponse, UserSchema } from '@/types';
 import { Injectable } from '@nestjs/common';
 import {
   DocumentData,
   DocumentReference,
+  Query,
   QuerySnapshot,
 } from 'firebase-admin/firestore';
 import { QueryResult } from 'neo4j-driver';
@@ -161,6 +162,100 @@ export class CoreService {
       } catch {
         return reject(this.error.e('server/user-not-found'));
       }
+    });
+  };
+
+  public fetchPosts = (
+    uids: string[],
+    uid: string,
+    lastPostId?: string,
+  ): Promise<ContentFetch> => {
+    const limit: number = 5;
+
+    return new Promise(async (resolve, reject) => {
+      let query: Query = this.db
+        .collection('posts')
+        .where('owner', 'in', uids)
+        .orderBy('created_at', 'desc')
+        .limit(limit);
+
+      if (lastPostId) {
+        const lastDoc: DocumentData = await this.db
+          .collection('posts')
+          .doc(lastPostId)
+          .get();
+        query = query.startAfter(lastDoc); // add the start after if is a next page request
+      }
+
+      const snapshot: QuerySnapshot = await query.get();
+
+      const content: PostResponse[] = await Promise.all(
+        snapshot.docs.map(async (doc: DocumentData) => {
+          const id: string = doc.id;
+          const data: DocumentData[string] = doc.data();
+          const userSchema: UserSchema = await this.getUserDataFromUid(
+            data.owner,
+          );
+          const isLiked: boolean = await this.isLiked(id, uid);
+          const likes: number = await this.counter(id, 'likes', 'post_id');
+          const comments: number = await this.counter(
+            id,
+            'comments',
+            'post_id',
+          );
+
+          return {
+            id: id,
+            created_at: data.created_at,
+            text: data.text,
+            type: data.type,
+            content: data.content,
+            likes: likes,
+            comments: comments,
+            is_liked: isLiked,
+            user_data: { ...userSchema },
+          };
+        }),
+      );
+
+      if (content.length > 0) {
+        const last_doc_id: string =
+          snapshot.docs[snapshot.docs.length - 1].ref.id;
+        const contentFetch: ContentFetch = {
+          content,
+          last_doc_id,
+        };
+        return resolve(contentFetch);
+      } else return reject(this.error.e('server/no-content'));
+    });
+  };
+
+  public getFriendList = (uid: string): Promise<string[]> => {
+    return new Promise(async (resolve, reject) => {
+      const tempArray: string[] = [];
+      const queryFriends: string = `MATCH (n:User)-[:Friend]-(p:User) where n.name = '${uid}' RETURN p`;
+      const resultMap: QueryResult = await this.neo4j
+        .neo()
+        .executeRead((tx) => tx.run(queryFriends));
+      const uids = resultMap.records.map((row: any) => row.get('p'));
+      uids.forEach((element: any) => {
+        tempArray.push(element.properties['name']);
+      });
+
+      if (tempArray.length > 0) return resolve(tempArray);
+      else return reject(this.error.e('server/no-friends'));
+    });
+  };
+
+  public isLiked = (postId: string, uid: string): Promise<boolean> => {
+    return new Promise(async (resolve) => {
+      const snapshot: QuerySnapshot = await this.db
+        .collection('likes')
+        .where('liker', '==', uid)
+        .where('post_id', '==', postId)
+        .get();
+
+      return resolve(!snapshot.empty);
     });
   };
 

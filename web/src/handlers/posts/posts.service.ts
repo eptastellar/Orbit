@@ -7,7 +7,6 @@ import {
   DocumentData,
   DocumentReference,
   Firestore,
-  QuerySnapshot,
 } from 'firebase-admin/firestore';
 
 @Injectable()
@@ -34,7 +33,7 @@ export class PostsService {
 
         const userSchema: UserSchema =
           await this.coreService.getUserDataFromUid(data.owner);
-        const isLiked: boolean = await this.isLiked(id, uid);
+        const isLiked: boolean = await this.coreService.isLiked(id, uid);
         const likes: number = await this.coreService.counter(
           id,
           'likes',
@@ -62,18 +61,6 @@ export class PostsService {
       } catch {
         reject(this.error.e('server/post-not-found'));
       }
-    });
-  };
-
-  public isLiked = (postId: string, uid: string): Promise<boolean> => {
-    return new Promise(async (resolve) => {
-      const snapshot: QuerySnapshot = await this.db
-        .collection('likes')
-        .where('liker', '==', uid)
-        .where('post_id', '==', postId)
-        .get();
-
-      return resolve(!snapshot.empty);
     });
   };
 

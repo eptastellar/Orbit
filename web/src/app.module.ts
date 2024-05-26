@@ -17,6 +17,7 @@ import { CommentsModule } from './handlers/comments/comments.module';
 import { InterestsModule } from './handlers/interests/interests.module';
 import { PostsModule } from './handlers/posts/posts.module';
 import { QrModule } from './handlers/qr/qr.module';
+import { HomeModule } from './handlers/home/home.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { QrModule } from './handlers/qr/qr.module';
     InterestsModule,
     AuthModule,
     PostsModule,
+    HomeModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],
