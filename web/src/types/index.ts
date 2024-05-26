@@ -128,7 +128,7 @@ export type SupernovaResponse = {
 };
 
 export type UploadMessageRequest = {
-  text: string;
+  text_content: string;
   type: string;
   content: string;
 };

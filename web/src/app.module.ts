@@ -19,6 +19,7 @@ import { InterestsModule } from './handlers/interests/interests.module';
 import { PostsModule } from './handlers/posts/posts.module';
 import { QrModule } from './handlers/qr/qr.module';
 import { ChatsModule } from './handlers/chats/chats.module';
+import { MessagesModule } from './handlers/messages/messages.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ChatsModule } from './handlers/chats/chats.module';
     PostsModule,
     HomeModule,
     ChatsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],
