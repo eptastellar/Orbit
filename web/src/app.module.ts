@@ -43,6 +43,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AccessMiddleware)
+      .exclude({ path: 'auth/sign-up/validate', method: RequestMethod.POST },)
       .forRoutes({ path: 'auth/sign-*', method: RequestMethod.ALL })
       .apply(CronMiddleware)
       .forRoutes({ path: 'cron/*', method: RequestMethod.ALL })
