@@ -136,7 +136,7 @@ export class AuthService {
             bday: bday,
           });
 
-          const userSchema: UserSchema = { username, name, pfp, bday };
+          const userSchema: UserSchema = { username: username, name: name, pfp: pfp, bday: bday };
           return resolve(userSchema);
         } catch (error) {
           return reject(error);
