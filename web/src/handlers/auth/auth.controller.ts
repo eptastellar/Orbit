@@ -36,6 +36,13 @@ export class AuthController {
     return authResponse;
   }
 
+  @Get('log-out')
+  async logOut(@Body() body: Body): Promise<SuccessResponse> {
+    const uid: string = body['uid'];
+    const successResponse: SuccessResponse = await this.authService.logOut(uid);
+    return successResponse;
+  }
+
   @Post('sign-up')
   async signUp(@Body() body: Body): Promise<AuthResponse> {
     const uid: string = body['uid'];

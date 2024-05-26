@@ -28,7 +28,7 @@ export class AuthService {
     this.validationService = new ValidationService();
   }
 
-  public newSessionJWT = async (uid: string) => {
+  private newSessionJWT = async (uid: string) => {
     const payload = { uid: uid };
     const secret: Uint8Array = new TextEncoder().encode(
       process.env.JWT_SECRET_KEY,
@@ -41,6 +41,24 @@ export class AuthService {
       .sign(secret);
 
     return jwt;
+  };
+
+  public logOut = (uid: string): Promise<SuccessResponse> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const docRef: DocumentReference = this.db
+          .collection('sessions')
+          .doc(uid);
+        await docRef.set({ jwt: '' });
+
+        const successResponse: SuccessResponse = {
+          success: true,
+        };
+        return resolve(successResponse);
+      } catch {
+        return reject(this.error.e('auth/log-out-failed'));
+      }
+    });
   };
 
   public jwtVerification = (token: string): Promise<JWTPayload> => {
@@ -79,7 +97,7 @@ export class AuthService {
     });
   };
 
-  public refreshSession = async (
+  private refreshSession = async (
     docRef: DocumentReference,
     uid: string,
   ): Promise<string> => {
@@ -88,24 +106,6 @@ export class AuthService {
 
       await docRef.set({ jwt }); //refresh the token in the session token:
       return resolve(jwt);
-    });
-  };
-
-  public logOut = (uid: string): Promise<SuccessResponse> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const docRef: DocumentReference = this.db
-          .collection('sessions')
-          .doc(uid);
-        await docRef.set({ jwt: '' });
-
-        const successResponse: SuccessResponse = {
-          success: true,
-        };
-        return resolve(successResponse);
-      } catch {
-        return reject('auth/log-out-failed');
-      }
     });
   };
 
