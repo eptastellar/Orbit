@@ -49,7 +49,8 @@ export class AppModule {
       .forRoutes({ path: 'cron/*', method: RequestMethod.ALL })
       .apply(SessionMiddleware)
       .exclude(
-        { path: 'auth/sign-*', method: RequestMethod.ALL },
+        { path: 'auth/sign-in', method: RequestMethod.ALL },
+        { path: 'auth/sign-up', method: RequestMethod.ALL },
         { path: 'auth/sign-up/validate', method: RequestMethod.ALL },
         { path: 'cron/(.*)', method: RequestMethod.ALL },
         { path: 'interests', method: RequestMethod.ALL },
