@@ -102,7 +102,7 @@ export type PostResponse = {
 };
 
 export type PostRequest = {
-  text?: string;
+  text_content?: string;
   type?: string;
   content?: string;
 };

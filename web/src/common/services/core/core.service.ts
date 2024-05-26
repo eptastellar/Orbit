@@ -1,6 +1,6 @@
 import { ErrorsService } from '@/common';
 import { FirebaseModule, Neo4jModule } from '@/config';
-import { UserSchema } from '@/types';
+import { IdResponse, UserSchema } from '@/types';
 import { Injectable } from '@nestjs/common';
 import {
   DocumentData,
@@ -52,9 +52,28 @@ export class CoreService {
         const data: DocumentData = await doc.data();
 
         if (data.owner === uid) return resolve();
-        else return reject(this.error.e('auth/unauthorized'));
+        else return reject(this.error.e('server/unauthorized'));
       } catch {
-        return reject(this.error.e('auth/unauthorized'));
+        return reject(this.error.e('server/unauthorized'));
+      }
+    });
+  };
+
+  public delete = (reference: string, path: string): Promise<IdResponse> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const docRef: DocumentReference = this.db
+          .collection(path)
+          .doc(reference);
+        await docRef.delete();
+
+        const id = docRef.id;
+        const idResponse: IdResponse = {
+          id,
+        };
+        return resolve(idResponse);
+      } catch {
+        return reject(this.error.e('server/delete-failed'));
       }
     });
   };
@@ -92,6 +111,31 @@ export class CoreService {
       } catch {
         return reject(this.error.e('server/user-not-found'));
       }
+    });
+  };
+
+  public getOwner = (id: string, path: string): Promise<string> => {
+    return new Promise(async (resolve) => {
+      const docRef: DocumentReference = this.db.collection(path).doc(id);
+      const doc: DocumentData = await docRef.get();
+      const data: DocumentData = await doc.data();
+
+      return resolve(data?.owner);
+    });
+  };
+
+  public areFriends = (uid: string, friendUid: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      if (uid !== friendUid) {
+        const query: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) where u.name = "${uid}" AND t.name = "${friendUid}" RETURN t`;
+        const resultMap: QueryResult = await this.neo4j
+          .neo()
+          .executeRead((tx) => tx.run(query));
+        const check = resultMap.records.map((row: any) => row.get('t'));
+
+        if (check[0] !== null) return resolve();
+        else return reject(this.error.e('server/not-friends'));
+      } else return resolve();
     });
   };
 

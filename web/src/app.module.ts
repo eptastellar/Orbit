@@ -10,12 +10,12 @@ import { ErrorsService } from '@/common/services/errors/errors.service';
 import { ValidationService } from '@/common/services/validation/validation.service';
 import { FirebaseModule } from '@/config/firebase/firebase.module';
 import { Neo4jModule } from '@/config/neo4j/neo4j.module';
-import { AuthController } from '@/handlers/auth/auth.controller';
-import { AuthService } from '@/handlers/auth/auth.service';
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './handlers/auth/auth.module';
 import { CommentsModule } from './handlers/comments/comments.module';
 import { InterestsModule } from './handlers/interests/interests.module';
+import { PostsModule } from './handlers/posts/posts.module';
 import { QrModule } from './handlers/qr/qr.module';
 
 @Module({
@@ -29,21 +29,17 @@ import { QrModule } from './handlers/qr/qr.module';
     CommentsModule,
     QrModule,
     InterestsModule,
+    AuthModule,
+    PostsModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [
-    AppService,
-    ValidationService,
-    ErrorsService,
-    CoreService,
-    AuthService,
-  ],
+  controllers: [AppController],
+  providers: [AppService, ValidationService, ErrorsService, CoreService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AccessMiddleware)
-      .exclude({ path: 'auth/sign-up/validate', method: RequestMethod.ALL },)
+      .exclude({ path: 'auth/sign-up/validate', method: RequestMethod.ALL })
       .forRoutes({ path: 'auth/sign-*', method: RequestMethod.ALL })
       .apply(CronMiddleware)
       .forRoutes({ path: 'cron/*', method: RequestMethod.ALL })
