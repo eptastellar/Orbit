@@ -24,7 +24,7 @@ export class SessionMiddleware implements NestMiddleware {
 
   async use(req: any, res: any, next: () => void) {
     console.log('session middleware');
-    
+
     const authorization: string = req.headers.authorization;
 
     if (authorization) {

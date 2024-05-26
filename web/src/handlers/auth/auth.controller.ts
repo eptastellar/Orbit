@@ -1,6 +1,12 @@
 import { ValidationService } from '@/common';
 import { CoreService } from '@/common/services/core/core.service';
-import { AuthResponse, SignUpRequest, UserSchema } from '@/types';
+import {
+  AuthResponse,
+  SignUpRequest,
+  SignUpValidateRequest,
+  SuccessResponse,
+  UserSchema,
+} from '@/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
@@ -62,5 +68,24 @@ export class AuthController {
     };
 
     return authResponse;
+  }
+
+  @Post('sign-up/validate')
+  async signUpValidate(@Body() body: Body): Promise<SuccessResponse> {
+    const username: string = body['username'];
+    const bday: number = body['bday'];
+
+    const ereq: SignUpValidateRequest = {
+      username,
+      bday,
+    };
+
+    await this.validationService.usernameValidation(ereq.username);
+    await this.validationService.birthdateValidation(ereq.bday);
+    const successResponse: SuccessResponse = {
+      success: true,
+    };
+
+    return successResponse;
   }
 }
