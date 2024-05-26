@@ -21,8 +21,7 @@ export class AccessMiddleware implements NestMiddleware {
       const authorization: string = req.headers.authorization; //get the authorization header
       const jwt: string = authorization.split('Bearer ')[1]; //remove bearer from the authentication param
 
-      const decodedJwt: DecodedIdToken = await this.auth
-        .verifyIdToken(jwt); //verify token using firebase, it also check if the token is expired
+      const decodedJwt: DecodedIdToken = await this.auth.verifyIdToken(jwt); //verify token using firebase, it also check if the token is expired
 
       if (decodedJwt.email_verified) {
         req.body.uid = decodedJwt.uid; //save the user id in the request body

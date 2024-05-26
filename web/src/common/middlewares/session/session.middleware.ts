@@ -17,7 +17,7 @@ export class SessionMiddleware implements NestMiddleware {
   private error: ErrorsService;
 
   constructor() {
-    this.db = new FirebaseModule().firestore();
+    this.db = new FirebaseModule().getFirestore();
     this.authService = new AuthService();
     this.error = new ErrorsService();
   }

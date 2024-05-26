@@ -32,7 +32,7 @@ export class FirebaseModule {
 
   public getAuth = (): Auth => {
     return admin.auth();
-  }
+  };
 
   public getFirestore = (): Firestore => {
     return admin.firestore();

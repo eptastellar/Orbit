@@ -23,6 +23,42 @@ export class CoreService {
     this.bucket = new FirebaseModule().getBucket();
   }
 
+  public counter = (
+    id: string,
+    path: string,
+    reference: string,
+  ): Promise<number> => {
+    return new Promise(async (resolve) => {
+      const snapshot = await this.db
+        .collection(path)
+        .where(reference, '==', id)
+        .count()
+        .get();
+
+      const data = snapshot.data();
+      return resolve(data.count);
+    });
+  };
+
+  public hasPermissionTo = (
+    uid: string,
+    id: string,
+    path: string,
+  ): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const docRef: DocumentReference = this.db.collection(path).doc(id);
+        const doc: DocumentData = await docRef.get();
+        const data: DocumentData = await doc.data();
+
+        if (data.owner === uid) return resolve();
+        else return reject(this.error.e('auth/unauthorized'));
+      } catch {
+        return reject(this.error.e('auth/unauthorized'));
+      }
+    });
+  };
+
   public getUserDataFromUid = async (uid: string): Promise<UserSchema> => {
     //retrieve user informations based from the uid
     return new Promise(async (resolve, reject) => {
