@@ -14,10 +14,11 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './handlers/auth/auth.module';
 import { CommentsModule } from './handlers/comments/comments.module';
+import { HomeModule } from './handlers/home/home.module';
 import { InterestsModule } from './handlers/interests/interests.module';
 import { PostsModule } from './handlers/posts/posts.module';
 import { QrModule } from './handlers/qr/qr.module';
-import { HomeModule } from './handlers/home/home.module';
+import { ChatsModule } from './handlers/chats/chats.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { HomeModule } from './handlers/home/home.module';
     AuthModule,
     PostsModule,
     HomeModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],
