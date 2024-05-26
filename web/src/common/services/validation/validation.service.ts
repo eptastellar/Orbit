@@ -239,7 +239,7 @@ export class ValidationService {
           return reject(this.error.e('validation/invalid-number-of-members'));
 
         /*
-
+        TODO remove this comment
         To add this algorithm we need to search for all the friends in the friend list of the starting node
         After this point we need to make a query in the friends of all the friends of the starting node
         and keep the friends in the starting array that are matching with the query of the friends

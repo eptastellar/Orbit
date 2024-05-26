@@ -133,6 +133,10 @@ export type UploadMessageRequest = {
   content: string;
 };
 
+export type SupernovaBind = {
+  response: 'one-way-binding' | 'friendship-created' | 'blocked';
+};
+
 export type GroupChatMessageRequest = {
   text: string;
   type: string;

@@ -9,7 +9,7 @@ export class MeteorAlgorithm {
     this.neo4j = new Neo4jModule();
   }
 
-  public Meteor = async (uid: string): Promise<string> => {
+  public meteor = async (uid: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
       await this.neo4j
         .neo()

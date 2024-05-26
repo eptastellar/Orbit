@@ -46,9 +46,8 @@ export class CronService {
           .executeRead((tx) => tx.run('MATCH (u:User) RETURN u.name AS uid'))
           .then(async (result) => {
             result.records.map(async (record) => {
-              const Meteor = new MeteorAlgorithm();
               const uid: string = record.get('uid');
-              const friend: string = await Meteor.Meteor(uid);
+              const friend: string = await new MeteorAlgorithm().meteor(uid);
               console.log(friend, 'is the friend of', uid);
               return resolve({ success: true });
             });

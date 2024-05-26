@@ -23,6 +23,7 @@ import { MessagesModule } from './handlers/messages/messages.module';
 import { CronModule } from './handlers/cron/cron.module';
 import { UserModule } from './handlers/user/user.module';
 import { LikesModule } from './handlers/likes/likes.module';
+import { SupernovaModule } from './handlers/supernova/supernova.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { LikesModule } from './handlers/likes/likes.module';
     CronModule,
     UserModule,
     LikesModule,
+    SupernovaModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],

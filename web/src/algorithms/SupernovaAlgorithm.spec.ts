@@ -1,6 +1,7 @@
-import { Neo4jModule } from '@/config';
+import { Neo4jModule } from '../config/neo4j/neo4j.module';
 import { SupernovaAlgorithm } from './SupernovaAlgorithm';
 
+//TODO need fix
 describe('supernova test suite', () => {
   it('should find a suitable match', async () => {
     const user: string = '8DBxwxXYIhSnyJEeFtY20nQaoBa2';
@@ -11,10 +12,10 @@ describe('supernova test suite', () => {
   });
 
   it('should return an error because it cant find the user', async () => {
-    const user: string = 'EasterEgg';
+    const user: string = 'ThisUserDoesNotExist';
 
     await new SupernovaAlgorithm().supernova(user).catch((error) => {
-      expect(error.message).toBe('User not found');
+      expect(error.message).toBe('server/starting-user-not-found');
     });
   });
 
