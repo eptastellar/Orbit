@@ -21,6 +21,7 @@ import { QrModule } from './handlers/qr/qr.module';
 import { ChatsModule } from './handlers/chats/chats.module';
 import { MessagesModule } from './handlers/messages/messages.module';
 import { CronModule } from './handlers/cron/cron.module';
+import { UserModule } from './handlers/user/user.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { CronModule } from './handlers/cron/cron.module';
     ChatsModule,
     MessagesModule,
     CronModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],

@@ -7,6 +7,7 @@ import {
   DocumentReference,
   Query,
   QuerySnapshot,
+  WriteBatch,
 } from 'firebase-admin/firestore';
 import { QueryResult } from 'neo4j-driver';
 
@@ -244,6 +245,28 @@ export class CoreService {
 
       if (tempArray.length > 0) return resolve(tempArray);
       else return reject(this.error.e('server/no-friends'));
+    });
+  };
+
+  public removeBatch = (type: string, uid: string): Promise<void> => {
+    return new Promise(async (resolve) => {
+      const snapshot: QuerySnapshot = await this.db
+        .collection(type)
+        .where('owner', '==', uid)
+        .get();
+
+      const batch: WriteBatch = this.db.batch();
+      snapshot.docs.forEach((doc: DocumentData) => {
+        batch.delete(doc.ref);
+      }); //removes all the posts of the user in one batch to dont overload firebase
+
+      await batch.commit();
+
+      if (snapshot.size === 0) return resolve();
+
+      process.nextTick(() => {
+        this.removeBatch(type, uid);
+      });
     });
   };
 
