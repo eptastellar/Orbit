@@ -19,6 +19,6 @@ export class CronMiddleware implements NestMiddleware {
 
       if (secret === process.env.CRON_SECRET) next();
       else return res.send(this.error.e('auth/invalid-token'));
-    }
+    } else return res.send(this.error.e('auth/invalid-token'));
   }
 }
