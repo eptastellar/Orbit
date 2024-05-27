@@ -1,4 +1,4 @@
-import styles from './endpoint.module.css';
+import styles from './enpoint.module.css'
 
 const Endpoint = ({
    method,
@@ -8,6 +8,14 @@ const Endpoint = ({
    contentType,
    parameters,
    tokenType
+} : {
+   method: string,
+   path: string,
+   reqType: string,
+   resType: string,
+   contentType: string,
+   parameters: string[],
+   tokenType: string
 }) => {
    // TODO rendere leggibile il testo
    return (
