@@ -1,4 +1,3 @@
-import { Neo4jModule } from '@/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SupernovaService } from './supernova.service';
 
@@ -37,6 +36,6 @@ describe('SupernovaService', () => {
   });
 
   afterAll(() => {
-    new Neo4jModule().close();
+    setTimeout(() => process.exit(), 1000)
   });
 });
