@@ -56,8 +56,7 @@ export class SupernovaAlgorithm {
 
       //explore the network of friends until a suitable match is found
       while (friendList.size > 0) {
-        //TODO fixa i commenti
-        //controlla se quella persona è già stata trovata dentro all'algoritmo almeno una volta, in caso negativo la aggiunge, in caso positivo salta all'amico dopo
+        //checks if the person was found at least once, if false it's added, if true continues with the next friend
         if (!friendListSearched.includes(arrayFriends[0])) {
           friendList.delete(arrayFriends[0]);
           startingPoint = arrayFriends.shift();
@@ -81,11 +80,11 @@ export class SupernovaAlgorithm {
           );
         });
         arrayFriends = this.sortFriendsMap(friendList);
-        //Itera attraverso tutti gli amici che sono stati trovati per quell'utente
+        //Iterate trough the friends of the starting user
         for await (const friend of arrayFriends) {
-          //Se quell'amico è già stato cercato una volta allora salterà quell'iterazione
+          //If that friend has already been searched trough, skip it
           if (alreadySearched.includes(friend)) continue;
-          //QUERY PER VEDERE SE SONO GIà AMICI ( ovviamente salta se è se stesso dato che non può essere amico di se stesso )
+          //Query to search if they're friends ( obviously it skips if the friend is the starting user)
           if (user != friend) {
             const queryAlreadyFriend: string = `OPTIONAL MATCH (u:User)-[:Friend]-(t:User) WHERE u.name="${user}" AND t.name="${friend}" RETURN t`;
             result = await this.neo4j
@@ -94,11 +93,11 @@ export class SupernovaAlgorithm {
             const testNull: RecordShape = result.records.map((row) =>
               row.get('t'),
             );
-            //Ritorna quando testNull[0] è null dato che l'optional match risponde con NULL solamente quando non trova il match tra le persone, ma se abbiamo controllato esattamente che quelle persone esistono e non hanno una connessione allora vuol dire che abbiamo un match
+            //Returns when testNull[0] is null because the optional match respons with NULL only when it doesn't find a match between nodes, but if we checked correctly that the nodes exists and doesn't have a relationship we've got a match
             if (testNull[0] === null) {
               return resolve(friend);
             }
-            //aggiunge alla lista di persone già cercate per ottimizzare l'algoritmo
+            //adds the list of friends to the already searched list to optimize the algorithm
             alreadySearched.push(friend);
           }
         }

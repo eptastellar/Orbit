@@ -209,15 +209,14 @@ export class ValidationService {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public harmfulContentValidation = (text: string): Promise<void> => {
+  private harmfulContentValidation = (text: string): Promise<void> => {
     //TODO
     return new Promise((resolve) => {
       return resolve();
     });
   };
 
-  public userFriends = (uid: string): Promise<string[]> => {
-    // TODO non va messo su validation
+  private userFriends = (uid: string): Promise<string[]> => {
     return new Promise(async (resolve) => {
       const friendsQuery: string = `MATCH (u:User {name: ${uid}})-[:Friend]->(f:User) RETURN f.name AS names`;
       const friendsResult: QueryResult = await this.neo4j
@@ -238,14 +237,6 @@ export class ValidationService {
         if (members.length < 2)
           return reject(this.error.e('validation/invalid-number-of-members'));
 
-        /*
-        TODO remove this comment
-        To add this algorithm we need to search for all the friends in the friend list of the starting node
-        After this point we need to make a query in the friends of all the friends of the starting node
-        and keep the friends in the starting array that are matching with the query of the friends
-        if a node is not matched in the previous searches it's removed and is not even going to be searched through
-
-        */
         const friends: string[] = await this.userFriends(uid);
         friends.forEach(async (friend) => {
           const friendsOfFriends: string[] = await this.userFriends(friend);
