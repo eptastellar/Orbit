@@ -1,5 +1,4 @@
-import { ErrorsService } from '@/common';
-import { CoreService } from '@/common/services/core/core.service';
+import { CoreService, ErrorsService } from '@/common';
 import { FirebaseModule } from '@/config';
 import {
   CommentSchema,

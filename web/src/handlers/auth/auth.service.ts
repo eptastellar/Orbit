@@ -1,5 +1,4 @@
-import { ErrorsService, ValidationService } from '@/common';
-import { CoreService } from '@/common/services/core/core.service';
+import { CoreService, ErrorsService, ValidationService } from '@/common';
 import { FirebaseModule, Neo4jModule } from '@/config';
 import { SuccessResponse, UserSchema } from '@/types';
 import { Injectable } from '@nestjs/common';

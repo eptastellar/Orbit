@@ -1,9 +1,10 @@
-import { MeteorAlgorithm } from '@/algorithms';
 import { ErrorsService } from '@/common';
 import { FirebaseModule, Neo4jModule } from '@/config';
 import { SuccessResponse } from '@/types';
 import { Injectable } from '@nestjs/common';
+import { randomInt } from 'crypto';
 import { Firestore } from 'firebase-admin/firestore';
+import { QueryResult } from 'neo4j-driver';
 
 @Injectable()
 export class CronService {
@@ -47,7 +48,7 @@ export class CronService {
           .then(async (result) => {
             result.records.map(async (record) => {
               const uid: string = record.get('uid');
-              const friend: string = await new MeteorAlgorithm().meteor(uid);
+              const friend: string = await this.meteorAlgorithm(uid);
               console.log(friend, 'is the friend of', uid);
               return resolve({ success: true });
             });
@@ -55,6 +56,29 @@ export class CronService {
       } catch {
         return reject(this.error.e('cron/meteor-algorithm-failed'));
       }
+    });
+  };
+
+  private meteorAlgorithm = async (uid: string): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+      await this.neo4j
+        .neo()
+        .executeRead((tx) =>
+          tx.run(
+            'MATCH (u:User{name : $uid})-[:Friend]-(t:User) return t.name as names',
+            { uid: uid },
+          ),
+        )
+        .then((result: QueryResult) => {
+          const names: string[] = result.records.map((record) =>
+            record.get('names'),
+          );
+          if (names.length === 0) return resolve('No friends found');
+          else return resolve(names[randomInt(0, names.length)]);
+        })
+        .catch((error: Error) => {
+          return reject(error);
+        });
     });
   };
 

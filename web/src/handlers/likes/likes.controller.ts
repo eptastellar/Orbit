@@ -1,5 +1,4 @@
-import { ValidationService } from '@/common';
-import { CoreService } from '@/common/services/core/core.service';
+import { CoreService, ValidationService } from '@/common';
 import { IdResponse } from '@/types';
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { LikesService } from './likes.service';

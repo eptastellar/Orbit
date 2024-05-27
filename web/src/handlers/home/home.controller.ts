@@ -1,5 +1,4 @@
-import { ValidationService } from '@/common';
-import { CoreService } from '@/common/services/core/core.service';
+import { CoreService, ValidationService } from '@/common';
 import { ContentFetch, NumberResponse, PostsRequest } from '@/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { HomeService } from './home.service';
