@@ -36,6 +36,6 @@ describe('SupernovaService', () => {
   });
 
   afterAll(() => {
-    setTimeout(() => process.exit(), 3000);
+    setTimeout(() => process.exit(), 1000);
   });
 });
