@@ -1,4 +1,4 @@
-import { ErrorsService } from '@/common/services/errors/errors.service';
+import { ErrorsService } from '@/common';
 import { FirebaseModule } from '@/config';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Auth } from 'firebase-admin/lib/auth/auth';

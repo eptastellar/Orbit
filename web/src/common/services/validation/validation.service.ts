@@ -1,3 +1,6 @@
+import { interests } from '@/assets';
+import { ErrorsService } from '@/common';
+import { FirebaseModule, Neo4jModule } from '@/config';
 import { Injectable } from '@nestjs/common';
 import {
   DocumentData,
@@ -5,10 +8,6 @@ import {
   QuerySnapshot,
 } from 'firebase-admin/firestore';
 import { QueryResult } from 'neo4j-driver';
-import { interests } from 'src/assets';
-import { FirebaseModule } from 'src/config/firebase/firebase.module';
-import { Neo4jModule } from 'src/config/neo4j/neo4j.module';
-import { ErrorsService } from '../errors/errors.service';
 
 @Injectable()
 export class ValidationService {
