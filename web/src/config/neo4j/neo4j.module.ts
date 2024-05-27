@@ -6,20 +6,19 @@ export class Neo4jModule {
   private NEO4J_URI: string = process.env.NEO4J_URI;
   private NEO4J_USERNAME: string = process.env.NEO4J_USERNAME;
   private NEO4J_PASSWORD: string = process.env.NEO4J_PASSWORD;
-  private driver: Driver;
+  private driver: Driver = neo4j.driver(
+    this.NEO4J_URI,
+    neo4j.auth.basic(this.NEO4J_USERNAME, this.NEO4J_PASSWORD),
+  );
+  private session: Session = this.driver.session();
 
-  constructor() {
-    this.driver = neo4j.driver(
-      this.NEO4J_URI,
-      neo4j.auth.basic(this.NEO4J_USERNAME, this.NEO4J_PASSWORD),
-    );
-  }
+  constructor() {}
 
-  neo = (): Session => {
-    return this.driver.session();
+  public neo = (): Session => {
+    return this.session;
   };
 
-  close = (): void => {
+  public close = (): void => {
     this.driver.close();
   };
 }
