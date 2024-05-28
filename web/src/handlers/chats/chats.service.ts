@@ -127,7 +127,7 @@ export class ChatsService {
           last_doc_id,
         };
         return resolve(contentFetch);
-      } else return reject(this.error.e('server/no-content'));
+      } else return reject(this.error.ne('server/no-content'));
     });
   };
 
@@ -241,7 +241,7 @@ export class ChatsService {
             chats: { ...chats },
           };
           return resolve(chatsResponse);
-        } else return reject(this.error.e('server/no-content'));
+        } else return reject(this.error.ne('server/no-content'));
       } catch (error) {
         return reject(error);
       }

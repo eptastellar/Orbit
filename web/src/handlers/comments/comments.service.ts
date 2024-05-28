@@ -84,7 +84,7 @@ export class CommentsService {
           snapshot.docs[snapshot.docs.length - 1].ref.id;
         const contentFetch: ContentFetch = { content, last_doc_id };
         return resolve(contentFetch);
-      } else return reject(this.error.e('server/no-content'));
+      } else return reject(this.error.ne('server/no-content'));
     });
   };
 
@@ -134,7 +134,7 @@ export class CommentsService {
           last_doc_id,
         };
         return resolve(contentFetch);
-      } else return reject(this.error.e('server/no-content'));
+      } else return reject(this.error.ne('server/no-content'));
     });
   };
 

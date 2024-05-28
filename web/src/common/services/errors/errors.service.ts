@@ -8,4 +8,9 @@ export class ErrorsService {
     console.log('error');
     return new HttpException(message, HttpStatus.BAD_REQUEST);
   };
+
+  public ne = (message: string): HttpException => {
+    console.log('error');
+    return new HttpException(message, HttpStatus.OK);
+  };
 }

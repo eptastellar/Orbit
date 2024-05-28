@@ -227,7 +227,7 @@ export class CoreService {
           last_doc_id,
         };
         return resolve(contentFetch);
-      } else return reject(this.error.e('server/no-content'));
+      } else return reject(this.error.ne('server/no-content'));
     });
   };
 
@@ -308,10 +308,10 @@ export class CoreService {
               });
               return resolve(urls[Math.floor(Math.random() * urls.length)]); // resolve the promise with a random URL from the urls array
             });
-          } else return reject(this.error.e('server/no-content'));
+          } else return reject(this.error.ne('server/no-content'));
         });
       } catch {
-        return reject(this.error.e('server/no-content'));
+        return reject(this.error.ne('server/no-content'));
       }
     });
   };
