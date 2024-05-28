@@ -1,0 +1,64 @@
+import Endpoint from '../../components/endpoint'
+
+# Chats
+### Introduction
+Chat
+
+#### Endpoints
+{/* TODO da eliminare l'esempio qui sotto */}
+<Endpoint
+   method="POST"
+   path="/chats/groups/m"
+   reqType="MessagesRequest"
+   resType="Response"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/chats/groups/new"
+   reqType="NewGroupChatRequest"
+   resType="Response"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/chats/groups/new"
+   reqType="NewGroupChatRequest"
+   resType="GroupChatInfoResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/chats/groups/new"
+   reqType="NewGroupChatRequest"
+   resType="ChatsResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/chats/groups/personal/m"
+   reqType="MessagesRequest"
+   resType="Response"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/chats/groups/personal/new"
+   reqType="NewPersonalChatRequest"
+   resType="Response"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/chats/groups/personal/new"
+   reqType="Request"
+   resType="PersonalChatInfoResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/chats/groups/personal/new"
+   reqType="Request"
+   resType="ChatsResponse"
+   contentType="application/json"
+/>

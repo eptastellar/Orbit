@@ -16,14 +16,14 @@ Authentication is used to create, validate, and log users into the app
 <Endpoint
    method="GET"
    path="/auth/sign-in/"
-   reqType="SuccessRequest"
-   resType="SuccessResponse"
+   reqType="AuthRequest"
+   resType="AuthResponse"
    contentType="application/json"
 />
 <Endpoint
    method="POST"
    path="/auth/sign-up/"
    reqType="SignUpValidateRequest"
-   resType="SuccessResponse"
+   resType="AuthResponse"
    contentType="application/json"
 />
