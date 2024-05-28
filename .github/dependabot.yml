@@ -1,7 +1,6 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    target-branch: "app"
     directory: "/app"
     assignees:
       - "74C17N3P7UN3"
@@ -19,6 +18,18 @@ updates:
     assignees:
       - "mzyxnuel"
       - "TheInfernalNick"
+    schedule:
+      interval: "monthly"
+      time: "08:00"
+      timezone: "Europe/Rome"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "npm"
+    directory: "/.docs"
+    assignees:
+      - "mzyxnuel"
     schedule:
       interval: "monthly"
       time: "08:00"
