@@ -35,7 +35,7 @@ describe('SupernovaService', () => {
     expect(result).toBe('jLlAgYRXh5XD5DaABy8zLy3fqUf1');
   });
 
-  afterAll(() => {
-    setTimeout(() => process.exit(), 1000);
+  afterEach(() => {
+    service.getNeo4J().close();
   });
 });

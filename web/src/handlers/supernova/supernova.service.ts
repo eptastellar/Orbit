@@ -296,4 +296,8 @@ export class SupernovaService {
       }
     });
   };
+
+  public getNeo4J = (): Neo4jModule => {
+    return this.neo4j;
+  };
 }
