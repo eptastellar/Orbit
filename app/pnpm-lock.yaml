@@ -12,10 +12,13 @@ importers:
         specifier: ^5.32.0
         version: 5.32.0(react@18.2.0)
       '@tauri-apps/api':
-        specifier: 2.0.0-beta.9
+        specifier: '>=2.0.0-beta.0'
         version: 2.0.0-beta.9
+      '@tauri-apps/plugin-barcode-scanner':
+        specifier: 2.0.0-beta.3
+        version: 2.0.0-beta.3
       '@tauri-apps/plugin-shell':
-        specifier: 2.0.0-beta.2
+        specifier: '>=2.0.0-beta.0'
         version: 2.0.0-beta.2
       '@vercel/analytics':
         specifier: ^1.2.2
@@ -52,7 +55,7 @@ importers:
         specifier: ^1.7.2
         version: 1.7.2(eslint@8.57.0)(typescript@5.4.5)
       '@tauri-apps/cli':
-        specifier: 2.0.0-beta.13
+        specifier: '>=2.0.0-beta.0'
         version: 2.0.0-beta.13
       '@types/node':
         specifier: ^20.12.7
@@ -613,6 +616,10 @@ packages:
     peerDependencies:
       react: ^18.0.0
 
+  '@tauri-apps/api@2.0.0-beta.11':
+    resolution: {integrity: sha512-wJRY+fBUm3KpqZDHMIz5HRv+1vlnvRJ/dFxiyY3NlINTx2qXqDou5qWYcP1CuZXsd39InWVPV3FAZvno/kGCkA==}
+    engines: {node: '>= 18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+
   '@tauri-apps/api@2.0.0-beta.4':
     resolution: {integrity: sha512-Nxtj28NYUo5iwYkpYslxmOPkdI2WkELU2e3UH9nbJm9Ydki2CQwJVGQxx4EANtdZcMNsEsUzRqaDTvEUYH1l6w==}
     engines: {node: '>= 18', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
@@ -685,6 +692,9 @@ packages:
     resolution: {integrity: sha512-Kp0zSvrhXrOQL+8evRMJufnDYDinWXaBb1Un8x4cptrM0GAKjYddV4vjNsXvEyjlXv0S+SWJD0OUNHQyMDUlAg==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-barcode-scanner@2.0.0-beta.3':
+    resolution: {integrity: sha512-NLszr+Q1Roxrq1fZhiuJjOUvmkYSwmCk/K85Nm7WfeEjzQLqsBVaZqdSVvbLJZb/9PI8XE+MLLDG8BGMiMEDaQ==}
 
   '@tauri-apps/plugin-shell@2.0.0-beta.2':
     resolution: {integrity: sha512-9rWsfN7Wt+EuWmpmNnK8bCs+04fzhEYrHtWyLIAYxb9diFdcJrEoctCP9YM2v+Uf8/y8qFC7VCbZ/9VQHANymQ==}
@@ -2901,6 +2911,8 @@ snapshots:
       '@tanstack/query-core': 5.32.0
       react: 18.2.0
 
+  '@tauri-apps/api@2.0.0-beta.11': {}
+
   '@tauri-apps/api@2.0.0-beta.4': {}
 
   '@tauri-apps/api@2.0.0-beta.9': {}
@@ -2947,6 +2959,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.0.0-beta.13
       '@tauri-apps/cli-win32-ia32-msvc': 2.0.0-beta.13
       '@tauri-apps/cli-win32-x64-msvc': 2.0.0-beta.13
+
+  '@tauri-apps/plugin-barcode-scanner@2.0.0-beta.3':
+    dependencies:
+      '@tauri-apps/api': 2.0.0-beta.11
 
   '@tauri-apps/plugin-shell@2.0.0-beta.2':
     dependencies:
