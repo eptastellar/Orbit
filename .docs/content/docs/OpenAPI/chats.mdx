@@ -1,0 +1,35 @@
+---
+title: Chats
+description: Chats
+---
+import Endpoint from '../../../components/endpoint'
+
+{/* TODO da eliminare l'esempio qui sotto */}
+<Endpoint
+   method="GET"
+   path="/chats/personal"
+   reqType=""
+   resType="ChatsResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/chats/personal/:id"
+   reqType="-"
+   resType="PersonalChatInfoResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/chats/personal/m"
+   reqType="MessagesRequest"
+   resType="(ContentFetch)"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/chats/personal/new"
+   reqType="NewPersonalChatRequest"
+   resType="IdResponse"
+   contentType="application/json"
+/>

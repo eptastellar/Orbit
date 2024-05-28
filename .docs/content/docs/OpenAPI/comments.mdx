@@ -1,0 +1,35 @@
+---
+title: Comments
+description: Comments
+---
+import Endpoint from '../../../components/endpoint'
+
+{/* TODO da eliminare l'esempio qui sotto */}
+<Endpoint
+   method="POST"
+   path="c/leafs/:id"
+   reqType="LeafCommentsRequest"
+   resType="-"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="c/roots/:id"
+   reqType="RootCommentsRequest"
+   resType="-"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="c/:id"
+   reqType="CommentUploadRequest"
+   resType="IdResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="DELETE"
+   path="c/:id"
+   reqType="DeleteCommentRequest"
+   resType="SuccessResponse"
+   contentType="application/json"
+/>

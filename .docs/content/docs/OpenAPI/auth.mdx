@@ -7,7 +7,28 @@ import Endpoint from '../../../components/endpoint'
 <Endpoint
    method="GET"
    path="/auth/log-out/"
-   reqType=""
+   reqType="-"
    resType="SuccessResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="GET"
+   path="/auth/sign-in/"
+   reqType="AuthRequest"
+   resType="AuthResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/auth/sign-up/"
+   reqType="SignUpRequest"
+   resType="AuthResponse"
+   contentType="application/json"
+/>
+<Endpoint
+   method="POST"
+   path="/auth/sign-up/validate"
+   reqType="SignUpRequest"
+   resType="AuthResponse"
    contentType="application/json"
 />
