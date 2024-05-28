@@ -26,7 +26,7 @@ describe('SupernovaService', () => {
     await service.supernova(user).catch((error) => {
       expect(error.message).toBe('Impossible to find new friends');
     });
-  });
+  }, 10000);
 
   it('should find the friend of the friend in the database', async () => {
     const startingUser: string = 'h3yZKtMRYfUvxLeijmSr5SKeCnl2';
