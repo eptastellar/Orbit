@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import 'dotenv/config';
 import neo4j, { Driver, Session } from 'neo4j-driver';
 
 @Module({})
