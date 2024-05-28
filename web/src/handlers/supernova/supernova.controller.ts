@@ -4,7 +4,7 @@ import { SupernovaService } from './supernova.service';
 
 @Controller('supernova')
 export class SupernovaController {
-  constructor(private readonly supernovaService: SupernovaService) {}
+  constructor(private readonly supernovaService: SupernovaService) { }
 
   @Get()
   async getSupernovaFriend(@Body() body: Body): Promise<SupernovaResponse> {
@@ -17,7 +17,7 @@ export class SupernovaController {
   @Post()
   async setSupernova(@Body() body: Body): Promise<SupernovaBind> {
     const username: string = body['username'];
-    const accepted: boolean = body['status'];
+    const accepted: boolean = body['accepted'];
     const status: string = body['status'];
     const oneway: string = body['oneway'];
 
