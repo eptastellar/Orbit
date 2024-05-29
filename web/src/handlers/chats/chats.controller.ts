@@ -8,8 +8,10 @@ import {
   PersonalChatInfoResponse,
 } from '@/types';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ChatsService } from './chats.service';
 
+@ApiTags('chats')
 @Controller('chats')
 export class ChatsController {
   private validationService: ValidationService;
@@ -21,6 +23,12 @@ export class ChatsController {
   }
 
   @Get('personal/:id')
+  @ApiResponse({
+    status: 200,
+    description: 'Get personal chat information',
+    type: 'PersonalChatInfoResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getPersonalChatInfo(
     @Body() body: Body,
     @Param() params: any,
@@ -35,6 +43,12 @@ export class ChatsController {
   }
 
   @Get('personal')
+  @ApiResponse({
+    status: 200,
+    description: 'Get list of personal chats',
+    type: 'ChatsResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getPersonalChats(@Body() body: Body): Promise<ChatsResponse> {
     const uid: string = body['uid'];
 
@@ -44,6 +58,24 @@ export class ChatsController {
   }
 
   @Post('personal/m')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        chat_id: { type: 'string' },
+        last_message_id: {
+          type: 'string',
+          description: 'Last message ID to get the following messages',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get messages from a personal chat',
+    type: 'ContentFetch',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getPersonalChatMessages(@Body() body: Body): Promise<ContentFetch> {
     const uid: string = body['uid'];
     const chat_id: string = body['chat_id'];
@@ -75,6 +107,20 @@ export class ChatsController {
   }
 
   @Post('personal/new')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        receiver_username: { type: 'string', description: 'The username of the chat the client wants to create', },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new personal chat',
+    type: 'IdResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async newPersonalChat(@Body() body: Body): Promise<IdResponse> {
     const uid: string = body['uid'];
     const receiver_username: string = body['receiver_username'];

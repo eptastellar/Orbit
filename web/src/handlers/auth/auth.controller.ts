@@ -7,8 +7,10 @@ import {
   UserSchema,
 } from '@/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   private validationService: ValidationService;
@@ -20,6 +22,12 @@ export class AuthController {
   }
 
   @Get('sign-in')
+  @ApiResponse({
+    status: 200,
+    description: 'User sign-in',
+    type: 'AuthResponse',
+  })
+  @ApiBearerAuth('Firebase Access Token')
   async signIn(@Body() body: Body): Promise<AuthResponse> {
     const uid: string = body['uid'];
     await this.validationService.documentIdValidation(uid, 'users'); //check if the user is fully signed up even in firestore
@@ -36,6 +44,11 @@ export class AuthController {
   }
 
   @Get('log-out')
+  @ApiResponse({
+    status: 200,
+    description: 'User log-out',
+    type: 'SuccessResponse',
+  })
   async logOut(@Body() body: Body): Promise<SuccessResponse> {
     const uid: string = body['uid'];
     const successResponse: SuccessResponse = await this.authService.logOut(uid);
@@ -43,6 +56,27 @@ export class AuthController {
   }
 
   @Post('sign-up')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        username: { type: 'string' },
+        interests: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of interests',
+        },
+        bday: { type: 'number', description: 'Unix timestamp birthday' },
+        pfp: { type: 'string', description: 'Profile picture URL' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'User sign-up',
+    type: 'AuthResponse',
+  })
+  @ApiBearerAuth('Firebase Access Token')
   async signUp(@Body() body: Body): Promise<AuthResponse> {
     const uid: string = body['uid'];
     const username: string = body['username'];
@@ -77,6 +111,20 @@ export class AuthController {
   }
 
   @Post('sign-up/validate')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        username: { type: 'string' },
+        bday: { type: 'number', description: 'Unix timestamp birthday' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User sign-up validation',
+    type: 'SuccessResponse',
+  })
   async signUpValidate(@Body() body: Body): Promise<SuccessResponse> {
     const username: string = body['username'];
     const bday: number = body['bday'];

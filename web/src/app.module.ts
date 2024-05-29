@@ -58,6 +58,8 @@ export class AppModule {
       .exclude(
         { path: 'auth/sign-in', method: RequestMethod.ALL },
         { path: 'auth/sign-up', method: RequestMethod.ALL },
+        { path: 'docs/(.*)', method: RequestMethod.ALL },
+        { path: 'docs-json', method: RequestMethod.ALL },
         { path: 'auth/sign-up/validate', method: RequestMethod.ALL },
         { path: 'cron/(.*)', method: RequestMethod.ALL },
         { path: 'interests', method: RequestMethod.ALL },
