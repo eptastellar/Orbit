@@ -21,6 +21,7 @@ import { PostsModule } from './handlers/posts/posts.module';
 import { QrModule } from './handlers/qr/qr.module';
 import { SupernovaModule } from './handlers/supernova/supernova.module';
 import { UserModule } from './handlers/user/user.module';
+import { NotificationsModule } from './handlers/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UserModule } from './handlers/user/user.module';
     UserModule,
     LikesModule,
     SupernovaModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, ValidationService, ErrorsService, CoreService],

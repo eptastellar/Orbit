@@ -34,6 +34,11 @@ export type DeleteCommentRequest = {
   root_id: boolean | string;
 };
 
+export type NotificationResponse = {
+  notifier: string;
+  type: string;
+};
+
 export type PostsRequest = {
   last_post_id?: string;
 };

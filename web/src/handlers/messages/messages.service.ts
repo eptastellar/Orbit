@@ -1,4 +1,4 @@
-import { CoreService, ErrorsService } from '@/common';
+import { ErrorsService } from '@/common';
 import { FirebaseModule } from '@/config';
 import { IdResponse } from '@/types';
 import { Injectable } from '@nestjs/common';
@@ -11,13 +11,11 @@ import {
 
 @Injectable()
 export class MessagesService {
-  private coreService: CoreService;
   private error: ErrorsService;
   private db: Firestore;
 
   constructor() {
     this.error = new ErrorsService();
-    this.coreService = new CoreService();
     this.db = new FirebaseModule().getFirestore();
   }
 

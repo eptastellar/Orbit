@@ -166,6 +166,29 @@ export class CoreService {
     });
   };
 
+  public addNotification = (
+    likerUid: string,
+    ownerUid: string,
+    type: 'like' | 'comment',
+  ): Promise<void> => {
+    return new Promise(async (resolve) => {
+      const docRef: DocumentReference = this.db
+        .collection('notifications')
+        .doc();
+
+      const { username } = await this.getUserDataFromUid(likerUid);
+
+      await docRef.set({
+        notifier: username,
+        to_who: ownerUid,
+        created_at: Date.now(),
+        type: type,
+      });
+
+      return resolve();
+    });
+  };
+
   public fetchPosts = (
     uids: string[],
     uid: string,

@@ -110,6 +110,9 @@ export class CommentsController {
       ereq.content,
     );
 
+    const owner: string = await this.coreService.getOwner(post_id, 'posts');
+    await this.coreService.addNotification(uid, owner, 'comment');
+
     return idResponse;
   }
 

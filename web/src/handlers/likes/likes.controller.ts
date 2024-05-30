@@ -28,6 +28,8 @@ export class LikesController {
       post_id,
       tokenUid,
     );
+
+    await this.coreService.addNotification(tokenUid, ownerUid, 'like');
     return idResponse;
   }
 }
