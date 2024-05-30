@@ -1,19 +1,42 @@
-import { CoreService, ValidationService } from '@/common';
+import { ValidationService } from '@/common';
 import { IdResponse, UploadMessageRequest } from '@/types';
 import { Body, Controller, Get, Param } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { MessagesService } from './messages.service';
 
+@ApiTags('messages')
 @Controller('m')
 export class MessagesController {
   private validationService: ValidationService;
-  private coreService: CoreService;
 
   constructor(private readonly messagesService: MessagesService) {
     this.validationService = new ValidationService();
-    this.coreService = new CoreService();
   }
 
   @Get('personal/:id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        text_content: { type: 'string' },
+        type: { type: 'string' },
+        content: { type: 'string' },
+      },
+    },
+  })
+  @ApiParam({ name: 'id', description: 'Chat ID', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get messages from a personal chat',
+    type: 'IdResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getPersonalChatMessages(
     @Body() body: Body,
     @Param() params: any,

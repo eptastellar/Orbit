@@ -8,7 +8,13 @@ import {
   PersonalChatInfoResponse,
 } from '@/types';
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ChatsService } from './chats.service';
 
 @ApiTags('chats')
@@ -28,6 +34,7 @@ export class ChatsController {
     description: 'Get personal chat information',
     type: 'PersonalChatInfoResponse',
   })
+  @ApiParam({ name: 'id', description: 'Chat ID', type: 'string' })
   @ApiBearerAuth('JWT Session Token')
   async getPersonalChatInfo(
     @Body() body: Body,

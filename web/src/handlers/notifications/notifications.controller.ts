@@ -1,17 +1,22 @@
-import { CoreService } from '@/common';
 import { NotificationResponse } from '@/types';
 import { Body, Controller, Get } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 
+@ApiTags('notifications')
 @Controller('notifications')
 export class NotificationsController {
-  private coreService: CoreService;
 
   constructor(private readonly notificationsService: NotificationsService) {
-    this.coreService = new CoreService();
   }
 
   @Get('all')
+  @ApiResponse({
+    status: 200,
+    description: 'Get all notifications',
+    type: 'NotificationResponse[]',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getAllNotifications(
     @Body() body: Body,
   ): Promise<NotificationResponse[]> {
@@ -23,6 +28,12 @@ export class NotificationsController {
   }
 
   @Get('comments')
+  @ApiResponse({
+    status: 200,
+    description: 'Get all comment notifications',
+    type: 'NotificationResponse[]',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getAllCommentsNotifications(
     @Body() body: Body,
   ): Promise<NotificationResponse[]> {
@@ -34,6 +45,12 @@ export class NotificationsController {
   }
 
   @Get('likes')
+  @ApiResponse({
+    status: 200,
+    description: 'Get all like notifications',
+    type: 'NotificationResponse[]',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getAllLikesNotifications(
     @Body() body: Body,
   ): Promise<NotificationResponse[]> {

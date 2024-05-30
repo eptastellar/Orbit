@@ -16,8 +16,16 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 
+@ApiTags('user')
 @Controller('u')
 export class UserController {
   private validationService: ValidationService;
@@ -29,6 +37,13 @@ export class UserController {
   }
 
   @Get(':username')
+  @ApiResponse({
+    status: 200,
+    description: 'Get user information by username',
+    type: 'UserResponse',
+  })
+  @ApiParam({ name: 'username', description: 'Username', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async getUserInfo(
     @Body() body: Body,
     @Param() params: any,
@@ -36,8 +51,8 @@ export class UserController {
     const tokenUid: string = body['uid'];
     const username: string = params['username'];
 
-    const uid: string = await this.coreService.getUidFromUserData(username); //also validate the username
-    await this.coreService.areFriends(tokenUid, uid); //if they are not friends it will reject an error
+    const uid: string = await this.coreService.getUidFromUserData(username);
+    await this.coreService.areFriends(tokenUid, uid);
     const userSchema: UserSchema =
       await this.coreService.getUserDataFromUid(uid);
     const posts: number = await this.coreService.counter(uid, 'posts', 'owner');
@@ -45,7 +60,7 @@ export class UserController {
     const meteors: number = await this.userService.getMeteorCount();
 
     const userResponse: UserResponse = {
-      personal: tokenUid === uid, //check if is the user personal profile
+      personal: tokenUid === uid,
       user_data: { ...userSchema },
       counters: {
         posts: posts,
@@ -57,13 +72,28 @@ export class UserController {
   }
 
   @Post('posts/:username')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        last_post_id: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get user posts by username',
+    type: 'ContentFetch',
+  })
+  @ApiParam({ name: 'username', description: 'Username', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async getUserPosts(
     @Body() body: Body,
     @Param() params: any,
   ): Promise<ContentFetch> {
     const tokenUid: string = body['uid'];
     const username: string = params['username'];
-    const last_post_id: string = body['last_post_id']; //retrieve the last fetched document
+    const last_post_id: string = body['last_post_id'];
 
     const ereq: PostsRequest = {
       last_post_id,
@@ -75,7 +105,7 @@ export class UserController {
         'posts',
       );
 
-    const uid: string = await this.coreService.getUidFromUserData(username); //get the uid from the username, also validate the username
+    const uid: string = await this.coreService.getUidFromUserData(username);
     await this.coreService.areFriends(tokenUid, uid);
     const contentFetch: ContentFetch = await this.coreService.fetchPosts(
       [uid],
@@ -86,15 +116,41 @@ export class UserController {
   }
 
   @Get('settings')
+  @ApiResponse({
+    status: 200,
+    description: 'Get user settings information',
+    type: 'UserSchema',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async getUserSettingsInfo(@Body() body: Body): Promise<UserSchema> {
     const uid: string = body['uid'];
-
     const userSchema: UserSchema =
       await this.coreService.getUserDataFromUid(uid);
     return userSchema;
   }
 
   @Patch('settings')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        interests: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Array of interests',
+        },
+        username: { type: 'string' },
+        name: { type: 'string' },
+        pfp: { type: 'string', description: 'Profile picture URL' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Update user settings information',
+    type: 'IdResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async fixUserSettingsInfo(@Body() body: Body): Promise<IdResponse> {
     const uid: string = body['uid'];
     const interests: string[] = body['interests'];
@@ -120,6 +176,12 @@ export class UserController {
   }
 
   @Delete('settings')
+  @ApiResponse({
+    status: 200,
+    description: 'Delete user and associated data',
+    type: 'SuccessResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async deleteUser(@Body() body: Body): Promise<SuccessResponse> {
     const uid: string = body['uid'];
     await this.userService.deleteUser(uid);

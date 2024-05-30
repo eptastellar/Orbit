@@ -9,8 +9,16 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 
+@ApiTags('posts')
 @Controller('p')
 export class PostsController {
   private validationService: ValidationService;
@@ -22,6 +30,13 @@ export class PostsController {
   }
 
   @Get(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Get a post by ID',
+    type: 'PostResponse',
+  })
+  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async getPost(
     @Body() body: Body,
     @Param() params: any,
@@ -40,6 +55,23 @@ export class PostsController {
   }
 
   @Patch(':id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        text_content: { type: 'string' },
+        type: { type: 'string' },
+        content: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Update a post by ID',
+    type: 'IdResponse',
+  })
+  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async fixPost(@Body() body: Body, @Param() params: any): Promise<IdResponse> {
     const uid: string = body['uid'];
     const post_id: string = params['id'];
@@ -70,6 +102,13 @@ export class PostsController {
   }
 
   @Delete(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Delete a post by ID',
+    type: 'IdResponse',
+  })
+  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async deletePost(
     @Body() body: Body,
     @Param() params: any,
@@ -87,6 +126,22 @@ export class PostsController {
   }
 
   @Post()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        text_content: { type: 'string' },
+        type: { type: 'string' },
+        content: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Create a new post',
+    type: 'IdResponse',
+  })
+  @ApiBearerAuth('JWT Session Token')
   async uploadPost(@Body() body: Body): Promise<IdResponse> {
     const uid: string = body['uid'];
     const text_content: string = body['text_content'];

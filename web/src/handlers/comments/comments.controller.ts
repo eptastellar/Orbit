@@ -9,8 +9,16 @@ import {
   SuccessResponse,
 } from '@/types';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 
+@ApiTags('comments')
 @Controller('c')
 export class CommentsController {
   private validationService: ValidationService;
@@ -22,6 +30,22 @@ export class CommentsController {
   }
 
   @Post('leafs/:id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        last_leaf_comment_id: { type: 'string' },
+        post_id: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get leaf comments',
+    type: 'ContentFetch',
+  })
+  @ApiParam({ name: 'id', description: 'Root comment ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async getLeafComments(
     @Body() body: Body,
     @Param() params: any,
@@ -53,6 +77,21 @@ export class CommentsController {
   }
 
   @Post('roots/:id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        last_root_comment_id: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Get root comments',
+    type: 'ContentFetch',
+  })
+  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async getRootComments(
     @Body() body: Body,
     @Param() params: any,
@@ -81,6 +120,22 @@ export class CommentsController {
   }
 
   @Post(':id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        root_id: { type: 'string' },
+        content: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Upload a comment',
+    type: 'IdResponse',
+  })
+  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async uploadComment(
     @Body() body: Body,
     @Param() params: any,
@@ -117,6 +172,22 @@ export class CommentsController {
   }
 
   @Delete(':id')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        root_id: { type: 'string' },
+        comment_id: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Delete a comment',
+    type: 'SuccessResponse',
+  })
+  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
+  @ApiBearerAuth('JWT Session Token')
   async deleteComment(
     @Body() body: Body,
     @Param() params: any,
