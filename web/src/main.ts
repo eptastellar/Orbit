@@ -6,8 +6,6 @@ async function nest() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
   const config = new DocumentBuilder()
-    .setTitle('Orbit API')
-    .setDescription('Orbit API Endpoints')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

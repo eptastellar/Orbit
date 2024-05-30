@@ -111,7 +111,10 @@ export class ChatsController {
     schema: {
       type: 'object',
       properties: {
-        receiver_username: { type: 'string', description: 'The username of the chat the client wants to create', },
+        receiver_username: {
+          type: 'string',
+          description: 'The username of the chat the client wants to create',
+        },
       },
     },
   })

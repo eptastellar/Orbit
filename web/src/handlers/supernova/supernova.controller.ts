@@ -4,7 +4,7 @@ import { SupernovaService } from './supernova.service';
 
 @Controller('supernova')
 export class SupernovaController {
-  constructor(private readonly supernovaService: SupernovaService) { }
+  constructor(private readonly supernovaService: SupernovaService) {}
 
   @Get()
   async getSupernovaFriend(@Body() body: Body): Promise<SupernovaResponse> {

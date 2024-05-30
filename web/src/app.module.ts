@@ -56,16 +56,16 @@ export class AppModule {
       .forRoutes({ path: 'cron/*', method: RequestMethod.ALL })
       .apply(SessionMiddleware)
       .exclude(
-        { path: 'auth/sign-in', method: RequestMethod.ALL },
-        { path: 'auth/sign-up', method: RequestMethod.ALL },
-        { path: 'docs/(.*)', method: RequestMethod.ALL },
-        { path: 'docs-json', method: RequestMethod.ALL },
-        { path: 'auth/sign-up/validate', method: RequestMethod.ALL },
-        { path: 'cron/(.*)', method: RequestMethod.ALL },
-        { path: 'interests', method: RequestMethod.ALL },
+        { path: 'auth/sign-in', method: RequestMethod.GET },
+        { path: 'auth/sign-up', method: RequestMethod.POST },
+        { path: 'docs/*', method: RequestMethod.GET },
+        { path: 'docs-json', method: RequestMethod.GET },
+        { path: 'auth/sign-up/validate', method: RequestMethod.POST },
+        { path: 'cron/*', method: RequestMethod.ALL },
+        { path: 'interests', method: RequestMethod.GET },
         { path: 'c', method: RequestMethod.ALL },
-        { path: '/', method: RequestMethod.ALL },
+        { path: '/', method: RequestMethod.GET },
       )
-      .forRoutes({ path: '*', method: RequestMethod.ALL }); //TODO
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
