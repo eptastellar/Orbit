@@ -7,6 +7,9 @@ import LargeButton from "./button/LargeButton"
 import SettingsButton from "./button/SettingsButton"
 import WelcomeButton from "./button/WelcomeButton"
 
+import Comment from "./comment/Comment"
+import NewComment from "./comment/NewComment"
+
 import FullInput from "./input/FullInput"
 import Input from "./input/Input"
 
@@ -30,6 +33,7 @@ export {
    AppDownload,
    AudioEmbed,
    BackButton,
+   Comment,
    FilterButton,
    FloatingConfirmation,
    FullInput,
@@ -42,6 +46,7 @@ export {
    LargeButton,
    LoadingOverlay,
    Navbar,
+   NewComment,
    Notification,
    Post,
    SettingsButton,

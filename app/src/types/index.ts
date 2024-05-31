@@ -1,3 +1,12 @@
+export type Comment = {
+   id: string
+   createdAt: number
+   content: string
+   userData: UserData
+}
+
+export type CommentRoot = Comment & { leavesCount: number }
+
 export type LocalUser = {
    sessionToken: string
    userData: UserData
