@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Orbit",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/favicon.svg",
+    "light": "/favicon.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -29,10 +29,21 @@
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "Authentication",
       "pages": [
+        "api-reference/auth/sign-in",
         "api-reference/auth/sign-up",
-        "api-reference/auth/sign-up/validate"
+        "api-reference/auth/sign-up/validate",
+        "api-reference/auth/log-out"
+      ]
+    },
+    {
+      "group": "Chats",
+      "pages": [
+        "api-reference/chats/personal/id",
+        "api-reference/chats/personal",
+        "api-reference/chats/personal/m",
+        "api-reference/chats/personal/new"
       ]
     }
   ],
