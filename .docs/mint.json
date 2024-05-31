@@ -1,0 +1,42 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Orbit",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "quickstart"
+      ]
+    },
+    {
+      "group": "API Documentation",
+      "pages": [
+        "api-reference/auth/sign-up",
+        "api-reference/auth/sign-up/validate"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/eptastellar/orbit"
+  }
+}
