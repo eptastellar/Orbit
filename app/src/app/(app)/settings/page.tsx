@@ -50,15 +50,15 @@ const Settings = () => {
 
          type ResponseType = {
             success: true
-            error: undefined
+            message: undefined
          } | {
             success: undefined
-            error: ServerError
+            message: ServerError
          }
 
          fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/settings`, params)
             .then((response) => response.json())
-            .then(async ({ success, error }: ResponseType) => {
+            .then(async ({ success, message: error }: ResponseType) => {
                if (success) {
                   await deleteUser()
                   removeUserProfile()

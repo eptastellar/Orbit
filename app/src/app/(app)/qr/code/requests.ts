@@ -12,17 +12,17 @@ export const generateQrCode = async (sessionToken: string): Promise<ReturnType> 
    }
 
    type ResponseType = {
-      error?: ServerError
-      message: string
-      expireTime: number
+      message?: ServerError
+      random_code: string
+      expire_time: number
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/qr`, requestParams)
-   const { error, ...result }: ResponseType = await response.json()
+   const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
-      qrCode: result.message,
-      expireTime: result.expireTime
+      qrCode: result.random_code,
+      expireTime: result.expire_time
    }
 
    throw new Error(error)

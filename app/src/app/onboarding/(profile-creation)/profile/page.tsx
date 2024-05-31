@@ -119,12 +119,12 @@ const Profile = () => {
       }
 
       type ResponseType = {
-         error?: ServerError
+         message?: ServerError
       }
 
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-up/validate`, params)
          .then((response) => response.json())
-         .then(({ error }: ResponseType) => {
+         .then(({ message: error }: ResponseType) => {
             if (!error) {
                router.push("/onboarding/interests")
             } else {

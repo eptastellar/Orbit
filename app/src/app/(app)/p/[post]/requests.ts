@@ -4,7 +4,7 @@ export const fetchComments = async (
    reqLastCommentId: string | undefined,
    postId: string,
    sessionToken: string
-): Promise<{ comments: CommentRoot[], lastCommentId: string | undefined }> => {
+): Promise<{ comments: CommentRoot[], lastCommentId?: string }> => {
    const requestBody = JSON.stringify({
       last_root_comment_id: reqLastCommentId
    })
