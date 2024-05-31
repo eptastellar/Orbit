@@ -1,6 +1,12 @@
+import { InterestsResponseDto } from '@/dto';
 import { InterestsResponse } from '@/types';
 import { Controller, Get } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { InterestsService } from './interests.service';
 
 @ApiTags('interests')
@@ -12,8 +18,9 @@ export class InterestsController {
   @ApiResponse({
     status: 200,
     description: 'Get list of interests',
-    type: 'InterestsResponse',
+    schema: { $ref: getSchemaPath(InterestsResponseDto) },
   })
+  @ApiExtraModels(InterestsResponseDto)
   async getInterests(): Promise<InterestsResponse> {
     return this.interestsService.getInterests();
   }

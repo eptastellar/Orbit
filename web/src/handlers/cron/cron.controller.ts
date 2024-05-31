@@ -1,6 +1,13 @@
+import { SuccessResponseDto } from '@/dto';
 import { SuccessResponse } from '@/types';
 import { Controller, Get } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { CronService } from './cron.service';
 
 @ApiTags('cron')
@@ -12,8 +19,10 @@ export class CronController {
   @ApiResponse({
     status: 200,
     description: 'Run garbage collector',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
+  @ApiExtraModels(SuccessResponseDto)
+  @ApiBearerAuth('Cron_Token')
   async garbageCollector(): Promise<SuccessResponse> {
     const successResponse: SuccessResponse =
       await this.cronService.garbageCollector();
@@ -24,8 +33,10 @@ export class CronController {
   @ApiResponse({
     status: 200,
     description: 'Keep Neo4j database alive',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
+  @ApiExtraModels(SuccessResponseDto)
+  @ApiBearerAuth('Cron_Token')
   async keepAliveNeo4j(): Promise<SuccessResponse> {
     const successResponse: SuccessResponse =
       await this.cronService.keepAliveNeo();
@@ -36,8 +47,10 @@ export class CronController {
   @ApiResponse({
     status: 200,
     description: 'Execute meteor task',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
+  @ApiExtraModels(SuccessResponseDto)
+  @ApiBearerAuth('Cron_Token')
   async meteor(): Promise<SuccessResponse> {
     const successResponse: SuccessResponse = await this.cronService.meteor();
     return successResponse;

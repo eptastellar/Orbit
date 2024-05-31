@@ -1,5 +1,13 @@
 import { CoreService, ValidationService } from '@/common';
 import {
+  ChatsResponseDto,
+  ContentFetchDto,
+  IdResponseDto,
+  MessagesRequestDto,
+  NewPersonalChatRequestDto,
+  PersonalChatInfoResponseDto,
+} from '@/dto';
+import {
   ChatsResponse,
   ContentFetch,
   IdResponse,
@@ -11,9 +19,11 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
   ApiParam,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { ChatsService } from './chats.service';
 
@@ -32,10 +42,11 @@ export class ChatsController {
   @ApiResponse({
     status: 200,
     description: 'Get personal chat information',
-    type: 'PersonalChatInfoResponse',
+    schema: { $ref: getSchemaPath(PersonalChatInfoResponseDto) },
   })
   @ApiParam({ name: 'id', description: 'Chat ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(PersonalChatInfoResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getPersonalChatInfo(
     @Body() body: Body,
     @Param() params: any,
@@ -53,9 +64,10 @@ export class ChatsController {
   @ApiResponse({
     status: 200,
     description: 'Get list of personal chats',
-    type: 'ChatsResponse',
+    schema: { $ref: getSchemaPath(ChatsResponseDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(ChatsResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getPersonalChats(@Body() body: Body): Promise<ChatsResponse> {
     const uid: string = body['uid'];
 
@@ -66,23 +78,17 @@ export class ChatsController {
 
   @Post('personal/m')
   @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        chat_id: { type: 'string' },
-        last_message_id: {
-          type: 'string',
-          description: 'Last message ID to get the following messages',
-        },
-      },
-    },
+    schema: { $ref: getSchemaPath(MessagesRequestDto) },
   })
   @ApiResponse({
     status: 200,
     description: 'Get messages from a personal chat',
-    type: 'ContentFetch',
+    schema: {
+      $ref: getSchemaPath(ContentFetchDto),
+    },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(MessagesRequestDto, ContentFetchDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getPersonalChatMessages(@Body() body: Body): Promise<ContentFetch> {
     const uid: string = body['uid'];
     const chat_id: string = body['chat_id'];
@@ -116,21 +122,16 @@ export class ChatsController {
   @Post('personal/new')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        receiver_username: {
-          type: 'string',
-          description: 'The username of the chat the client wants to create',
-        },
-      },
+      $ref: getSchemaPath(NewPersonalChatRequestDto),
     },
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Create a new personal chat',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(NewPersonalChatRequestDto, IdResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async newPersonalChat(@Body() body: Body): Promise<IdResponse> {
     const uid: string = body['uid'];
     const receiver_username: string = body['receiver_username'];

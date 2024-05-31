@@ -1,4 +1,5 @@
 import { CoreService, ValidationService } from '@/common';
+import { IdResponseDto, PostRequestDto, PostResponseDto } from '@/dto';
 import { IdResponse, PostRequest, PostResponse } from '@/types';
 import {
   Body,
@@ -12,9 +13,11 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
   ApiParam,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { PostsService } from './posts.service';
 
@@ -33,10 +36,11 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Get a post by ID',
-    type: 'PostResponse',
+    schema: { $ref: getSchemaPath(PostResponseDto) },
   })
   @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(PostResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getPost(
     @Body() body: Body,
     @Param() params: any,
@@ -57,21 +61,17 @@ export class PostsController {
   @Patch(':id')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        text_content: { type: 'string' },
-        type: { type: 'string' },
-        content: { type: 'string' },
-      },
+      $ref: getSchemaPath(PostRequestDto),
     },
   })
   @ApiResponse({
     status: 200,
     description: 'Update a post by ID',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
   @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(IdResponseDto, PostRequestDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async fixPost(@Body() body: Body, @Param() params: any): Promise<IdResponse> {
     const uid: string = body['uid'];
     const post_id: string = params['id'];
@@ -105,10 +105,11 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'Delete a post by ID',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
   @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(IdResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async deletePost(
     @Body() body: Body,
     @Param() params: any,
@@ -128,20 +129,16 @@ export class PostsController {
   @Post()
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        text_content: { type: 'string' },
-        type: { type: 'string' },
-        content: { type: 'string' },
-      },
+      $ref: getSchemaPath(PostRequestDto),
     },
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Create a new post',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(PostRequestDto, IdResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async uploadPost(@Body() body: Body): Promise<IdResponse> {
     const uid: string = body['uid'];
     const text_content: string = body['text_content'];
