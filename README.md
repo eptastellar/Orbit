@@ -9,7 +9,7 @@ The way to connect.
 ## 📝 Table of Contents
 
 > - [💿 Introduction](#-introduction)
-> - [📚️ DOCS](https://github.com/eptastellar/orbit/wiki)
+> - [📚️ DOCUMENTATION](#-documentation)
 > - [📜️️️️️️️️️ LICENSE](/LICENSE)
 > - [✍ Authors](#-authors)
 
@@ -39,21 +39,20 @@ Orbit is a social media application that allows users to maintain and develop th
 ## 🛠️ Technologies used
 
 ![Static Badge](https://img.shields.io/badge/TypeScript-%23007acc?style=for-the-badge&logo=typescript&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Tauri-%23007acc?style=for-the-badge&logo=tauri&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Nextjs-%23007acc?style=for-the-badge&logo=next.js&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/React-007acc?style=for-the-badge&logo=react&labelColor=black)&nbsp;&nbsp;
-![Static Badge](https://img.shields.io/badge/Express-%23007acc?style=for-the-badge&logo=express&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Nestjs-%23007acc?style=for-the-badge&logo=nestjs&labelColor=black)&nbsp;&nbsp;
 ![Static Badge](https://img.shields.io/badge/Firebase-%23007acc?style=for-the-badge&logo=firebase&labelColor=black)&nbsp;&nbsp;
 ![Static Badge](https://img.shields.io/badge/Neo4j-%23007acc?style=for-the-badge&logo=neo4j&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Nextjs-%23007acc?style=for-the-badge&logo=next.js&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/React-007acc?style=for-the-badge&logo=react&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Tauri-%23007acc?style=for-the-badge&logo=tauri&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Vercel-%23007acc?style=for-the-badge&logo=vercel&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Render-%23007acc?style=for-the-badge&logo=render&labelColor=black)&nbsp;&nbsp;
+![Static Badge](https://img.shields.io/badge/Figma-%23007acc?style=for-the-badge&logo=figma&labelColor=black)&nbsp;&nbsp;
+
+## ✍ Documentation
+Documentation available [here](https://docs-orbit.vercel.app/docs)
 
 ## ✍ Authors
-<a href="https://github.com/mzyxnuel"><img src="https://i.ibb.co/CzXXgbZ/MANUEL-DEF.png" height="256"/><a/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/74C17N3P7UN3"><img src="https://i.ibb.co/RDKyY6v/LEONARDO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/TheInfernalNick"><img src="https://i.ibb.co/wWc3k5g/NICOLO-DEF.png" height="256"/></a>
+<a href="https://github.com/mzyxnuel"><img src="https://i.ibb.co/LpDRzGK/MANUEL-DEF.png" height="256"/><a/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/74C17N3P7UN3"><img src="https://i.ibb.co/RDKyY6v/LEONARDO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/TheInfernalNick"><img src="https://i.ibb.co/wWc3k5g/NICOLO-DEF.png" height="256"/></a>
 
 <a href="https://github.com/MarcoMattei04"><img src="https://i.ibb.co/J3YFF3G/MARCO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/Tommybordi"><img src="https://i.ibb.co/hV0vS4r/TOMMASO-DEF.png" height="256"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/itspomo"><img src="https://i.ibb.co/SQCkRFv/DAMIANO-DEF.png" height="256"/></a>
-
-
-## 💸 Donations
-
-> Small donations play a crucial role in the development and improvement of Orbit. They provide the necessary financial support to enhance our app's functionality, ensure its security, and expand its reach.
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E6SYFXS)
