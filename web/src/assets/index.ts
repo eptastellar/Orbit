@@ -1,5 +1,3 @@
-import { interests } from "./content/interests"
+import { interests } from './interests';
 
-export {
-   interests
-}
+export { interests };
