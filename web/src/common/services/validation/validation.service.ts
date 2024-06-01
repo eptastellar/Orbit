@@ -145,8 +145,8 @@ export class ValidationService {
           .collection('comments')
           .doc(rootId)
           .get(); //retrieve the root comment
-        const leafData: DocumentData[string] = rootRef.data();
-        const rootData: DocumentData[string] = leafRef.data();
+        const leafData: DocumentData[string] = leafRef.data();
+        const rootData: DocumentData[string] = rootRef.data();
 
         if (rootRef.exists) {
           if (rootData.post_id === postId) {

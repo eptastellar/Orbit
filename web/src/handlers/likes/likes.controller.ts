@@ -1,7 +1,15 @@
 import { CoreService, ValidationService } from '@/common';
+import { IdResponseDto } from '@/dto';
 import { IdResponse } from '@/types';
 import { Body, Controller, Param, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { LikesService } from './likes.service';
 
 @ApiTags('likes')
@@ -19,10 +27,11 @@ export class LikesController {
   @ApiResponse({
     status: 200,
     description: 'Manage a like for a post',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
   @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(IdResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async manageLike(
     @Body() body: Body,
     @Param() params: any,

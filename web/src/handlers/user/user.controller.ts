@@ -1,5 +1,13 @@
 import { CoreService, ValidationService } from '@/common';
 import {
+  ContentFetchDto,
+  IdResponseDto,
+  PostsRequestDto,
+  SuccessResponseDto,
+  UserResponseDto,
+  UserSchemaDto,
+} from '@/dto';
+import {
   ContentFetch,
   IdResponse,
   PostsRequest,
@@ -19,9 +27,11 @@ import {
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
   ApiParam,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 
@@ -40,10 +50,11 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get user information by username',
-    type: 'UserResponse',
+    schema: { $ref: getSchemaPath(UserResponseDto) },
   })
   @ApiParam({ name: 'username', description: 'Username', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(UserResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getUserInfo(
     @Body() body: Body,
     @Param() params: any,
@@ -74,19 +85,17 @@ export class UserController {
   @Post('posts/:username')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        last_post_id: { type: 'string' },
-      },
+      $ref: getSchemaPath(PostsRequestDto),
     },
   })
   @ApiResponse({
     status: 200,
     description: 'Get user posts by username',
-    type: 'ContentFetch',
+    schema: { $ref: getSchemaPath(ContentFetchDto) },
   })
   @ApiParam({ name: 'username', description: 'Username', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(ContentFetchDto, PostsRequestDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getUserPosts(
     @Body() body: Body,
     @Param() params: any,
@@ -119,9 +128,10 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Get user settings information',
-    type: 'UserSchema',
+    schema: { $ref: getSchemaPath(UserSchemaDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(UserSchemaDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getUserSettingsInfo(@Body() body: Body): Promise<UserSchema> {
     const uid: string = body['uid'];
     const userSchema: UserSchema =
@@ -132,25 +142,16 @@ export class UserController {
   @Patch('settings')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        interests: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Array of interests',
-        },
-        username: { type: 'string' },
-        name: { type: 'string' },
-        pfp: { type: 'string', description: 'Profile picture URL' },
-      },
+      $ref: getSchemaPath(UserSchemaDto),
     },
   })
   @ApiResponse({
     status: 200,
     description: 'Update user settings information',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(IdResponseDto, UserSchemaDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async fixUserSettingsInfo(@Body() body: Body): Promise<IdResponse> {
     const uid: string = body['uid'];
     const interests: string[] = body['interests'];
@@ -179,9 +180,10 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'Delete user and associated data',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(SuccessResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async deleteUser(@Body() body: Body): Promise<SuccessResponse> {
     const uid: string = body['uid'];
     await this.userService.deleteUser(uid);

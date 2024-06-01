@@ -1,8 +1,15 @@
 import { CoreService, ValidationService } from '@/common';
 import {
+  CommentUploadRequestDto,
+  ContentFetchDto,
+  IdResponseDto,
+  LeafCommentsRequestDto,
+  RootCommentsRequestDto,
+  SuccessResponseDto,
+} from '@/dto';
+import {
   CommentUploadRequest,
   ContentFetch,
-  DeleteCommentRequest,
   IdResponse,
   LeafCommentsRequest,
   RootCommentsRequest,
@@ -12,9 +19,11 @@ import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
   ApiParam,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { CommentsService } from './comments.service';
 
@@ -32,20 +41,17 @@ export class CommentsController {
   @Post('leafs/:id')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        last_leaf_comment_id: { type: 'string' },
-        post_id: { type: 'string' },
-      },
+      $ref: getSchemaPath(LeafCommentsRequestDto),
     },
   })
   @ApiResponse({
     status: 200,
     description: 'Get leaf comments',
-    type: 'ContentFetch',
+    schema: { $ref: getSchemaPath(ContentFetchDto) },
   })
   @ApiParam({ name: 'id', description: 'Root comment ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(ContentFetchDto, LeafCommentsRequestDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getLeafComments(
     @Body() body: Body,
     @Param() params: any,
@@ -79,19 +85,19 @@ export class CommentsController {
   @Post('roots/:id')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        last_root_comment_id: { type: 'string' },
-      },
+      $ref: getSchemaPath(RootCommentsRequestDto),
     },
   })
   @ApiResponse({
     status: 200,
     description: 'Get root comments',
-    type: 'ContentFetch',
+    schema: {
+      $ref: getSchemaPath(ContentFetchDto),
+    },
   })
   @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(ContentFetchDto, RootCommentsRequestDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getRootComments(
     @Body() body: Body,
     @Param() params: any,
@@ -122,20 +128,17 @@ export class CommentsController {
   @Post(':id')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        root_id: { type: 'string' },
-        content: { type: 'string' },
-      },
+      $ref: getSchemaPath(CommentUploadRequestDto),
     },
   })
   @ApiResponse({
     status: 201,
     description: 'Upload a comment',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
   @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(CommentUploadRequestDto, IdResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async uploadComment(
     @Body() body: Body,
     @Param() params: any,
@@ -171,55 +174,41 @@ export class CommentsController {
     return idResponse;
   }
 
-  @Delete(':id')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        root_id: { type: 'string' },
-        comment_id: { type: 'string' },
-      },
-    },
-  })
+  @Delete(':post_id/:comment_id/:root_id')
   @ApiResponse({
     status: 200,
     description: 'Delete a comment',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
-  @ApiParam({ name: 'id', description: 'Post ID', type: 'string' })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiParam({ name: 'post_id', description: 'Post ID', type: 'string' })
+  @ApiParam({ name: 'root_id', description: 'Root Comment ID', type: 'string' })
+  @ApiParam({ name: 'comment_id', description: 'Comment ID', type: 'string' })
+  @ApiExtraModels(SuccessResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async deleteComment(
     @Body() body: Body,
     @Param() params: any,
   ): Promise<SuccessResponse> {
     const uid: string = body['uid'];
-    const post_id: string = params['id'];
-    const root_id: string = body['root_id'];
-    const comment_id: string = body['comment_id'];
-
-    const ereq: DeleteCommentRequest = {
-      root_id,
-      comment_id,
-    };
+    const post_id: string = params['post_id'];
+    const root_id: string = params['root_id'];
+    const comment_id: string = params['comment_id'];
 
     await this.validationService.documentIdValidation(post_id, 'posts');
 
-    if (ereq.root_id)
-      await this.validationService.commentRootIdValidation(
-        ereq.comment_id,
-        post_id,
-      );
+    if (root_id)
+      await this.validationService.commentRootIdValidation(comment_id, post_id);
     else
       await this.validationService.commentLeafIdValidation(
-        ereq.comment_id,
-        ereq.root_id as string,
+        comment_id,
+        root_id,
         post_id,
       );
 
-    await this.coreService.hasPermissionTo(uid, ereq.comment_id, 'comments');
+    await this.coreService.hasPermissionTo(uid, comment_id, 'comments');
 
     const successResponse: SuccessResponse =
-      await this.commentsService.deleteComment(ereq.comment_id);
+      await this.commentsService.deleteComment(comment_id);
 
     return successResponse;
   }

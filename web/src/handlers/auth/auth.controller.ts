@@ -1,5 +1,12 @@
 import { CoreService, ValidationService } from '@/common';
 import {
+  AuthResponseDto,
+  SignUpRequestDto,
+  SignUpValidateRequestDto,
+  SuccessResponseDto,
+  UserSchemaDto,
+} from '@/dto';
+import {
   AuthResponse,
   SignUpRequest,
   SignUpValidateRequest,
@@ -7,7 +14,14 @@ import {
   UserSchema,
 } from '@/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiExtraModels,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth')
@@ -25,9 +39,10 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User sign-in',
-    type: 'AuthResponse',
+    schema: { $ref: getSchemaPath(AuthResponseDto) },
   })
-  @ApiBearerAuth('Firebase Access Token')
+  @ApiExtraModels(AuthResponseDto, UserSchemaDto)
+  @ApiBearerAuth('Firebase_Access_Token')
   async signIn(@Body() body: Body): Promise<AuthResponse> {
     const uid: string = body['uid'];
     await this.validationService.documentIdValidation(uid, 'users'); //check if the user is fully signed up even in firestore
@@ -47,8 +62,9 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User log-out',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
+  @ApiExtraModels(SuccessResponseDto)
   async logOut(@Body() body: Body): Promise<SuccessResponse> {
     const uid: string = body['uid'];
     const successResponse: SuccessResponse = await this.authService.logOut(uid);
@@ -57,26 +73,15 @@ export class AuthController {
 
   @Post('sign-up')
   @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string' },
-        interests: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'Array of interests',
-        },
-        bday: { type: 'number', description: 'Unix timestamp birthday' },
-        pfp: { type: 'string', description: 'Profile picture URL' },
-      },
-    },
+    schema: { $ref: getSchemaPath(SignUpRequestDto) },
   })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'User sign-up',
-    type: 'AuthResponse',
+    schema: { $ref: getSchemaPath(AuthResponseDto) },
   })
-  @ApiBearerAuth('Firebase Access Token')
+  @ApiExtraModels(SignUpRequestDto, AuthResponseDto)
+  @ApiBearerAuth('Firebase_Access_Token')
   async signUp(@Body() body: Body): Promise<AuthResponse> {
     const uid: string = body['uid'];
     const username: string = body['username'];
@@ -112,19 +117,14 @@ export class AuthController {
 
   @Post('sign-up/validate')
   @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string' },
-        bday: { type: 'number', description: 'Unix timestamp birthday' },
-      },
-    },
+    schema: { $ref: getSchemaPath(SignUpValidateRequestDto) },
   })
   @ApiResponse({
     status: 200,
     description: 'User sign-up validation',
-    type: 'SuccessResponse',
+    schema: { $ref: getSchemaPath(SuccessResponseDto) },
   })
+  @ApiExtraModels(SignUpValidateRequestDto, SuccessResponseDto)
   async signUpValidate(@Body() body: Body): Promise<SuccessResponse> {
     const username: string = body['username'];
     const bday: number = body['bday'];

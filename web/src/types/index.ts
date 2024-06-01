@@ -29,11 +29,6 @@ export type CommentUploadRequest = {
   content: string;
 };
 
-export type DeleteCommentRequest = {
-  comment_id: string;
-  root_id: boolean | string;
-};
-
 export type NotificationResponse = {
   notifier: string;
   type: string;
@@ -48,7 +43,7 @@ export type MessagesRequest = {
   last_message_id?: string;
 };
 
-export type QrCodeRequest = {
+export type QrCodeResponse = {
   random_code: string;
   expire_time: number;
 };
@@ -71,6 +66,10 @@ export type UserSchema = {
   pfp: string;
   bday?: number;
   interests?: string[];
+};
+
+export type FriendshipRequest = {
+  friend_code: string;
 };
 
 export type ContentFetch = {
@@ -142,20 +141,8 @@ export type SupernovaBind = {
   response: 'one-way-binding' | 'friendship-created' | 'blocked';
 };
 
-export type GroupChatMessageRequest = {
-  text: string;
-  type: string;
-  content: string;
-};
-
 export type NewPersonalChatRequest = {
   receiver_username: string;
-};
-
-export type NewGroupChatRequest = {
-  members: string[];
-  pfp?: string;
-  name: string;
 };
 
 export type ChatsResponse = {
@@ -173,12 +160,6 @@ export type ChatSchema = {
 
 export type PersonalChatInfoResponse = {
   user_data: UserSchema;
-};
-
-export type GroupChatInfoResponse = {
-  name: string;
-  pfp: string;
-  members_name: string[];
 };
 
 export type MessageSchema = {

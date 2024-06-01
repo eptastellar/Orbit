@@ -1,20 +1,33 @@
+import { NotificationResponseDto } from '@/dto';
 import { NotificationResponse } from '@/types';
 import { Body, Controller, Get } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExtraModels,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
 
 @ApiTags('notifications')
 @Controller('notifications')
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) {}
+  constructor(private readonly notificationsService: NotificationsService) { }
 
   @Get('all')
   @ApiResponse({
     status: 200,
     description: 'Get all notifications',
-    type: 'NotificationResponse[]',
+    schema: {
+      items: {
+        type: 'array',
+        $ref: getSchemaPath(NotificationResponseDto),
+      },
+    },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(NotificationResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getAllNotifications(
     @Body() body: Body,
   ): Promise<NotificationResponse[]> {
@@ -29,9 +42,15 @@ export class NotificationsController {
   @ApiResponse({
     status: 200,
     description: 'Get all comment notifications',
-    type: 'NotificationResponse[]',
+    schema: {
+      items: {
+        type: 'array',
+        $ref: getSchemaPath(NotificationResponseDto),
+      },
+    },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(NotificationResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getAllCommentsNotifications(
     @Body() body: Body,
   ): Promise<NotificationResponse[]> {
@@ -46,9 +65,15 @@ export class NotificationsController {
   @ApiResponse({
     status: 200,
     description: 'Get all like notifications',
-    type: 'NotificationResponse[]',
+    schema: {
+      items: {
+        type: 'array',
+        $ref: getSchemaPath(NotificationResponseDto),
+      },
+    },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(NotificationResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getAllLikesNotifications(
     @Body() body: Body,
   ): Promise<NotificationResponse[]> {

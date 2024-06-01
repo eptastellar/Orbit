@@ -119,8 +119,8 @@ export class CommentsService {
 
           return {
             id: doc.id,
-            created_at: doc.created_at,
-            content: doc.content,
+            created_at: data.created_at,
+            content: data.content,
             user_data: { ...userSchema },
           };
         }),

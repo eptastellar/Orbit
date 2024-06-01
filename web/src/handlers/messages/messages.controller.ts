@@ -1,12 +1,15 @@
 import { ValidationService } from '@/common';
+import { IdResponseDto, UploadMessageRequestDto } from '@/dto';
 import { IdResponse, UploadMessageRequest } from '@/types';
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Param, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiExtraModels,
   ApiParam,
   ApiResponse,
   ApiTags,
+  getSchemaPath,
 } from '@nestjs/swagger';
 import { MessagesService } from './messages.service';
 
@@ -19,24 +22,20 @@ export class MessagesController {
     this.validationService = new ValidationService();
   }
 
-  @Get('personal/:id')
+  @Post('personal/:id')
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        text_content: { type: 'string' },
-        type: { type: 'string' },
-        content: { type: 'string' },
-      },
+      $ref: getSchemaPath(UploadMessageRequestDto),
     },
   })
   @ApiParam({ name: 'id', description: 'Chat ID', type: 'string' })
   @ApiResponse({
     status: 200,
     description: 'Get messages from a personal chat',
-    type: 'IdResponse',
+    schema: { $ref: getSchemaPath(IdResponseDto) },
   })
-  @ApiBearerAuth('JWT Session Token')
+  @ApiExtraModels(UploadMessageRequestDto, IdResponseDto)
+  @ApiBearerAuth('JWT_Session_Token')
   async getPersonalChatMessages(
     @Body() body: Body,
     @Param() params: any,
