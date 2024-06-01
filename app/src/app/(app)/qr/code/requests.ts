@@ -17,7 +17,7 @@ export const generateQrCode = async (sessionToken: string): Promise<ReturnType> 
       expire_time: number
    }
 
-   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/qr`, requestParams)
+   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/qr`, requestParams)
    const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
