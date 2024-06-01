@@ -24,6 +24,8 @@ import { RootCommentsRequestDto } from './RootCommentsRequest.dto';
 import { SignUpRequestDto } from './SignUpRequest.dto';
 import { SignUpValidateRequestDto } from './SignUpValidate.dto';
 import { SuccessResponseDto } from './SuccessResponse.dto';
+import { SupernovaBindDto } from './SupernovaBind.dto';
+import { SupernovaParamsDto } from './SupernovaParams.dto';
 import { SupernovaResponseDto } from './SupernovaResponse.dto';
 import { UploadMessageRequestDto } from './UploadMessageRequest.dto';
 import { UserResponseDto } from './UserResponse.dto';
@@ -55,9 +57,8 @@ export {
   RootCommentsRequestDto,
   SignUpRequestDto,
   SignUpValidateRequestDto,
-  SuccessResponseDto,
-  SupernovaResponseDto,
-  UploadMessageRequestDto,
+  SuccessResponseDto, SupernovaBindDto,
+  SupernovaParamsDto, SupernovaResponseDto, UploadMessageRequestDto,
   UserResponseDto,
-  UserSchemaDto,
+  UserSchemaDto
 };
