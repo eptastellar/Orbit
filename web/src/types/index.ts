@@ -74,10 +74,10 @@ export type FriendshipRequest = {
 
 export type ContentFetch = {
   content:
-    | PostResponse[]
-    | RootCommentSchema[]
-    | CommentSchema[]
-    | MessageSchema[];
+  | PostResponse[]
+  | RootCommentSchema[]
+  | CommentSchema[]
+  | MessageSchema[];
   last_doc_id: string;
 };
 
@@ -126,7 +126,7 @@ export type UserResponse = {
 };
 
 export type SupernovaResponse = {
-  username: string;
+  user: UserSchema;
   status: string;
   oneway: string;
 };

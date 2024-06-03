@@ -1,8 +1,9 @@
+import { UserSchema } from '@/types';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SupernovaResponseDto {
   @ApiProperty()
-  username: string;
+  user: UserSchema;
 
   @ApiProperty()
   status: string;
