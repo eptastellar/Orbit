@@ -19,7 +19,7 @@ export const fetchPosts = async (
 
    type ResponseType = {
       message?: ServerError
-      posts: {
+      content: {
          id: string
          created_at: number
          text?: string
@@ -41,7 +41,7 @@ export const fetchPosts = async (
    const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
-      posts: result.posts.map((post) => ({
+      posts: result.content.map((post) => ({
          id: post.id,
          createdAt: post.created_at,
          type: post.type ?? "text",
