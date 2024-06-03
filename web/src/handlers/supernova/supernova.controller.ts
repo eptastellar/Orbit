@@ -47,13 +47,12 @@ export class SupernovaController {
   @ApiExtraModels(SupernovaParamsDto, SupernovaBindDto)
   @ApiBearerAuth('JWT_Session_Token')
   async setSupernova(@Body() body: Body): Promise<SupernovaBind> {
-    const username: string = body['username'];
+    const username: string = body['uid'];
     const accepted: boolean = body['accepted'];
     const status: string = body['status'];
     const oneway: string = body['oneway'];
-    const friendUid: string = body['uid'];
+    const friendUid: string = body['username'];
     const friendUserSchema: UserSchema = await this.CoreService.getUserDataFromUid(friendUid);
-
 
     const userData: SupernovaResponse = {
       user: friendUserSchema,
