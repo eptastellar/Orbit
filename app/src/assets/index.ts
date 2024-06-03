@@ -1,6 +1,3 @@
-import apple from "./logos/apple.png"
-import google from "./logos/google.png"
-
 import directChat from "./illustrations/direct-chat.svg"
 import downloadApp from "./illustrations/download-app.svg"
 import emailVerification from "./illustrations/email-verification.svg"
@@ -15,12 +12,18 @@ import rotateDevice from "./illustrations/rotate-device.svg"
 import supernovaAccepted from "./illustrations/supernova-accepted.svg"
 import supernovaRejected from "./illustrations/supernova-rejected.svg"
 
+import apple from "./logos/apple.png"
+import google from "./logos/google.png"
+
+import galaxy from "./galaxy.png"
+
 export {
    apple,
    directChat,
    downloadApp,
    emailVerification,
    emptyChat,
+   galaxy,
    google,
    groupChat,
    homeEmpty,
