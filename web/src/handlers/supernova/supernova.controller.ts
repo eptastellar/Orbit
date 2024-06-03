@@ -15,7 +15,8 @@ import { SupernovaService } from './supernova.service';
 @ApiTags('supernova')
 @Controller('supernova')
 export class SupernovaController {
-  constructor(private readonly supernovaService: SupernovaService, private readonly CoreService: CoreService) { }
+  private CoreService: CoreService;
+  constructor(private readonly supernovaService: SupernovaService) { this.CoreService = new CoreService(); }
 
   @Get()
   @ApiResponse({
