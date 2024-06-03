@@ -51,7 +51,8 @@ export class SupernovaController {
     const accepted: boolean = body['accepted'];
     const status: string = body['status'];
     const oneway: string = body['oneway'];
-    const friendUid: string = body['username'];
+    const friendUsername: string = body['username'];
+    const friendUid: string = await this.CoreService.getUidFromUserData(friendUsername);
     const friendUserSchema: UserSchema = await this.CoreService.getUserDataFromUid(friendUid);
 
     const userData: SupernovaResponse = {
