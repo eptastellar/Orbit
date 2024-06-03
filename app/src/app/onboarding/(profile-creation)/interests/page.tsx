@@ -224,12 +224,12 @@ const Interests = () => {
             />
 
             <p className="text-center text-xs text-gray-3">
-               When creating an account, you accept <br />
+               When creating an account, you agree to <br />
                <Link
                   className="text-semibold text-white underline underline-offset-4 cursor-pointer"
-                  href="/terms-conditions"
+                  href="/privacy-policy"
                >
-                  Orbit’s Terms & Conditions
+                  Orbit’s Privacy Policy
                </Link>.
             </p>
          </div>
