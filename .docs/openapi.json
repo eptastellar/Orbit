@@ -1,0 +1,1703 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getStatus",
+        "parameters": [],
+        "responses": {
+          "default": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uptime": {
+                      "type": "number",
+                      "description": "Uptime in seconds"
+                    },
+                    "platform": {
+                      "type": "string",
+                      "description": "Operating System"
+                    },
+                    "arch": {
+                      "type": "string",
+                      "description": "CPU Architecture"
+                    },
+                    "node": {
+                      "type": "string",
+                      "description": "Node.js version"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": []
+      }
+    },
+    "/c/leafs/{id}": {
+      "post": {
+        "operationId": "CommentsController_getLeafComments",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Root comment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeafCommentsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get leaf comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentFetchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "comments"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/c/roots/{id}": {
+      "post": {
+        "operationId": "CommentsController_getRootComments",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RootCommentsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get root comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentFetchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "comments"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/c/{id}": {
+      "post": {
+        "operationId": "CommentsController_uploadComment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentUploadRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Upload a comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "comments"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/c/{post_id}/{comment_id}/{root_id}": {
+      "delete": {
+        "operationId": "CommentsController_deleteComment",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "required": true,
+            "in": "path",
+            "description": "Comment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "root_id",
+            "required": true,
+            "in": "path",
+            "description": "Root Comment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "post_id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete a comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "comments"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/qr": {
+      "get": {
+        "operationId": "QrController_setQrCode",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Generate a QR code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QrCodeResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "qr"
+        ]
+      },
+      "post": {
+        "operationId": "QrController_createFriendship",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FriendshipRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create friendship with QR code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSchemaDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "qr"
+        ]
+      }
+    },
+    "/interests": {
+      "get": {
+        "operationId": "InterestsController_getInterests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get list of interests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "interests"
+        ]
+      }
+    },
+    "/auth/sign-in": {
+      "get": {
+        "operationId": "AuthController_signIn",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User sign-in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "Firebase_Access_Token": []
+          }
+        ]
+      }
+    },
+    "/auth/log-out": {
+      "get": {
+        "operationId": "AuthController_logOut",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "User log-out",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/sign-up": {
+      "post": {
+        "operationId": "AuthController_signUp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User sign-up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "security": [
+          {
+            "Firebase_Access_Token": []
+          }
+        ]
+      }
+    },
+    "/auth/sign-up/validate": {
+      "post": {
+        "operationId": "AuthController_signUpValidate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpValidateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User sign-up validation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/p/{id}": {
+      "get": {
+        "operationId": "PostsController_getPost",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get a post by ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "posts"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "PostsController_fixPost",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update a post by ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "posts"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "PostsController_deletePost",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delete a post by ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "posts"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/p": {
+      "post": {
+        "operationId": "PostsController_uploadPost",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create a new post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "posts"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/home/posts": {
+      "post": {
+        "operationId": "HomeController_getPosts",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get posts for the home feed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentFetchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "home"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/home/messages": {
+      "get": {
+        "operationId": "HomeController_getMessagesCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get count of unread messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NumberResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "home"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/chats/personal/{id}": {
+      "get": {
+        "operationId": "ChatsController_getPersonalChatInfo",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Chat ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get personal chat information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonalChatInfoResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "chats"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/chats/personal": {
+      "get": {
+        "operationId": "ChatsController_getPersonalChats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get list of personal chats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "chats"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/chats/personal/m": {
+      "post": {
+        "operationId": "ChatsController_getPersonalChatMessages",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessagesRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get messages from a personal chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentFetchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "chats"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/chats/personal/new": {
+      "post": {
+        "operationId": "ChatsController_newPersonalChat",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewPersonalChatRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create a new personal chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "chats"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/m/personal/{id}": {
+      "post": {
+        "operationId": "MessagesController_getPersonalChatMessages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Chat ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadMessageRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get messages from a personal chat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "messages"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/cron/garbage-collector": {
+      "get": {
+        "operationId": "CronController_garbageCollector",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Run garbage collector",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cron"
+        ],
+        "security": [
+          {
+            "Cron_Token": []
+          }
+        ]
+      }
+    },
+    "/cron/keep-alive-neo4j": {
+      "get": {
+        "operationId": "CronController_keepAliveNeo4j",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Keep Neo4j database alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cron"
+        ],
+        "security": [
+          {
+            "Cron_Token": []
+          }
+        ]
+      }
+    },
+    "/cron/meteor": {
+      "get": {
+        "operationId": "CronController_meteor",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Execute meteor task",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cron"
+        ],
+        "security": [
+          {
+            "Cron_Token": []
+          }
+        ]
+      }
+    },
+    "/u/{username}": {
+      "get": {
+        "operationId": "UserController_getUserInfo",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get user information by username",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/u/posts/{username}": {
+      "post": {
+        "operationId": "UserController_getUserPosts",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "description": "Username",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostsRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Get user posts by username",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContentFetchDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/u/settings": {
+      "get": {
+        "operationId": "UserController_getUserSettingsInfo",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get user settings information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserSchemaDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      },
+      "patch": {
+        "operationId": "UserController_fixUserSettingsInfo",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserSchemaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Update user settings information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_deleteUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Delete user and associated data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/l/{id}": {
+      "post": {
+        "operationId": "LikesController_manageLike",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Manage a like for a post",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "likes"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/supernova": {
+      "get": {
+        "operationId": "SupernovaController_getSupernovaFriend",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get supernova friend",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupernovaResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "supernova"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "SupernovaController_setSupernova",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SupernovaParamsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Set supernova",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupernovaBindDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "supernova"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/notifications/all": {
+      "get": {
+        "operationId": "NotificationsController_getAllNotifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "array",
+                    "$ref": "#/components/schemas/NotificationResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/notifications/comments": {
+      "get": {
+        "operationId": "NotificationsController_getAllCommentsNotifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all comment notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "array",
+                    "$ref": "#/components/schemas/NotificationResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    },
+    "/notifications/likes": {
+      "get": {
+        "operationId": "NotificationsController_getAllLikesNotifications",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all like notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "array",
+                    "$ref": "#/components/schemas/NotificationResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "notifications"
+        ],
+        "security": [
+          {
+            "JWT_Session_Token": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "Firebase_Access_Token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "JWT_Session_Token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      },
+      "Cron_Token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "ContentFetchDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "last_doc_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "content",
+          "last_doc_id"
+        ]
+      },
+      "LeafCommentsRequestDto": {
+        "type": "object",
+        "properties": {
+          "last_leaf_comment_id": {
+            "type": "string"
+          },
+          "post_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "last_leaf_comment_id",
+          "post_id"
+        ]
+      },
+      "RootCommentsRequestDto": {
+        "type": "object",
+        "properties": {
+          "last_root_comment_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "last_root_comment_id"
+        ]
+      },
+      "CommentUploadRequestDto": {
+        "type": "object",
+        "properties": {
+          "root_id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "root_id",
+          "content"
+        ]
+      },
+      "IdResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "SuccessResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "QrCodeResponseDto": {
+        "type": "object",
+        "properties": {
+          "random_code": {
+            "type": "string"
+          },
+          "expire_time": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "random_code",
+          "expire_time"
+        ]
+      },
+      "FriendshipRequestDto": {
+        "type": "object",
+        "properties": {
+          "friend_code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "friend_code"
+        ]
+      },
+      "UserSchemaDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "pfp": {
+            "type": "string"
+          },
+          "bday": {
+            "type": "number"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "username",
+          "name",
+          "pfp",
+          "bday",
+          "interests"
+        ]
+      },
+      "InterestsResponseDto": {
+        "type": "object",
+        "properties": {
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "interests"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "user_data": {
+            "$ref": "#/components/schemas/UserSchemaDto"
+          },
+          "jwt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_data",
+          "jwt"
+        ]
+      },
+      "SignUpRequestDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bday": {
+            "type": "number"
+          },
+          "pfp": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "interests",
+          "bday",
+          "pfp"
+        ]
+      },
+      "SignUpValidateRequestDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "bday": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "username",
+          "bday"
+        ]
+      },
+      "PostResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "user_data": {
+            "$ref": "#/components/schemas/UserSchemaDto"
+          },
+          "created_at": {
+            "type": "number"
+          },
+          "likes": {
+            "type": "number"
+          },
+          "comments": {
+            "type": "number"
+          },
+          "is_liked": {
+            "type": "boolean"
+          },
+          "content": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "user_data",
+          "created_at",
+          "likes",
+          "comments",
+          "is_liked",
+          "content",
+          "text",
+          "type"
+        ]
+      },
+      "PostRequestDto": {
+        "type": "object",
+        "properties": {
+          "text_content": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text_content",
+          "type",
+          "content"
+        ]
+      },
+      "PostsRequestDto": {
+        "type": "object",
+        "properties": {
+          "last_post_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "last_post_id"
+        ]
+      },
+      "NumberResponseDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "number"
+        ]
+      },
+      "PersonalChatInfoResponseDto": {
+        "type": "object",
+        "properties": {
+          "user_data": {
+            "$ref": "#/components/schemas/UserSchemaDto"
+          }
+        },
+        "required": [
+          "user_data"
+        ]
+      },
+      "ChatsResponseDto": {
+        "type": "object",
+        "properties": {
+          "chats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "chats"
+        ]
+      },
+      "MessagesRequestDto": {
+        "type": "object",
+        "properties": {
+          "chat_id": {
+            "type": "string"
+          },
+          "last_message_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "chat_id",
+          "last_message_id"
+        ]
+      },
+      "NewPersonalChatRequestDto": {
+        "type": "object",
+        "properties": {
+          "receiver_username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "receiver_username"
+        ]
+      },
+      "UploadMessageRequestDto": {
+        "type": "object",
+        "properties": {
+          "text_content": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text_content",
+          "type",
+          "content"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "personal": {
+            "type": "boolean"
+          },
+          "user_data": {
+            "$ref": "#/components/schemas/UserSchemaDto"
+          },
+          "counters": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "personal",
+          "user_data",
+          "counters"
+        ]
+      },
+      "SupernovaResponseDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "oneway": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "status",
+          "oneway"
+        ]
+      },
+      "SupernovaParamsDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "SupernovaBindDto": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "response"
+        ]
+      },
+      "NotificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "notifier": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "notifier",
+          "type"
+        ]
+      }
+    }
+  }
+}

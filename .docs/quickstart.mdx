@@ -1,0 +1,70 @@
+---
+title: 'Quickstart'
+description: 'Run orbit locally'
+---
+
+Download the project from the [GitHub repository](https://github.com/eptastellar/Orbit) or clone it using the following command:
+
+```bash
+git clone https://github.com/eptastellar/orbit.git
+cd orbit
+```
+
+## Running the project locally
+
+### Configuration
+- You should have a Firebase project and a Firestore database set up. You can follow the instructions [here](https://firebase.google.com/docs/web/setup) to set up a Firebase project.
+- You should have a Neo4j database set up. You can follow the instructions [here](https://neo4j.com/) to set up a Neo4j database.
+
+Add the following environment variables to your `.env` files in the `app` (Frontend) and `web` (Backend) directories:
+<CodeGroup>
+```.env Frontend (Next.js) .env
+  NEXT_PUBLIC_API_URL = <backend_service_url>
+
+  NEXT_PUBLIC_FIREBASE_API_KEY = <firebase_api_key>
+  NEXT_PUBLIC_FIREBASE_APP_ID = <firebase_app_id>
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = <firebase_auth_domain>
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = <firebase_messaging_id>
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID = <firebase_project_id>
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = <firebase_storage_bucket>
+```
+
+```.env Backend (Nest.js) .env
+  PORT = 5000
+  JWT_SECRET_KEY = <secret_key>
+  CRON_SECRET = <secret_key>
+
+  FIREBASE_PROJECT_ID = <firebase_project_id>
+  FIREBASE_PRIVATE_KEY = <firebase_service_private_key>
+  FIREBASE_CLIENT_EMAIL = <firebase_client_email>
+  FIREBASE_BUCKET_ID = <firebase_bucket_id>
+
+  NEO4J_URI = <neo4j_uri>
+  NEO4J_USERNAME = <neo4j_username>
+  NEO4J_PASSWORD = <neo4j_password>
+  AURA_INSTANCEID = <neo4j_instance_id>
+```
+</CodeGroup>
+
+### Run the following commands to start the services:
+- Docker Compose: Install [Docker](https://www.docker.com/) if you haven't already.
+- Node.js: Install [Node.js](https://nodejs.org/) if you haven't already.
+
+<CodeGroup>
+```bash Docker Compose
+  docker compose up
+```
+
+```bash pnpm (Node.js)
+  #### Frontend (Next.js)
+  cd app
+  npm install -g pnpm
+  pnpm dev
+
+  #### Backend (Nest.js) 
+  cd web
+  npm install -g pnpm
+  pnpm dev
+```
+</CodeGroup>
+

@@ -1,0 +1,128 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Orbit",
+  "logo": {
+    "dark": "/favicon.svg",
+    "light": "/favicon.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373",
+    "anchors": {
+      "from": "#0D9373",
+      "to": "#07C983"
+    }
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Authentication",
+      "pages": [
+        "api-reference/auth/sign-in",
+        "api-reference/auth/sign-up",
+        "api-reference/auth/sign-up/validate",
+        "api-reference/auth/log-out"
+      ]
+    },
+    {
+      "group": "Chats",
+      "pages": [
+        "api-reference/chats/personal/id",
+        "api-reference/chats/personal",
+        "api-reference/chats/personal/m",
+        "api-reference/chats/personal/new"
+      ]
+    },
+    {
+      "group": "Comments",
+      "pages": [
+        "api-reference/comments/leafs",
+        "api-reference/comments/roots",
+        "api-reference/comments/id",
+        "api-reference/comments/delete"
+      ]
+    },
+    {
+      "group": "Home",
+      "pages": [
+        "api-reference/home/posts",
+        "api-reference/home/messages"
+      ]
+    },
+    {
+      "group": "Interests",
+      "pages": [
+        "api-reference/interests/interests"
+      ]
+    },
+    {
+      "group": "Likes",
+      "pages": [
+        "api-reference/likes/id"
+      ]
+    },
+    {
+      "group": "Messages",
+      "pages": [
+        "api-reference/messages/personal"
+      ]
+    },
+    {
+      "group": "Notifications",
+      "pages": [
+        "api-reference/notifications/likes",
+        "api-reference/notifications/comments",
+        "api-reference/notifications/all"
+      ]
+    },
+    {
+      "group": "Posts",
+      "pages": [
+        "api-reference/posts/id",
+        "api-reference/posts/patch",
+        "api-reference/posts/delete",
+        "api-reference/posts/post"
+      ]
+    },
+    {
+      "group": "QR",
+      "pages": [
+        "api-reference/qr/get",
+        "api-reference/qr/post"
+      ]
+    },
+    {
+      "group": "Supernova",
+      "pages": [
+        "api-reference/supernova/get",
+        "api-reference/supernova/post"
+      ]
+    },
+    {
+      "group": "User",
+      "pages": [
+        "api-reference/user/username",
+        "api-reference/user/posts",
+        "api-reference/user/settings",
+        "api-reference/user/psettings",
+        "api-reference/user/dsettings"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/eptastellar/orbit"
+  }
+}

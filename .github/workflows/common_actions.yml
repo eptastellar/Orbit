@@ -53,6 +53,8 @@ jobs:
         working-directory: app
         run: |
             npm version patch
+            git config --local user.name 'github-actions[bot]'
+            git config --local user.email 'github-actions[bot]@users.noreply.github.com'
             git add .
             git commit -m "Update package.json"
         if: github.event_name == 'push' && github.ref_name == 'app'
@@ -61,14 +63,18 @@ jobs:
         working-directory: web
         run: |
             npm version patch
+            git config --local user.name 'github-actions[bot]'
+            git config --local user.email 'github-actions[bot]@users.noreply.github.com'
             git add .
             git commit -m "Update package.json"
-        if: github.event_name == 'push' && github.ref_name == 'web'
+        if: github.event_name == 'push' && github.ref_name == 'api'
 
       - name : Update package.json App minor
         working-directory: app
         run: |
           npm version minor
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
           git commit -m "Update package.json"
         if: github.event_name == 'pull_request' && github.ref_name == 'app'
@@ -77,9 +83,11 @@ jobs:
         working-directory: Web
         run: |
           npm version minor
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
           git commit -m "Update package.json"
-        if: github.event_name == 'pull_request' && github.ref_name == 'web'
+        if: github.event_name == 'pull_request' && github.ref_name == 'api'
 
       - name: Push changes
         uses: ad-m/github-push-action@master
