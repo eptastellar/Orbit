@@ -47,7 +47,7 @@ const Signin = () => {
             }
 
             type ResponseType = {
-               error?: ServerError
+               message?: ServerError
                jwt: string
                user_data: {
                   name: string
@@ -58,7 +58,7 @@ const Signin = () => {
 
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/sign-in`, params)
                .then((response) => response.json())
-               .then(({ error, ...result }: ResponseType) => {
+               .then(({ message: error, ...result }: ResponseType) => {
                   if (!error) {
                      setUserProfile({
                         sessionToken: result.jwt,

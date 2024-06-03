@@ -67,7 +67,15 @@ input[type="range"]::-moz-range-thumb {
 
 .loader-pulse { @apply bg-gray-7 animate-pulse }
 
+/* Custom text classes */
 .text-stroke {
    -webkit-text-stroke: #FBFBFB;
    -webkit-text-stroke-width: 2px;
+}
+
+a.link {
+   color: var(--tw-primary-accent);
+   text-decoration-line: underline;
+   text-underline-offset: 4px;
+   cursor: pointer;
 }

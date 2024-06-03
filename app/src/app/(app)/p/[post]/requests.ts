@@ -1,4 +1,71 @@
-import { Post, ServerError } from "@/types"
+import { CommentRoot, Post, ServerError } from "@/types"
+
+export const fetchComments = async (
+   reqLastCommentId: string | undefined,
+   postId: string,
+   sessionToken: string
+): Promise<{ comments: CommentRoot[], lastCommentId?: string }> => {
+   const requestBody = JSON.stringify({
+      last_root_comment_id: reqLastCommentId
+   })
+
+   const requestParams: RequestInit = {
+      method: "POST",
+      headers: {
+         "Authorization": "Bearer " + sessionToken,
+         "Content-Type": "application/json"
+      },
+      body: requestBody
+   }
+
+   type ResponseType = {
+      message?: ServerError
+      content: {
+         comment: {
+            id: string
+            created_at: number
+            content: string
+            user_data: {
+               name: string
+               username: string
+               pfp: string
+            }
+         }
+         leafs: number
+      }[]
+      last_doc_id: string
+   }
+
+   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/c/roots/${postId}`, requestParams)
+   const { message: error, ...result }: ResponseType = await response.json()
+
+   if (!error) return {
+      comments: result.content.map((object) => {
+         const comment = object.comment
+
+         return {
+            id: comment.id,
+            createdAt: comment.created_at,
+            content: comment.content,
+            leavesCount: object.leafs,
+            userData: {
+               displayName: comment.user_data.name,
+               username: comment.user_data.username,
+               profilePicture: comment.user_data.pfp
+            }
+         }
+      }),
+      lastCommentId: result.last_doc_id
+   }
+
+   if (error === "server/no-content")
+      return {
+         comments: [],
+         lastCommentId: undefined
+      }
+
+   throw new Error(error)
+}
 
 export const fetchPost = async (
    post: string,
@@ -10,7 +77,7 @@ export const fetchPost = async (
    }
 
    type ResponseType = {
-      error?: ServerError
+      message?: ServerError
       id: string
       created_at: number
       text?: string
@@ -27,7 +94,7 @@ export const fetchPost = async (
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/p/${post}`, requestParams)
-   const { error, ...result }: ResponseType = await response.json()
+   const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
       id: result.id,

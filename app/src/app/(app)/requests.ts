@@ -3,7 +3,7 @@ import { Post, ServerError } from "@/types"
 export const fetchPosts = async (
    reqLastPostId: string | undefined,
    sessionToken: string
-): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
+): Promise<{ posts: Post[], lastPostId?: string }> => {
    const requestBody = JSON.stringify({
       last_post_id: reqLastPostId
    })
@@ -18,8 +18,8 @@ export const fetchPosts = async (
    }
 
    type ResponseType = {
-      error?: ServerError
-      posts: {
+      message?: ServerError
+      content: {
          id: string
          created_at: number
          text?: string
@@ -38,10 +38,10 @@ export const fetchPosts = async (
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/home/posts`, requestParams)
-   const { error, ...result }: ResponseType = await response.json()
+   const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
-      posts: result.posts.map((post) => ({
+      posts: result.content.map((post) => ({
          id: post.id,
          createdAt: post.created_at,
          type: post.type ?? "text",

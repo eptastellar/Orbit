@@ -1,17 +1,3 @@
-import logoBlack1024 from "./brand/black/1024.png"
-import logoBlack128 from "./brand/black/128.png"
-import logoBlack256 from "./brand/black/256.png"
-import logoBlack512 from "./brand/black/512.png"
-import logoBlack64 from "./brand/black/64.png"
-import logoWhite1024 from "./brand/white/1024.png"
-import logoWhite128 from "./brand/white/128.png"
-import logoWhite256 from "./brand/white/256.png"
-import logoWhite512 from "./brand/white/512.png"
-import logoWhite64 from "./brand/white/64.png"
-
-import apple from "./logos/apple.png"
-import google from "./logos/google.png"
-
 import directChat from "./illustrations/direct-chat.svg"
 import downloadApp from "./illustrations/download-app.svg"
 import emailVerification from "./illustrations/email-verification.svg"
@@ -26,20 +12,10 @@ import rotateDevice from "./illustrations/rotate-device.svg"
 import supernovaAccepted from "./illustrations/supernova-accepted.svg"
 import supernovaRejected from "./illustrations/supernova-rejected.svg"
 
-const logoBlack = {
-   "64px": logoBlack64,
-   "128px": logoBlack128,
-   "256px": logoBlack256,
-   "512px": logoBlack512,
-   "1024px": logoBlack1024,
-}
-const logoWhite = {
-   "64px": logoWhite64,
-   "128px": logoWhite128,
-   "256px": logoWhite256,
-   "512px": logoWhite512,
-   "1024px": logoWhite1024,
-}
+import apple from "./logos/apple.png"
+import google from "./logos/google.png"
+
+import galaxy from "./galaxy.png"
 
 export {
    apple,
@@ -47,11 +23,10 @@ export {
    downloadApp,
    emailVerification,
    emptyChat,
+   galaxy,
    google,
    groupChat,
    homeEmpty,
-   logoBlack,
-   logoWhite,
    notifications,
    passwordUpdate,
    privacyPolicy,
