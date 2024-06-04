@@ -1,6 +1,6 @@
 import { CoreService } from '@/common';
 import { SupernovaBindDto, SupernovaParamsDto, SupernovaResponseDto } from '@/dto';
-import { SupernovaBind, SupernovaResponse } from '@/types';
+import { SupernovaBind, SupernovaResponse, UserSchema } from '@/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -15,10 +15,8 @@ import { SupernovaService } from './supernova.service';
 @ApiTags('supernova')
 @Controller('supernova')
 export class SupernovaController {
-  private core: CoreService
-  constructor(private readonly supernovaService: SupernovaService) {
-    this.core = new CoreService();
-  }
+  private CoreService: CoreService;
+  constructor(private readonly supernovaService: SupernovaService) { this.CoreService = new CoreService(); }
 
   @Get()
   @ApiResponse({
@@ -53,10 +51,12 @@ export class SupernovaController {
     const accepted: boolean = body['accepted'];
     const status: string = body['status'];
     const oneway: string = body['oneway'];
-    const friendUid: string = body['username'];
+    const friendUsername: string = body['username'];
+    const friendUid: string = await this.CoreService.getUidFromUserData(friendUsername);
+    const friendUserSchema: UserSchema = await this.CoreService.getUserDataFromUid(friendUid);
 
     const userData: SupernovaResponse = {
-      user: await this.core.getUserDataFromUid(friendUid),
+      user: friendUserSchema,
       status: status,
       oneway: oneway,
     };
