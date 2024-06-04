@@ -117,7 +117,7 @@ const NewPost = () => {
          setPosting(true)
 
          const requestBody = JSON.stringify({
-            text: text ? text : undefined,
+            text_content: text ? text : undefined,
             type: content.type,
             content: content.url
          })
