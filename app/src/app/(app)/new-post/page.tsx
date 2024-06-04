@@ -132,13 +132,13 @@ const NewPost = () => {
          }
 
          type ResponseType = {
-            error?: ServerError
+            message?: ServerError
             id: string
          }
 
          fetch(`${process.env.NEXT_PUBLIC_API_URL}/p`, params)
             .then((response) => response.json())
-            .then(({ error, ...result }: ResponseType) => {
+            .then(({ message: error, ...result }: ResponseType) => {
                if (!error) {
                   router.replace(`/p/${result.id}`)
                } else {

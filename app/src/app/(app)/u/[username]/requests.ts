@@ -10,7 +10,7 @@ export const fetchProfile = async (
    }
 
    type ResponseType = {
-      error?: ServerError
+      message?: ServerError
       personal: boolean
       counters: {
          posts: number
@@ -26,7 +26,7 @@ export const fetchProfile = async (
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/${reqUsername}`, requestParams)
-   const { error, ...result }: ResponseType = await response.json()
+   const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
       isPersonal: result.personal,
@@ -50,7 +50,7 @@ export const fetchPosts = async (
    reqUsername: string,
    reqLastPostId: string | undefined,
    sessionToken: string
-): Promise<{ posts: Post[], lastPostId: string | undefined }> => {
+): Promise<{ posts: Post[], lastPostId?: string }> => {
    const requestBody = JSON.stringify({
       last_post_id: reqLastPostId
    })
@@ -65,7 +65,7 @@ export const fetchPosts = async (
    }
 
    type ResponseType = {
-      error?: ServerError
+      message?: ServerError
       content: {
          id: string
          created_at: number
@@ -85,7 +85,7 @@ export const fetchPosts = async (
    }
 
    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/posts/${reqUsername}`, requestParams)
-   const { error, ...result }: ResponseType = await response.json()
+   const { message: error, ...result }: ResponseType = await response.json()
 
    if (!error) return {
       posts: result.content.map((post) => ({

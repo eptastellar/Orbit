@@ -50,15 +50,15 @@ const Settings = () => {
 
          type ResponseType = {
             success: true
-            error: undefined
+            message: undefined
          } | {
             success: undefined
-            error: ServerError
+            message: ServerError
          }
 
          fetch(`${process.env.NEXT_PUBLIC_API_URL}/u/settings`, params)
             .then((response) => response.json())
-            .then(async ({ success, error }: ResponseType) => {
+            .then(async ({ success, message: error }: ResponseType) => {
                if (success) {
                   await deleteUser()
                   removeUserProfile()
@@ -93,7 +93,7 @@ const Settings = () => {
                   <div className="flex flex-col gap-4 w-full mt-2">
                      <SettingsButton text="Personal Information" onClick={() => alert("Coming soon...")} /> {/* href="/settings/personal-information" */}
                      <SettingsButton text="Manage Interests" onClick={() => alert("Coming soon...")} /> {/* href="/settings/manage-interests" */}
-                     <SettingsButton text="Terms & Conditions" onClick={() => alert("Coming soon...")} /> {/* href="/terms-conditions" */}
+                     <SettingsButton text="Privacy Policy" href="/privacy-policy" />
                   </div>
                </div>
 
