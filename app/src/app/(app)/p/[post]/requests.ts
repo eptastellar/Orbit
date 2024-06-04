@@ -80,7 +80,7 @@ export const fetchPost = async (
       message?: ServerError
       id: string
       created_at: number
-      text?: string
+      text_content?: string
       type?: "audio" | "image"
       content?: string
       likes: number
@@ -100,7 +100,7 @@ export const fetchPost = async (
       id: result.id,
       createdAt: result.created_at,
       type: result.type ?? "text",
-      text: result.text,
+      text: result.text_content,
       content: result.content,
       isLiked: result.is_liked,
       counters: {

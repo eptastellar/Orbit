@@ -69,7 +69,7 @@ export const fetchPosts = async (
       content: {
          id: string
          created_at: number
-         text?: string
+         text_content?: string
          type?: "audio" | "image"
          content?: string
          is_liked: boolean
@@ -92,7 +92,7 @@ export const fetchPosts = async (
          id: post.id,
          createdAt: post.created_at,
          type: post.type ?? "text",
-         text: post.text,
+         text: post.text_content,
          content: post.content,
          isLiked: post.is_liked,
          counters: {
