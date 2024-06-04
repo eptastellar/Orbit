@@ -1,4 +1,4 @@
-import { ErrorsService } from '@/common';
+import { CoreService, ErrorsService } from '@/common';
 import { Neo4jModule } from '@/config';
 import { SupernovaBind, SupernovaResponse } from '@/types';
 import { Injectable } from '@nestjs/common';
@@ -8,10 +8,12 @@ import { ManagedTransaction, QueryResult, RecordShape } from 'neo4j-driver';
 export class SupernovaService {
   private neo4j: Neo4jModule;
   private error: ErrorsService;
+  private core: CoreService;
 
   constructor() {
     this.neo4j = new Neo4jModule();
     this.error = new ErrorsService();
+    this.core = new CoreService();
   }
 
   public supernova = async (user: string): Promise<string> => {
@@ -229,7 +231,7 @@ export class SupernovaService {
         return reject(this.error.e('server/no-supernova')); //This is given when there is no supernova associated at the user
       } else {
         const returnValue: SupernovaResponse = {
-          username: friendName,
+          user: await this.core.getUserDataFromUid(friendName),
           status: status.type,
           oneway: oneway,
         };
@@ -246,7 +248,7 @@ export class SupernovaService {
     return new Promise(async (res, rej) => {
       if (supernovaState.status === 'supernovaBind' && accepted === true) {
         // Se è stato trovato il binding di supernova e lo accetto
-        const querySupernovaOneWaySetter: string = `MATCH (u:User {name : "${supernovaState.username}"})-[r:supernovaBind]-(t:User) DELETE r MERGE (u)-[d:oneWaysupernovaBind]-(t) SET d.oneway = "${username}"`;
+        const querySupernovaOneWaySetter: string = `MATCH (u:User {name : "${supernovaState.user.username}"})-[r:supernovaBind]-(t:User) DELETE r MERGE (u)-[d:oneWaysupernovaBind]-(t) SET d.oneway = "${username}"`;
         await this.neo4j
           .neo()
           .executeWrite((tx) => tx.run(querySupernovaOneWaySetter));
@@ -267,7 +269,7 @@ export class SupernovaService {
         accepted
       ) {
         // Se trovo che è già stato accettato il supernova dall'altra persona
-        const queryFriendshipCreated: string = `MATCH (u:User {name : "${supernovaState.username}"})-[r:oneWaysupernovaBind]-(t:User) DELETE r MERGE (u)-[:Friend]-(t)`;
+        const queryFriendshipCreated: string = `MATCH (u:User {name : "${supernovaState.user.username}"})-[r:oneWaysupernovaBind]-(t:User) DELETE r MERGE (u)-[:Friend]-(t)`;
         await this.neo4j
           .neo()
           .executeWrite((tx) => tx.run(queryFriendshipCreated));
@@ -279,7 +281,7 @@ export class SupernovaService {
         !accepted
       ) {
         // Se è già stata accettata la supernova e non sono io e la rifiuto
-        const queryFriendshipCreated: string = `MATCH (u:User {name : "${supernovaState.username}"})-[r:oneWaysupernovaBind]-(t:User) DELETE r MERGE (u)-[:refusedSupernova]-(t)`;
+        const queryFriendshipCreated: string = `MATCH (u:User {name : "${supernovaState.user.username}"})-[r:oneWaysupernovaBind]-(t:User) DELETE r MERGE (u)-[:refusedSupernova]-(t)`;
         await this.neo4j
           .neo()
           .executeWrite((tx) => tx.run(queryFriendshipCreated));
@@ -287,7 +289,7 @@ export class SupernovaService {
         return res(binding);
       } else if (supernovaState.status === 'supernovaBind' && !accepted) {
         // Se è stato creato un supernova binding e non lo accetto
-        const queryFriendshipCreated: string = `MATCH (u:User {name : "${supernovaState.username}"})-[r:oneWaysupernovaBind]-(t:User) DELETE r MERGE (u)-[:refusedSupernova]-(t)`;
+        const queryFriendshipCreated: string = `MATCH (u:User {name : "${supernovaState.user.username}"})-[r:oneWaysupernovaBind]-(t:User) DELETE r MERGE (u)-[:refusedSupernova]-(t)`;
         await this.neo4j
           .neo()
           .executeWrite((tx) => tx.run(queryFriendshipCreated));

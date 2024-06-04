@@ -1,3 +1,4 @@
+import { CoreService } from '@/common';
 import { SupernovaBindDto, SupernovaParamsDto, SupernovaResponseDto } from '@/dto';
 import { SupernovaBind, SupernovaResponse } from '@/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
@@ -14,7 +15,10 @@ import { SupernovaService } from './supernova.service';
 @ApiTags('supernova')
 @Controller('supernova')
 export class SupernovaController {
-  constructor(private readonly supernovaService: SupernovaService) { }
+  private core: CoreService
+  constructor(private readonly supernovaService: SupernovaService) {
+    this.core = new CoreService();
+  }
 
   @Get()
   @ApiResponse({
@@ -45,14 +49,14 @@ export class SupernovaController {
   @ApiExtraModels(SupernovaParamsDto, SupernovaBindDto)
   @ApiBearerAuth('JWT_Session_Token')
   async setSupernova(@Body() body: Body): Promise<SupernovaBind> {
-    const username: string = body['username'];
+    const username: string = body['uid'];
     const accepted: boolean = body['accepted'];
     const status: string = body['status'];
     const oneway: string = body['oneway'];
-    const friendUid: string = body['uid'];
+    const friendUid: string = body['username'];
 
     const userData: SupernovaResponse = {
-      username: friendUid,
+      user: await this.core.getUserDataFromUid(friendUid),
       status: status,
       oneway: oneway,
     };
