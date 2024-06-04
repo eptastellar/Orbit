@@ -16,3 +16,4 @@ const manifest = (): MetadataRoute.Manifest => ({
 })
 
 export default manifest
+ 
